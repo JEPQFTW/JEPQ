@@ -2,7 +2,7 @@ import os
 import requests
 import datetime
 import pandas as pd
-import shutil  # move import here at the top
+import shutil
 
 DATA_FOLDER = "data"
 URL = 'https://tinyurl.com/Pr0d1g10s0'
@@ -34,6 +34,7 @@ def parse_option_info(option_str):
         return expiry_date, option_type, strike_price
     except Exception:
         return None, None, None
+
 
 def main():
     os.makedirs(DATA_FOLDER, exist_ok=True)
@@ -85,12 +86,13 @@ def main():
         else:
             print(f"No records found for bucket '{bucket_name}'.")
 
-    # Copy each dated JSON file to latest JSON file (overwrite)
+    # Copy dated JSON files to "latest" versions
     for bucket_name in ["Options - Index", "Cash", "Stocks"]:
         dated_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
         latest_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_latest.json')
         if os.path.exists(dated_file):
             shutil.copyfile(dated_file, latest_file)
+            print(f"Copied {dated_file} to {latest_file}")
 
 if __name__ == '__main__':
     main()
