@@ -28,66 +28,67 @@
   </div>
 
   <script>
+    const FINNHUB_API_KEY = 'd2cvo7hr01qjem5ibl90d2cvo7hr01qjem5ibl9g';
+
     // Helper to build and insert table
     function buildTable(containerId, data, columns) {
-  const container = document.getElementById(containerId);
-  const table = container.querySelector("table");
-  table.innerHTML = "";
+      const container = document.getElementById(containerId);
+      const table = container.querySelector("table");
+      table.innerHTML = "";
 
-  if (!data.length) {
-    table.innerHTML = "<tr><td>No data found</td></tr>";
-    return;
-  }
+      if (!data.length) {
+        table.innerHTML = "<tr><td>No data found</td></tr>";
+        return;
+      }
 
-  // Build header row
-  let headerRow = "<tr>";
-  columns.forEach(col => headerRow += `<th>${col}</th>`);
-  headerRow += "</tr>";
-  table.insertAdjacentHTML("beforeend", headerRow);
+      // Build header row
+      let headerRow = "<tr>";
+      columns.forEach(col => headerRow += `<th>${col}</th>`);
+      headerRow += "</tr>";
+      table.insertAdjacentHTML("beforeend", headerRow);
 
-  // Build data rows
-  data.forEach(row => {
-    let rowHtml = "<tr>";
-    columns.forEach(col => rowHtml += `<td>${row[col] !== undefined ? row[col] : ''}</td>`);
-    rowHtml += "</tr>";
-    table.insertAdjacentHTML("beforeend", rowHtml);
-  });
-
-  // Calculate total weight (assuming the 'Weight' column is always present and numeric as string)
-  // We convert to number just in case (some strings like "0.50" need conversion)
-  const totalWeight = data.reduce((sum, row) => sum + Number(row.Weight || 0), 0);
-
-  // Format totalWeight to 2 decimals with comma if you want (same as your JSON formatting)
-  const totalWeightFormatted = totalWeight.toFixed(2);
-
-  // Build total row (span all columns except last to label "Total")
-  let totalRowHtml = "<tr style='font-weight: bold;'>";
-  columns.forEach((col, i) => {
-    if (i === 0) {
-      totalRowHtml += `<td>Total</td>`;
-    } else if (col === "Weight") {
-      totalRowHtml += `<td>${totalWeightFormatted}</td>`;
-    } else {
-      totalRowHtml += `<td></td>`;
+      // Build data rows
+      data.forEach(row => {
+        let rowHtml = "<tr>";
+        columns.forEach(col => rowHtml += `<td>${row[col] !== undefined ? row[col] : ''}</td>`);
+        rowHtml += "</tr>";
+        table.insertAdjacentHTML("beforeend", rowHtml);
+      });
     }
-  });
-  totalRowHtml += "</tr>";
-  table.insertAdjacentHTML("beforeend", totalRowHtml);
-}
+
+    // Fetch live price for a ticker from Finnhub
+    async function getPrice(ticker) {
+      const url = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${FINNHUB_API_KEY}`;
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('API error');
+        const data = await response.json();
+        return data.c ? data.c.toFixed(2) : 'N/A';
+      } catch (err) {
+        console.error(`Failed to fetch price for ${ticker}`, err);
+        return 'N/A';
+      }
+    }
 
     // Fetch and display data
     async function loadData() {
-      // Fetch Options - Index
+      // Fetch Options - Index JSON
       const optionsResp = await fetch("./data/JEPQ_Options_-_Index_latest.json");
-      const optionsData = await optionsResp.json();
-      buildTable("options-container", optionsData, ["Ticker", "Weight", "Expiry_Date", "Option_Type", "Strike_Price"]);
+      let optionsData = await optionsResp.json();
 
-      // Fetch Cash
+      // For each option, fetch live price of underlying ticker
+      for (let item of optionsData) {
+        item.UnderlyingPrice = await getPrice(item.Ticker);
+      }
+
+      buildTable("options-container", optionsData, ["Ticker", "Weight", "Expiry_Date", "Option_Type", "Strike_Price", "UnderlyingPrice"]);
+
+      // Fetch Cash JSON
       const cashResp = await fetch("./data/JEPQ_Cash_latest.json");
       const cashData = await cashResp.json();
       buildTable("cash-container", cashData, ["Ticker", "Weight"]);
 
-      // Fetch Stocks
+      // Fetch Stocks JSON
       const stocksResp = await fetch("./data/JEPQ_Stocks_latest.json");
       const stocksData = await stocksResp.json();
       buildTable("stocks-container", stocksData, ["Ticker", "Weight"]);
