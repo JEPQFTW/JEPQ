@@ -4,100 +4,179 @@
   <meta charset="UTF-8" />
   <title>JEPQ Holdings</title>
   <style>
-    table { border-collapse: collapse; margin-bottom: 20px; width: 100%; }
-    th, td { border: 1px solid #999; padding: 0.5rem; text-align: left; }
-    th { background-color: #eee; }
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 960px;
+      margin: 30px auto;
+      padding: 0 20px;
+      background: #f9f9f9;
+      color: #222;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #2c3e50;
+    }
+    h2 {
+      margin-top: 40px;
+      margin-bottom: 15px;
+      color: #34495e;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      background: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+      font-size: 14px;
+    }
+    th {
+      background-color: #3498db;
+      color: white;
+      font-weight: 600;
+    }
+    tfoot td {
+      font-weight: bold;
+      background-color: #ecf0f1;
+      border-top: 2px solid #3498db;
+    }
+    .right {
+      text-align: right;
+      font-feature-settings: "tnum";
+      font-variant-numeric: tabular-nums;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
+
   <h1>JEPQ Holdings</h1>
 
-  <div id="options-container">
+  <section id="options-container">
     <h2>Options - Index</h2>
     <table id="options-table"></table>
-  </div>
+  </section>
 
-  <div id="cash-container">
+  <section id="cash-container">
     <h2>Cash</h2>
     <table id="cash-table"></table>
-  </div>
+  </section>
 
-  <div id="stocks-container">
+  <section id="stocks-container">
     <h2>Stocks</h2>
     <table id="stocks-table"></table>
-  </div>
+  </section>
 
   <script>
+    // Your Finnhub API Key here
     const FINNHUB_API_KEY = 'd2cvo7hr01qjem5ibl90d2cvo7hr01qjem5ibl9g';
 
-    // Helper to build and insert table
-    function buildTable(containerId, data, columns) {
-      const container = document.getElementById(containerId);
-      const table = container.querySelector("table");
-      table.innerHTML = "";
-
-      if (!data.length) {
-        table.innerHTML = "<tr><td>No data found</td></tr>";
-        return;
-      }
-
-      // Build header row
-      let headerRow = "<tr>";
-      columns.forEach(col => headerRow += `<th>${col}</th>`);
-      headerRow += "</tr>";
-      table.insertAdjacentHTML("beforeend", headerRow);
-
-      // Build data rows
-      data.forEach(row => {
-        let rowHtml = "<tr>";
-        columns.forEach(col => rowHtml += `<td>${row[col] !== undefined ? row[col] : ''}</td>`);
-        rowHtml += "</tr>";
-        table.insertAdjacentHTML("beforeend", rowHtml);
-      });
-    }
-
-    // Fetch live price for a ticker from Finnhub
+    // Helper: fetch price from Finnhub API for given ticker
     async function getPrice(ticker) {
       const url = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${FINNHUB_API_KEY}`;
       try {
         const response = await fetch(url);
         if (!response.ok) throw new Error('API error');
         const data = await response.json();
-        return data.c ? data.c.toFixed(2) : 'N/A';
+        return data.c ? Number(data.c).toFixed(2) : 'N/A';
       } catch (err) {
         console.error(`Failed to fetch price for ${ticker}`, err);
         return 'N/A';
       }
     }
 
-    // Fetch and display data
-    async function loadData() {
-      // Fetch Options - Index JSON
-      const optionsResp = await fetch("./data/JEPQ_Options_-_Index_latest.json");
-      let optionsData = await optionsResp.json();
+    // Build and insert table
+    function buildTable(containerId, data, columns, showTotals = false) {
+      const container = document.getElementById(containerId);
+      const table = container.querySelector("table");
+      table.innerHTML = "";
 
-      // For each option, fetch live price of underlying ticker
-      for (let item of optionsData) {
-        item.UnderlyingPrice = await getPrice(item.Ticker);
+      if (!data.length) {
+        table.innerHTML = "<tr><td colspan='" + columns.length + "'>No data found</td></tr>";
+        return;
       }
 
-      buildTable("options-container", optionsData, ["Ticker", "Weight", "Expiry_Date", "Option_Type", "Strike_Price", "UnderlyingPrice"]);
+      // Header row
+      let headerRow = "<tr>";
+      columns.forEach(col => headerRow += `<th>${col}</th>`);
+      headerRow += "</tr>";
+      table.insertAdjacentHTML("beforeend", headerRow);
 
-      // Fetch Cash JSON
-      const cashResp = await fetch("./data/JEPQ_Cash_latest.json");
-      const cashData = await cashResp.json();
-      buildTable("cash-container", cashData, ["Ticker", "Weight"]);
+      // Data rows
+      data.forEach(row => {
+        let rowHtml = "<tr>";
+        columns.forEach(col => {
+          const val = row[col] !== undefined ? row[col] : '';
+          const cellClass = (col === "Weight" || col === "Strike_Price" || col === "UnderlyingPrice") ? "right" : "";
+          rowHtml += `<td class="${cellClass}">${val}</td>`;
+        });
+        rowHtml += "</tr>";
+        table.insertAdjacentHTML("beforeend", rowHtml);
+      });
 
-      // Fetch Stocks JSON
-      const stocksResp = await fetch("./data/JEPQ_Stocks_latest.json");
-      const stocksData = await stocksResp.json();
-      buildTable("stocks-container", stocksData, ["Ticker", "Weight"]);
+      // Totals row
+      if (showTotals) {
+        let totalWeight = data.reduce((acc, r) => acc + (parseFloat(r.Weight) || 0), 0);
+        totalWeight = totalWeight.toFixed(2);
+
+        let totalCols = columns.length;
+        let totalRowHtml = `<tfoot><tr><td colspan="${totalCols - 1}">Total Weight (%)</td><td class="right">${totalWeight}</td></tr></tfoot>`;
+        table.insertAdjacentHTML("beforeend", totalRowHtml);
+      }
     }
 
-    loadData().catch(err => {
-      console.error("Error loading data:", err);
-      document.body.insertAdjacentHTML("beforeend", "<p>Error loading data, check console.</p>");
-    });
+    async function loadData() {
+      try {
+        // Fetch Nasdaq-100 index price (use ETF QQQ if NDX doesn't work)
+        const nasdaqTicker = 'NDX'; // Try 'QQQ' if you want ETF price instead
+        const nasdaqPrice = await getPrice(nasdaqTicker);
+
+        // Fetch Options - Index JSON
+        const optionsResp = await fetch("./data/JEPQ_Options_-_Index_latest.json");
+        const optionsData = await optionsResp.json();
+
+        // Add UnderlyingPrice (Nasdaq-100 price) to all options
+        optionsData.forEach(item => {
+          item.UnderlyingPrice = nasdaqPrice;
+        });
+
+        buildTable(
+          "options-container",
+          optionsData,
+          ["Ticker", "Weight", "Expiry_Date", "Option_Type", "Strike_Price", "UnderlyingPrice"],
+          true
+        );
+
+        // Fetch Cash JSON
+        const cashResp = await fetch("./data/JEPQ_Cash_latest.json");
+        const cashData = await cashResp.json();
+        buildTable("cash-container", cashData, ["Ticker", "Weight"], true);
+
+        // Fetch Stocks JSON
+        const stocksResp = await fetch("./data/JEPQ_Stocks_latest.json");
+        const stocksData = await stocksResp.json();
+        buildTable("stocks-container", stocksData, ["Ticker", "Weight"], true);
+
+      } catch (err) {
+        console.error("Error loading data:", err);
+        document.body.insertAdjacentHTML("beforeend", `<p class="error">Error loading data, check console.</p>`);
+      }
+    }
+
+    loadData();
   </script>
+
 </body>
 </html>
