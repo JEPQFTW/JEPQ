@@ -3,9 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <title>JEPQ Holdings</title>
+  <style>
+    table { border-collapse: collapse; margin-bottom: 20px; width: 100%; }
+    th, td { border: 1px solid #999; padding: 0.5rem; text-align: left; }
+    th { background-color: #eee; }
+  </style>
 </head>
 <body>
-  <h1>Welcome to JEPQ Holdings Tracker</h1>
-  <p>Data coming soon...</p>
+  <h1>JEPQ Holdings</h1>
+
+  <div id="options-container">
+    <h2>Options - Index</h2>
+    <table id="options-table"></table>
+  </div>
+
+  <div id="cash-container">
+    <h2>Cash</h2>
+    <table id="cash-table"></table>
+  </div>
+
+  <div id="stocks-container">
+    <h2>Stocks</h2>
+    <table id="stocks-table"></table>
+  </div>
+
+  <script>
+    // Helper to build and insert table
+    function buildTable(containerId, data, columns) {
+      const container = document.getElementById(containerId);
+      const table = container.querySelector("table");
+      table.innerHTML = "";
+
+      if (!data.length) {
+        table.innerHTML = "<tr><td>No data found</td></tr>";
+        return;
+      }
+
+      // Build header row
+      let headerRow = "<tr>";
+      columns.forEach(col => headerRow += `<th>${col}</th>`);
+      headerRow += "</tr>";
+      table.insertAdjacentHTML("beforeend", headerRow);
+
+      // Build data rows
+      data.forEach(row => {
+        let rowHtml = "<tr>";
+        columns.forEach(col => rowHtml += `<td>${row[col] !== undefined ? row[col] : ''}</td>`);
+        rowHtml += "</tr>";
+        table.insertAdjacentHTML("beforeend", rowHtml);
+      });
+    }
+
+    // Fetch and display data
+    async function loadData() {
+      // Fetch Options - Index
+      const optionsResp = await fetch("./data/JEPQ_Options_-_Index_latest.json");
+      const optionsData = await optionsResp.json();
+      buildTable("options-container", optionsData, ["Ticker", "Weight", "Expiry_Date", "Option_Type", "Strike_Price"]);
+
+      // Fetch Cash
+      const cashResp = await fetch("./data/JEPQ_Cash_latest.json");
+      const cashData = await cashResp.json();
+      buildTable("cash-container", cashData, ["Ticker", "Weight"]);
+
+      // Fetch Stocks
+      const stocksResp = await fetch("./data/JEPQ_Stocks_latest.json");
+      const stocksData = await stocksResp.json();
+      buildTable("stocks-container", stocksData, ["Ticker", "Weight"]);
+    }
+
+    loadData().catch(err => {
+      console.error("Error loading data:", err);
+      document.body.insertAdjacentHTML("beforeend", "<p>Error loading data, check console.</p>");
+    });
+  </script>
 </body>
 </html>
