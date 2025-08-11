@@ -58,6 +58,13 @@
       text-align: center;
       margin-top: 20px;
     }
+    .note {
+      font-size: 0.9em;
+      color: #666;
+      text-align: center;
+      margin-top: 10px;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -67,6 +74,7 @@
   <section id="options-container">
     <h2>Options - Index</h2>
     <table id="options-table"></table>
+    <p class="note">Underlying price approximated by QQQ ETF price (Nasdaq-100 proxy).</p>
   </section>
 
   <section id="cash-container">
@@ -80,90 +88,85 @@
   </section>
 
   <script>
-    // Helper: fetch live Nasdaq-100 index price from Yahoo Finance JSON API
-    async function getNasdaq100PriceYahoo() {
-      const url = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=%5ENDX';
+    const FINNHUB_API_KEY = 'd2cvo7hr01qjem5ibl90d2cvo7hr01qjem5ibl9g';
+
+    async function getPrice(ticker) {
+      const url = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${FINNHUB_API_KEY}`;
       try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error('Yahoo API error');
-        const json = await response.json();
-        const price = json.quoteResponse.result[0]?.regularMarketPrice;
-        return price ? price.toFixed(2) : 'N/A';
-      } catch (e) {
-        console.error('Failed to fetch Nasdaq-100 price from Yahoo', e);
+        if (!response.ok) throw new Error('API error');
+        const data = await response.json();
+        return data.c ? Number(data.c).toFixed(2) : 'N/A';
+      } catch (err) {
+        console.error(`Failed to fetch price for ${ticker}`, err);
         return 'N/A';
       }
     }
 
-    // Build and insert table
     function buildTable(containerId, data, columns, showTotals = false) {
       const container = document.getElementById(containerId);
       const table = container.querySelector("table");
       table.innerHTML = "";
 
       if (!data.length) {
-        table.innerHTML = "<tr><td colspan='" + columns.length + "'>No data found</td></tr>";
+        table.innerHTML = `<tr><td colspan="${columns.length}">No data found</td></tr>`;
         return;
       }
 
-      // Header row
+      // Header
       let headerRow = "<tr>";
-      columns.forEach(col => headerRow += `<th>${col}</th>`);
+      columns.forEach(col => {
+        headerRow += `<th>${col.replace(/_/g, ' ')}</th>`;
+      });
       headerRow += "</tr>";
       table.insertAdjacentHTML("beforeend", headerRow);
 
-      // Data rows
+      // Rows
       data.forEach(row => {
         let rowHtml = "<tr>";
         columns.forEach(col => {
-          const val = row[col] !== undefined ? row[col] : '';
-          const cellClass = (col === "Weight" || col === "Strike_Price" || col === "UnderlyingPrice") ? "right" : "";
+          let val = row[col] !== undefined ? row[col] : '';
+          const rightAlignCols = ["Weight", "Strike_Price", "UnderlyingPrice"];
+          const cellClass = rightAlignCols.includes(col) ? "right" : "";
           rowHtml += `<td class="${cellClass}">${val}</td>`;
         });
         rowHtml += "</tr>";
         table.insertAdjacentHTML("beforeend", rowHtml);
       });
 
-      // Totals row
+      // Totals
       if (showTotals) {
         let totalWeight = data.reduce((acc, r) => acc + (parseFloat(r.Weight) || 0), 0);
         totalWeight = totalWeight.toFixed(2);
 
-        let totalCols = columns.length;
-        let totalRowHtml = `<tfoot><tr><td colspan="${totalCols - 1}">Total Weight (%)</td><td class="right">${totalWeight}</td></tr></tfoot>`;
+        const totalCols = columns.length;
+        const totalRowHtml = `<tfoot><tr><td colspan="${totalCols - 1}">Total Weight (%)</td><td class="right">${totalWeight}</td></tr></tfoot>`;
         table.insertAdjacentHTML("beforeend", totalRowHtml);
       }
     }
 
     async function loadData() {
       try {
-        const nasdaqPrice = await getNasdaq100PriceYahoo();
+        // Fetch QQQ price from Finnhub
+        const qqqPrice = await getPrice('QQQ');
 
-        // Fetch Options - Index JSON
-        const optionsResp = await fetch("./data/JEPQ_Options_-_Index_latest.json");
+        // Load Options
+        const optionsResp = await fetch('./data/JEPQ_Options_-_Index_latest.json');
         const optionsData = await optionsResp.json();
-
-        // Add UnderlyingPrice (Nasdaq-100 live price) to all options
         optionsData.forEach(item => {
-          item.UnderlyingPrice = nasdaqPrice;
+          item.UnderlyingPrice = qqqPrice;
         });
+        buildTable('options-container', optionsData, ["Ticker", "Weight", "Expiry_Date", "Option_Type", "Strike_Price", "UnderlyingPrice"], true);
 
-        buildTable(
-          "options-container",
-          optionsData,
-          ["Ticker", "Weight", "Expiry_Date", "Option_Type", "Strike_Price", "UnderlyingPrice"],
-          true
-        );
-
-        // Fetch Cash JSON
-        const cashResp = await fetch("./data/JEPQ_Cash_latest.json");
+        // Load Cash
+        const cashResp = await fetch('./data/JEPQ_Cash_latest.json');
         const cashData = await cashResp.json();
-        buildTable("cash-container", cashData, ["Ticker", "Weight"], true);
+        buildTable('cash-container', cashData, ["Ticker", "Weight"], true);
 
-        // Fetch Stocks JSON
-        const stocksResp = await fetch("./data/JEPQ_Stocks_latest.json");
+        // Load Stocks
+        const stocksResp = await fetch('./data/JEPQ_Stocks_latest.json');
         const stocksData = await stocksResp.json();
-        buildTable("stocks-container", stocksData, ["Ticker", "Weight"], true);
+        buildTable('stocks-container', stocksData, ["Ticker", "Weight"], true);
 
       } catch (err) {
         console.error("Error loading data:", err);
@@ -173,6 +176,5 @@
 
     loadData();
   </script>
-
 </body>
 </html>
