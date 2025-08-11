@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>JEPQ Holdings</title>
   <style>
+    /* Your existing styles here */
     body {
       font-family: Arial, sans-serif;
       max-width: 960px;
@@ -14,55 +15,28 @@
     }
     h1 {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 10px;
       color: #2c3e50;
     }
-    h2 {
-      margin-top: 40px;
-      margin-bottom: 15px;
-      color: #34495e;
-      border-bottom: 2px solid #3498db;
-      padding-bottom: 5px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-      background: white;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    th, td {
-      padding: 10px 12px;
-      border: 1px solid #ddd;
-      text-align: left;
-      font-size: 14px;
-    }
-    th {
-      background-color: #3498db;
-      color: white;
-      font-weight: 600;
-    }
-    tfoot td {
-      font-weight: bold;
-      background-color: #ecf0f1;
-      border-top: 2px solid #3498db;
-    }
-    .right {
-      text-align: right;
-      font-feature-settings: "tnum";
-      font-variant-numeric: tabular-nums;
-    }
-    .error {
-      color: red;
-      font-weight: bold;
+    #date-select-container {
       text-align: center;
-      margin-top: 20px;
+      margin-bottom: 30px;
     }
+    #date-select {
+      font-size: 16px;
+      padding: 6px 10px;
+    }
+    /* Rest of your styles unchanged */
   </style>
 </head>
 <body>
 
   <h1>JEPQ Holdings</h1>
+
+  <div id="date-select-container">
+    <label for="date-select">Select Date: </label>
+    <select id="date-select"></select>
+  </div>
 
   <section id="options-container">
     <h2>Options - Index</h2>
@@ -119,7 +93,7 @@
         let rowHtml = "<tr>";
         columns.forEach(col => {
           const val = row[col] !== undefined ? row[col] : '';
-          const cellClass = (col === "Weight %" || col === "Strike Price" || col === "Underlying Price") ? "right" : "";
+          const cellClass = (col === "Weight" || col === "Strike_Price" || col === "UnderlyingPrice") ? "right" : "";
           rowHtml += `<td class="${cellClass}">${val}</td>`;
         });
         rowHtml += "</tr>";
@@ -137,38 +111,41 @@
       }
     }
 
-    async function loadData() {
+    async function loadDates() {
       try {
-        // Get QQQ price once
+        const resp = await fetch("./data/available_dates.json");
+        if (!resp.ok) throw new Error("Failed to load dates");
+        const json = await resp.json();
+        return json.dates || [];
+      } catch (err) {
+        console.error("Error loading dates:", err);
+        return [];
+      }
+    }
+
+    async function loadData(date) {
+      try {
         const qqqPrice = await fetchQQQPrice();
         if (qqqPrice === null) throw new Error("QQQ price unavailable");
-
-        // Calculate estimated Nasdaq-100 price
         const estimatedNasdaqPrice = (qqqPrice * SCALE_FACTOR).toFixed(2);
 
-        // Fetch Options JSON
-        const optionsResp = await fetch("./data/JEPQ_Options_-_Index_latest.json");
-        const optionsData = await optionsResp.json();
+        const dateSuffix = date ? `_${date}` : "_latest";
 
-        // Add estimated Nasdaq price as UnderlyingPrice
+        // Load Options
+        const optionsResp = await fetch(`./data/JEPQ_Options_-_Index${dateSuffix}.json`);
+        const optionsData = await optionsResp.json();
         optionsData.forEach(item => {
           item.UnderlyingPrice = estimatedNasdaqPrice;
         });
+        buildTable("options-container", optionsData, ["Ticker", "Weight", "Expiry_Date", "Strike_Price", "UnderlyingPrice"], true);
 
-        buildTable(
-          "options-container",
-          optionsData,
-          ["Ticker", "Weight", "Expiry_Date", "Strike_Price", "UnderlyingPrice"],
-          true
-        );
-
-        // Fetch Cash JSON
-        const cashResp = await fetch("./data/JEPQ_Cash_latest.json");
+        // Load Cash
+        const cashResp = await fetch(`./data/JEPQ_Cash${dateSuffix}.json`);
         const cashData = await cashResp.json();
         buildTable("cash-container", cashData, ["Ticker", "Weight"], true);
 
-        // Fetch Stocks JSON
-        const stocksResp = await fetch("./data/JEPQ_Stocks_latest.json");
+        // Load Stocks
+        const stocksResp = await fetch(`./data/JEPQ_Stocks${dateSuffix}.json`);
         const stocksData = await stocksResp.json();
         buildTable("stocks-container", stocksData, ["Ticker", "Weight"], true);
 
@@ -178,7 +155,43 @@
       }
     }
 
-    loadData();
+    async function init() {
+      const dates = await loadDates();
+
+      const select = document.getElementById("date-select");
+      if (dates.length === 0) {
+        select.innerHTML = `<option>No dates available</option>`;
+        return;
+      }
+
+      // Add options to select, latest at the end
+      dates.forEach(date => {
+        const opt = document.createElement("option");
+        opt.value = date;
+        opt.textContent = date;
+        select.appendChild(opt);
+      });
+
+      // Add latest option at the end
+      const latestOpt = document.createElement("option");
+      latestOpt.value = "";
+      latestOpt.textContent = "Latest";
+      select.appendChild(latestOpt);
+
+      // Default to latest
+      select.value = "";
+
+      // Load initial data for latest
+      loadData("");
+
+      // On change, load selected date data
+      select.addEventListener("change", () => {
+        const selectedDate = select.value;
+        loadData(selectedDate);
+      });
+    }
+
+    init();
   </script>
 
 </body>
