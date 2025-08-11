@@ -80,19 +80,17 @@
   </section>
 
   <script>
-    // Your Finnhub API Key here
-    const FINNHUB_API_KEY = 'd2cvo7hr01qjem5ibl90d2cvo7hr01qjem5ibl9g';
-
-    // Helper: fetch price from Finnhub API for given ticker
-    async function getPrice(ticker) {
-      const url = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${FINNHUB_API_KEY}`;
+    // Helper: fetch live Nasdaq-100 index price from Yahoo Finance JSON API
+    async function getNasdaq100PriceYahoo() {
+      const url = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=%5ENDX';
       try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error('API error');
-        const data = await response.json();
-        return data.c ? Number(data.c).toFixed(2) : 'N/A';
-      } catch (err) {
-        console.error(`Failed to fetch price for ${ticker}`, err);
+        if (!response.ok) throw new Error('Yahoo API error');
+        const json = await response.json();
+        const price = json.quoteResponse.result[0]?.regularMarketPrice;
+        return price ? price.toFixed(2) : 'N/A';
+      } catch (e) {
+        console.error('Failed to fetch Nasdaq-100 price from Yahoo', e);
         return 'N/A';
       }
     }
@@ -139,15 +137,13 @@
 
     async function loadData() {
       try {
-        // Fetch Nasdaq-100 index price (use ETF QQQ if NDX doesn't work)
-        const nasdaqTicker = 'NDX'; // Try 'QQQ' if you want ETF price instead
-        const nasdaqPrice = await getPrice(nasdaqTicker);
+        const nasdaqPrice = await getNasdaq100PriceYahoo();
 
         // Fetch Options - Index JSON
         const optionsResp = await fetch("./data/JEPQ_Options_-_Index_latest.json");
         const optionsData = await optionsResp.json();
 
-        // Add UnderlyingPrice (Nasdaq-100 price) to all options
+        // Add UnderlyingPrice (Nasdaq-100 live price) to all options
         optionsData.forEach(item => {
           item.UnderlyingPrice = nasdaqPrice;
         });
