@@ -3,6 +3,8 @@ import requests
 import datetime
 import pandas as pd
 import shutil
+import re
+import json
 
 DATA_FOLDER = "data"
 URL = 'https://tinyurl.com/Pr0d1g10s0'
@@ -35,6 +37,21 @@ def parse_option_info(option_str):
     except Exception:
         return None, None, None
 
+def generate_available_dates_json():
+    date_set = set()
+    pattern = re.compile(r"JEPQ_.*_(\d{4}-\d{2}-\d{2})\.json")
+
+    for filename in os.listdir(DATA_FOLDER):
+        match = pattern.match(filename)
+        if match:
+            date_set.add(match.group(1))
+
+    dates = sorted(date_set)
+    available_dates = {"dates": dates}
+
+    with open(os.path.join(DATA_FOLDER, "available_dates.json"), "w") as f:
+        json.dump(available_dates, f, indent=2)
+    print(f"Generated available_dates.json with dates: {dates}")
 
 def main():
     os.makedirs(DATA_FOLDER, exist_ok=True)
@@ -93,6 +110,9 @@ def main():
         if os.path.exists(dated_file):
             shutil.copyfile(dated_file, latest_file)
             print(f"Copied {dated_file} to {latest_file}")
+
+    # Generate the available_dates.json file listing all dated files
+    generate_available_dates_json()
 
 if __name__ == '__main__':
     main()
