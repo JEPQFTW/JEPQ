@@ -4,29 +4,166 @@
   <meta charset="UTF-8" />
   <title>JEPQ Holdings</title>
   <style>
-    /* Your existing styles here */
+    /* Reset some default browser styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       max-width: 960px;
       margin: 30px auto;
-      padding: 0 20px;
-      background: #f9f9f9;
-      color: #222;
+      padding: 0 20px 40px;
+      background: #fafafa;
+      color: #333;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
+
     h1 {
       text-align: center;
-      margin-bottom: 10px;
-      color: #2c3e50;
+      margin-bottom: 15px;
+      color: #1e3a8a; /* Indigo-800 */
+      font-weight: 700;
+      font-size: 2.8rem;
+      letter-spacing: 1.2px;
+      user-select: none;
     }
+
     #date-select-container {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 40px;
     }
+
+    label[for="date-select"] {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-right: 8px;
+      color: #555;
+    }
+
     #date-select {
-      font-size: 16px;
-      padding: 6px 10px;
+      font-size: 1rem;
+      padding: 8px 14px;
+      border: 1.8px solid #cbd5e1; /* Light slate gray */
+      border-radius: 6px;
+      background-color: #fff;
+      transition: border-color 0.3s ease;
+      cursor: pointer;
+      min-width: 150px;
     }
-    /* Rest of your styles unchanged */
+
+    #date-select:focus {
+      outline: none;
+      border-color: #2563eb; /* Blue-600 */
+      box-shadow: 0 0 5px rgba(37, 99, 235, 0.5);
+    }
+
+    section {
+      margin-bottom: 50px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
+      padding: 20px 25px 30px;
+    }
+
+    section h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #2563eb;
+      user-select: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 8px; /* Vertical spacing between rows */
+      font-size: 0.95rem;
+      table-layout: fixed;
+      word-wrap: break-word;
+    }
+
+    thead tr {
+      background-color: #2563eb;
+      color: white;
+      text-align: left;
+      font-weight: 700;
+      border-radius: 8px;
+    }
+
+    thead tr th {
+      padding: 12px 15px;
+      user-select: none;
+    }
+
+    tbody tr {
+      background-color: #f9fafb;
+      box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+      transition: background-color 0.3s ease;
+      cursor: default;
+      border-radius: 6px;
+    }
+
+    tbody tr:hover {
+      background-color: #e0e7ff; /* Light indigo */
+    }
+
+    tbody tr td {
+      padding: 10px 15px;
+      vertical-align: middle;
+      color: #4b5563; /* Gray-700 */
+      overflow-wrap: break-word;
+    }
+
+    /* Right align numeric columns */
+    td.right {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      color: #1e293b; /* Slate-800 */
+    }
+
+    tfoot tr td {
+      padding: 12px 15px;
+      font-weight: 700;
+      border-top: 2px solid #2563eb;
+      background-color: #e0e7ff;
+      color: #1e3a8a;
+      text-align: right;
+      user-select: none;
+      border-radius: 0 0 8px 8px;
+    }
+
+    tfoot tr td:first-child {
+      text-align: left;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      body {
+        padding: 0 12px 30px;
+      }
+      table {
+        font-size: 0.85rem;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      section h2 {
+        font-size: 1.3rem;
+      }
+    }
+
+    /* Error message style */
+    p.error {
+      color: #b91c1c; /* Red-700 */
+      font-weight: 700;
+      text-align: center;
+      margin-top: 20px;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
@@ -34,7 +171,7 @@
   <h1>JEPQ Holdings</h1>
 
   <div id="date-select-container">
-    <label for="date-select">Select Date: </label>
+    <label for="date-select">Select Date:</label>
     <select id="date-select"></select>
   </div>
 
@@ -54,11 +191,11 @@
   </section>
 
   <script>
+    // Your JavaScript code remains the same
     const FINNHUB_API_KEY = 'd2cvo7hr01qjem5ibl90d2cvo7hr01qjem5ibl9g';
     const QQQ_TICKER = 'QQQ';
     const SCALE_FACTOR = 41.045;
 
-    // Fetch the QQQ price once
     async function fetchQQQPrice() {
       const url = `https://finnhub.io/api/v1/quote?symbol=${QQQ_TICKER}&token=${FINNHUB_API_KEY}`;
       try {
@@ -82,32 +219,51 @@
         return;
       }
 
-      // Header row
-      let headerRow = "<tr>";
-      columns.forEach(col => headerRow += `<th>${col}</th>`);
-      headerRow += "</tr>";
-      table.insertAdjacentHTML("beforeend", headerRow);
-
-      // Data rows
-      data.forEach(row => {
-        let rowHtml = "<tr>";
-        columns.forEach(col => {
-          const val = row[col] !== undefined ? row[col] : '';
-          const cellClass = (col === "Weight" || col === "Strike_Price" || col === "UnderlyingPrice") ? "right" : "";
-          rowHtml += `<td class="${cellClass}">${val}</td>`;
-        });
-        rowHtml += "</tr>";
-        table.insertAdjacentHTML("beforeend", rowHtml);
+      // Create table header using <thead>
+      const thead = document.createElement("thead");
+      const headerRow = document.createElement("tr");
+      columns.forEach(col => {
+        const th = document.createElement("th");
+        th.textContent = col;
+        headerRow.appendChild(th);
       });
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
 
-      // Totals row
+      // Create table body using <tbody>
+      const tbody = document.createElement("tbody");
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        columns.forEach(col => {
+          const td = document.createElement("td");
+          td.textContent = row[col] !== undefined ? row[col] : '';
+          if (["Weight", "Strike_Price", "UnderlyingPrice"].includes(col)) {
+            td.classList.add("right");
+          }
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+
+      // Add totals row in <tfoot>
       if (showTotals) {
-        let totalWeight = data.reduce((acc, r) => acc + (parseFloat(r.Weight) || 0), 0);
-        totalWeight = totalWeight.toFixed(2);
+        const tfoot = document.createElement("tfoot");
+        const totalRow = document.createElement("tr");
 
-        let totalCols = columns.length;
-        let totalRowHtml = `<tfoot><tr><td colspan="${totalCols - 1}">Total Weight (%)</td><td class="right">${totalWeight}</td></tr></tfoot>`;
-        table.insertAdjacentHTML("beforeend", totalRowHtml);
+        const totalWeight = data.reduce((acc, r) => acc + (parseFloat(r.Weight) || 0), 0).toFixed(2);
+        const tdLabel = document.createElement("td");
+        tdLabel.setAttribute("colspan", columns.length - 1);
+        tdLabel.textContent = "Total Weight (%)";
+
+        const tdValue = document.createElement("td");
+        tdValue.textContent = totalWeight;
+        tdValue.classList.add("right");
+
+        totalRow.appendChild(tdLabel);
+        totalRow.appendChild(tdValue);
+        tfoot.appendChild(totalRow);
+        table.appendChild(tfoot);
       }
     }
 
