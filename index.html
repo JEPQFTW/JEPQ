@@ -30,29 +30,50 @@
   <script>
     // Helper to build and insert table
     function buildTable(containerId, data, columns) {
-      const container = document.getElementById(containerId);
-      const table = container.querySelector("table");
-      table.innerHTML = "";
+  const container = document.getElementById(containerId);
+  const table = container.querySelector("table");
+  table.innerHTML = "";
 
-      if (!data.length) {
-        table.innerHTML = "<tr><td>No data found</td></tr>";
-        return;
-      }
+  if (!data.length) {
+    table.innerHTML = "<tr><td>No data found</td></tr>";
+    return;
+  }
 
-      // Build header row
-      let headerRow = "<tr>";
-      columns.forEach(col => headerRow += `<th>${col}</th>`);
-      headerRow += "</tr>";
-      table.insertAdjacentHTML("beforeend", headerRow);
+  // Build header row
+  let headerRow = "<tr>";
+  columns.forEach(col => headerRow += `<th>${col}</th>`);
+  headerRow += "</tr>";
+  table.insertAdjacentHTML("beforeend", headerRow);
 
-      // Build data rows
-      data.forEach(row => {
-        let rowHtml = "<tr>";
-        columns.forEach(col => rowHtml += `<td>${row[col] !== undefined ? row[col] : ''}</td>`);
-        rowHtml += "</tr>";
-        table.insertAdjacentHTML("beforeend", rowHtml);
-      });
+  // Build data rows
+  data.forEach(row => {
+    let rowHtml = "<tr>";
+    columns.forEach(col => rowHtml += `<td>${row[col] !== undefined ? row[col] : ''}</td>`);
+    rowHtml += "</tr>";
+    table.insertAdjacentHTML("beforeend", rowHtml);
+  });
+
+  // Calculate total weight (assuming the 'Weight' column is always present and numeric as string)
+  // We convert to number just in case (some strings like "0.50" need conversion)
+  const totalWeight = data.reduce((sum, row) => sum + Number(row.Weight || 0), 0);
+
+  // Format totalWeight to 2 decimals with comma if you want (same as your JSON formatting)
+  const totalWeightFormatted = totalWeight.toFixed(2);
+
+  // Build total row (span all columns except last to label "Total")
+  let totalRowHtml = "<tr style='font-weight: bold;'>";
+  columns.forEach((col, i) => {
+    if (i === 0) {
+      totalRowHtml += `<td>Total</td>`;
+    } else if (col === "Weight") {
+      totalRowHtml += `<td>${totalWeightFormatted}</td>`;
+    } else {
+      totalRowHtml += `<td></td>`;
     }
+  });
+  totalRowHtml += "</tr>";
+  table.insertAdjacentHTML("beforeend", totalRowHtml);
+}
 
     // Fetch and display data
     async function loadData() {
