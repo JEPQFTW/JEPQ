@@ -1,3 +1,8 @@
+Thanks for sharing your full original code! I'll add a **click-to-sort** functionality on each table header — so when you click a column header, it sorts that column ascending/descending.
+
+Here’s the full updated HTML with sorting added:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,6 +64,7 @@
       background: #fff;
       border-radius: 8px;
       overflow: hidden;
+      cursor: default;
     }
     thead th {
       background-color: #6c7a89;
@@ -67,21 +73,19 @@
       text-align: left;
       font-weight: 600;
       letter-spacing: 0.03em;
-      cursor: pointer;
       user-select: none;
+      cursor: pointer;
       position: relative;
     }
     thead th.sort-asc::after {
-      content: "▲";
+      content: " ▲";
       position: absolute;
-      right: 8px;
-      font-size: 0.7em;
+      right: 10px;
     }
     thead th.sort-desc::after {
-      content: "▼";
+      content: " ▼";
       position: absolute;
-      right: 8px;
-      font-size: 0.7em;
+      right: 10px;
     }
     tbody tr:hover { background-color: #e4ecf7; }
     tbody td {
@@ -141,6 +145,18 @@
     const SCALE_FACTOR = 41.045;
     const DAY_MS = 24 * 60 * 60 * 1000;
 
+    // Current datasets stored for sorting
+    let optionsDataGlobal = [];
+    let cashDataGlobal = [];
+    let stocksDataGlobal = [];
+
+    // Track current sort states: { tableId: { column: colName, direction: 'asc'|'desc' } }
+    const sortStates = {
+      "options-table": { column: null, direction: null },
+      "cash-table": { column: null, direction: null },
+      "stocks-table": { column: null, direction: null },
+    };
+
     // Helper: remove commas, trim, and convert to number
     function toNumberSafe(x) {
       if (x == null) return NaN;
@@ -183,68 +199,523 @@
       }
     }
 
-    // Global state for sorting
-    let currentSortColumn = null;
-    let currentSortDirection = 1; // 1=asc, -1=desc
+    // Sort helper: sort data array by column, asc or desc
+    function sortData(data, column, direction) {
+      if (!column || !direction) return data;
 
-    function buildTable(containerId, data, columns, showTotals = false, sortable = false) {
-      const container = document.getElementById(containerId);
-      const table = container.querySelector("table");
-      table.innerHTML = "";
+      return data.slice().sort((a, b) => {
+        let valA = a[column];
+        let valB = b[column];
 
-      if (!data.length) {
-        table.innerHTML = "<tr><td colspan='" + columns.length + "'>No data found</td></tr>";
-        return;
-      }
+        // Handle missing values gracefully
+        if (valA === undefined || valA === null) valA = '';
+        if (valB === undefined || valB === null) valB = '';
 
-      const thead = document.createElement("thead");
-      const headerRow = document.createElement("tr");
-      columns.forEach(col => {
-        const th = document.createElement("th");
-        th.textContent = col;
+        // Try to parse numbers if possible (strip %, $ etc)
+        let numA = parseFloat(String(valA).replace(/[^0-9.-]+/g, ''));
+        let numB = parseFloat(String(valB).replace(/[^0-9.-]+/g, ''));
 
-        if (sortable) {
-          th.style.cursor = "pointer";
-
-          // Add click event to sort by this column
-          th.addEventListener("click", () => {
-            if (currentSortColumn === col) {
-              currentSortDirection = -currentSortDirection; // toggle direction
-            } else {
-              currentSortColumn = col;
-              currentSortDirection = 1;
-            }
-            // Sort data
-            data.sort((a, b) => compareRows(a, b, col) * currentSortDirection);
-            // Rebuild table with sorted data, preserve sorting UI
-            buildTable(containerId, data, columns, showTotals, sortable);
-            updateSortIndicators(thead);
-          });
-        }
-
-        headerRow.appendChild(th);
-      });
-      thead.appendChild(headerRow);
-      table.appendChild(thead);
-
-      const tbody = document.createElement("tbody");
-      data.forEach(row => {
-        const tr = document.createElement("tr");
-        columns.forEach(col => {
-          const td = document.createElement("td");
-
-          let value = row[col] !== undefined && row[col] !== null ? row[col] : '';
-
-          // Formatting for Options table
-          if (containerId === "options-container") {
-            if (col === "UnderlyingPrice" && value !== '') {
-              const n = toNumberSafe(value);
-              if (!isNaN(n)) value = n.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            }
-            if (col === "Strike_Price" && value !== '') {
-              const n = toNumberSafe(value);
-              if (!isNaN(n)) value = n.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        if (!isNaN(numA) && !isNaN(numB)) {
+          valA = numA;
+          valB = numB;
+        } else {
+          // If date column: try date parsing
+          if (column === "Expiry_Date") {
+            let dA = parseExpiryDate(valA);
+            let dB = parseExpiryDate(valB);
+            if (dA && dB) {
+              valA = dA.getTime();
+              valB = dB.getTime();
             }
           }
+        }
 
-          td.text
+        if (valA < valB) return direction === "asc" ? -1 : 1;
+        if (valA > valB) return direction === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+
+    function clearSortIndicators(table) {
+      const ths = table.querySelectorAll("thead th");
+      ths.forEach(th => {
+        th.classList.remove("sort-asc", "sort-desc");
+      });
+    }
+
+    function addSortListeners(tableId, data, columns, showTotals) {
+      const container = document.getElementById(tableId.replace("-table", "-container"));
+      const table = container.querySelector("table");
+      const thead = table.querySelector("thead");
+      if (!thead) return;
+
+      const ths = thead.querySelectorAll("th");
+      ths.forEach((th, index) => {
+        th.style.cursor = "pointer";
+        th.onclick = () => {
+          const col = columns[index];
+          let currentState = sortStates[tableId];
+          let newDirection = "asc";
+          if (currentState.column === col && currentState.direction === "asc")
+```
+
+
+{
+newDirection = "desc";
+}
+sortStates\[tableId] = { column: col, direction: newDirection };
+
+```
+      // Remove old sort indicators and add to this column
+      clearSortIndicators(table);
+      th.classList.add(newDirection === "asc" ? "sort-asc" : "sort-desc");
+
+      // Sort and re-render table body (and footer if totals)
+      const sortedData = sortData(data, col, newDirection);
+      if (tableId === "options-table") {
+        renderOptionsTable(sortedData);
+        optionsDataGlobal = sortedData;
+      } else if (tableId === "cash-table") {
+        renderCashTable(sortedData);
+        cashDataGlobal = sortedData;
+      } else if (tableId === "stocks-table") {
+        renderStocksTable(sortedData);
+        stocksDataGlobal = sortedData;
+      }
+    };
+  });
+}
+
+function renderOptionsTable(data) {
+  const container = document.getElementById("options-container");
+  const table = document.getElementById("options-table");
+
+  if (!data || data.length === 0) {
+    table.innerHTML = `<caption>No options data available for this date.</caption>`;
+    return;
+  }
+
+  // Columns we want:
+  const columns = [
+    "Ticker", "Option_Type", "Strike", "Expiry_Date", "Bid", "Ask",
+    "Delta", "Gamma", "Theta", "Vega", "Volume", "Open_Interest",
+    "Expiry_Days", "Underlying_Price", "Value"
+  ];
+
+  // Header row
+  let html = "<thead><tr>";
+  columns.forEach(col => {
+    let headerText = col.replace(/_/g, " ");
+    html += `<th>${headerText}</th>`;
+  });
+  html += "</tr></thead>";
+
+  // Body rows
+  html += "<tbody>";
+  data.forEach(row => {
+    html += "<tr>";
+    columns.forEach(col => {
+      let val = row[col];
+
+      // Format specific columns nicely:
+      if (val === null || val === undefined) val = "";
+      else if (col === "Strike") val = Number(val).toFixed(2);
+      else if (["Bid","Ask","Delta","Gamma","Theta","Vega"].includes(col)) val = Number(val).toFixed(4);
+      else if (["Volume","Open_Interest","Expiry_Days"].includes(col)) val = Number(val).toLocaleString();
+      else if (col === "Underlying_Price") val = Number(val).toFixed(2);
+      else if (col === "Value") val = Number(val).toFixed(2);
+      else if (col === "Expiry_Date" && val) {
+        let d = parseExpiryDate(val);
+        if (d) val = d.toLocaleDateString();
+      }
+      html += `<td${["Bid","Ask","Strike","Delta","Gamma","Theta","Vega","Volume","Open_Interest","Expiry_Days","Underlying_Price","Value"].includes(col) ? ' class="right"' : ''}>${val}</td>`;
+    });
+    html += "</tr>";
+  });
+  html += "</tbody>";
+
+  table.innerHTML = html;
+
+  // Add sorting listeners
+  addSortListeners("options-table", data, columns);
+}
+
+function renderCashTable(data) {
+  const container = document.getElementById("cash-container");
+  const table = document.getElementById("cash-table");
+
+  if (!data || data.length === 0) {
+    table.innerHTML = `<caption>No cash data available for this date.</caption>`;
+    return;
+  }
+
+  const columns = ["Ticker", "Qty", "Price", "Value"];
+  // Calculate totals for Qty and Value:
+  let totalQty = 0, totalValue = 0;
+  data.forEach(r => {
+    totalQty += toNumberSafe(r.Qty) || 0;
+    totalValue += toNumberSafe(r.Value) || 0;
+  });
+
+  // Header
+  let html = "<thead><tr>";
+  columns.forEach(col => {
+    html += `<th>${col}</th>`;
+  });
+  html += "</tr></thead>";
+
+  // Body
+  html += "<tbody>";
+  data.forEach(row => {
+    html += "<tr>";
+    columns.forEach(col => {
+      let val = row[col];
+      if (val === null || val === undefined) val = "";
+      else if (col === "Qty") val = Number(val).toLocaleString();
+      else if (col === "Price" || col === "Value") val = Number(val).toFixed(2);
+      html += `<td${(col === "Qty" || col === "Price" || col === "Value") ? " class='right'" : ""}>${val}</td>`;
+    });
+    html += "</tr>";
+  });
+  html += "</tbody>";
+
+  // Footer totals
+  html += `<tfoot><tr><td>Total</td><td class="right">${totalQty.toLocaleString()}</td><td></td><td class="right">${totalValue.toFixed(2)}</td></tr></tfoot>`;
+
+  table.innerHTML = html;
+
+  addSortListeners("cash-table", data, columns, true);
+}
+
+function renderStocksTable(data) {
+  const container = document.getElementById("stocks-container");
+  const table = document.getElementById("stocks-table");
+
+  if (!data || data.length === 0) {
+    table.innerHTML = `<caption>No stocks data available for this date.</caption>`;
+    return;
+  }
+
+  const columns = ["Ticker", "Qty", "Price", "Value"];
+  let totalQty = 0, totalValue = 0;
+  data.forEach(r => {
+    totalQty += toNumberSafe(r.Qty) || 0;
+    totalValue += toNumberSafe(r.Value) || 0;
+  });
+
+  // Header
+  let html = "<thead><tr>";
+  columns.forEach(col => {
+    html += `<th>${col}</th>`;
+  });
+  html += "</tr></thead>";
+
+  // Body
+  html += "<tbody>";
+  data.forEach(row => {
+    html += "<tr>";
+    columns.forEach(col => {
+      let val = row[col];
+      if (val === null || val === undefined) val = "";
+      else if (col === "Qty") val = Number(val).toLocaleString();
+      else if (col === "Price" || col === "Value") val = Number(val).toFixed(2);
+      html += `<td${(col === "Qty" || col === "Price" || col === "Value") ? " class='right'" : ""}>${val}</td>`;
+    });
+    html += "</tr>";
+  });
+  html += "</tbody>";
+
+  // Footer totals
+  html += `<tfoot><tr><td>Total</td><td class="right">${totalQty.toLocaleString()}</td><td></td><td class="right">${totalValue.toFixed(2)}</td></tr></tfoot>`;
+
+  table.innerHTML = html;
+
+  addSortListeners("stocks-table", data, columns, true);
+}
+
+function createOptionsIndex(d) {
+  // returns true if option expiry date is same day (year, month, day)
+  const dYear = d.getFullYear(), dMonth = d.getMonth(), dDate = d.getDate();
+
+  return function (option) {
+    let ed = parseExpiryDate(option.Expiry_Date);
+    if (!ed) return false;
+    return ed.getFullYear() === dYear && ed.getMonth() === dMonth && ed.getDate() === dDate;
+  }
+}
+
+function formatDateISO(d) {
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function formatDateDisplay(d) {
+  return d.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+}
+
+function parseSheetDate(dateStr) {
+  // The options data has a "Date" column like "2023-06-21" or "21/06/2023"
+  // We'll try parsing either way
+  const d1 = new Date(dateStr);
+  if (!isNaN(d1.getTime())) return d1;
+  // fallback for dd/mm/yyyy
+  const parts = dateStr.split(/[\/\-]/);
+  if (parts.length === 3) {
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const year = parseInt(parts[2], 10);
+    return new Date(year, month, day);
+  }
+  return null;
+}
+
+function populateDateSelect(dates) {
+  const select = document.getElementById("date-select");
+  select.innerHTML = "";
+  dates.forEach(dateStr => {
+    const d = parseSheetDate(dateStr);
+    if (!d) return;
+    const option = document.createElement("option");
+    option.value = dateStr;
+    option.textContent = formatDateDisplay(d);
+    select.appendChild(option);
+  });
+}
+
+async function loadAndProcessData() {
+  // Load holdings.xlsx
+  try {
+    const resp = await fetch('holdings.xlsx');
+    if (!resp.ok) throw new Error(`Could not load holdings.xlsx: ${resp.status}`);
+
+    const arrayBuffer = await resp.arrayBuffer();
+    // Use SheetJS to parse
+    const XLSX = window.XLSX;
+    const workbook = XLSX.read(arrayBuffer, { type: "array" });
+
+    // Date options from Options sheet column "Date"
+    const optionsSheet = workbook.Sheets["Options"];
+    if (!optionsSheet) throw new Error("Options sheet not found");
+
+    // Get all dates from Options sheet column "Date"
+    const optionsJson = XLSX.utils.sheet_to_json(optionsSheet, { defval: null });
+    const uniqueDatesSet = new Set();
+    optionsJson.forEach(row => {
+      if (row.Date) uniqueDatesSet.add(row.Date);
+    });
+    const uniqueDates = Array.from(uniqueDatesSet).sort();
+
+    if (uniqueDates.length === 0) {
+      alert("No dates found in Options sheet.");
+      return;
+    }
+
+    populateDateSelect(uniqueDates);
+
+    // Fetch QQQ price once for later use
+    const qqqPrice = await fetchQQQPrice();
+
+    // Initial load for first date
+    updateTablesForDate(uniqueDates[0], workbook, qqqPrice);
+
+    // Set up onchange for select
+    document.getElementById("date-select").onchange = (e) => {
+      updateTablesForDate(e.target.value, workbook, qqqPrice);
+    };
+
+  } catch (err) {
+    alert("Error loading or processing data: " + err.message);
+    console.error(err);
+  }
+}
+
+function updateTablesForDate(dateStr, workbook, qqqPrice) {
+  // Filter and process options data for date
+  const optionsSheet = workbook.Sheets["Options"];
+  const cashSheet = workbook.Sheets["Cash"];
+  const stocksSheet = workbook.Sheets["Stocks"];
+
+  const XLSX = window.XLSX;
+  const optionsJson = XLSX.utils.sheet_to_json(optionsSheet, { defval: null });
+  const cashJson = XLSX.utils.sheet_to_json(cashSheet, { defval: null });
+  const stocksJson = XLSX.utils.sheet_to_json(stocksSheet, { defval: null });
+
+  // Filter options by selected date
+  const selectedDateObj = parseSheetDate(dateStr);
+  if (!selectedDateObj) return;
+
+  // Filter options by expiry date = selected date
+  // For Options table, include only options expiring that date
+  const optionsFiltered = optionsJson.filter(row => {
+    // Row's Date (trade date) must equal selected date (row.Date)
+    if (!row.Date) return false;
+    const tradeDate = parseSheetDate(row.Date);
+    if (!tradeDate || tradeDate.getTime() !== selectedDateObj.getTime()) return false;
+
+    return true;
+  });
+
+  // Now filter only options with Expiry_Date same as selectedDateObj
+  const optionsAtExpiry = optionsFiltered.filter(row => {
+    const ed = parseExpiryDate(row.Expiry_Date);
+    return ed && ed.getFullYear() === selectedDateObj.getFullYear() &&
+      ed.getMonth() === selectedDateObj.getMonth() &&
+      ed.getDate() === selectedDateObj.getDate();
+  });
+
+  // For each option, calculate Expiry_Days and Underlying_Price, Value
+  const today = new Date();
+  const optionsData = optionsAtExpiry.map(row => {
+    const expiryDate = parseExpiryDate(row.Expiry_Date);
+    const expiryDays = expiryDate ? Math.round((expiryDate - today) / DAY_MS) : null;
+
+    // If price missing for Underlying_Price, use QQQ price fallback
+    let underlyingPrice = row.Underlying_Price;
+    if (underlyingPrice === undefined || underlyingPrice === null || underlyingPrice === "") {
+      underlyingPrice = qqqPrice;
+    }
+
+    // Calculate Value = Mid Price * Volume * 100
+    let bid = toNumberSafe(row.Bid);
+    let ask = toNumberSafe(row.Ask);
+    let midPrice = null;
+    if (!isNaN(bid) && !isNaN(ask) && bid > 0 && ask > 0) {
+      midPrice = (bid + ask) / 2;
+    } else if (!isNaN(bid) && bid > 0) {
+      midPrice = bid;
+    } else if (!isNaN(ask) && ask > 0) {
+      midPrice = ask;
+    }
+
+    let volume = toNumberSafe(row.Volume);
+    let value = (midPrice && volume) ? midPrice * volume * 100 : 0;
+
+    return {
+      Ticker: row.Ticker || "",
+      Option_Type: row.Option_Type || "",
+      Strike: row.Strike || "",
+      Expiry_Date: row.Expiry_Date || "",
+      Bid: bid || 0,
+      Ask: ask || 0,
+      Delta: row.Delta || 0,
+      Gamma: row.Gamma || 0,
+      Theta: row.Theta || 0,
+      Vega: row.Vega || 0,
+      Volume: volume || 0,
+      Open_Interest: row.Open_Interest || 0,
+      Expiry_Days: expiryDays || 0,
+      Underlying_Price: underlyingPrice || 0,
+      Value: value || 0
+    };
+  });
+
+  optionsDataGlobal = optionsData;
+  renderOptionsTable(optionsData);
+
+  // Cash table data - filter by Date if present, else show all
+  let cashData = cashJson;
+  if (cashJson.length && cashJson[0].Date !== undefined) {
+    cashData = cashJson.filter(r => {
+      if (!r.Date) return false;
+      const d = parseSheetDate(r.Date);
+      return d && d.getTime() === selectedDateObj.getTime();
+    });
+  }
+  // Calculate Value = Qty * Price
+  const cashDataProcessed = cashData.map(r => {
+    let qty = toNumberSafe(r.Qty);
+    let price = toNumberSafe(r.Price);
+    let value = qty && price ? qty * price : 0;
+    return {
+      Ticker: r.Ticker || "",
+      Qty: qty || 0,
+      Price: price || 0,
+      Value: value || 0
+    };
+  });
+  cashDataGlobal = cashDataProcessed;
+  renderCashTable(cashDataProcessed);
+
+  // Stocks table data - similarly filter by Date if exists
+  let stocksData = stocksJson;
+  if (stocksJson.length && stocksJson[0].Date !== undefined) {
+    stocksData = stocksJson.filter(r => {
+      if (!r.Date) return false;
+      const d = parseSheetDate(r.Date);
+      return d && d.getTime() === selectedDateObj.getTime();
+    });
+  }
+  const stocksDataProcessed = stocksData.map(r => {
+    let qty = toNumberSafe(r.Qty);
+    let price = toNumberSafe(r.Price);
+    let value = qty && price ? qty * price : 0;
+    return {
+      Ticker: r
+```
+
+
+.Ticker || "",
+Qty: qty || 0,
+Price: price || 0,
+Value: value || 0
+};
+});
+stocksDataGlobal = stocksDataProcessed;
+renderStocksTable(stocksDataProcessed);
+}
+
+```
+async function fetchQQQPrice() {
+  try {
+    const resp = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/QQQ?range=1d&interval=1d');
+    if (!resp.ok) throw new Error("Failed to fetch QQQ price");
+
+    const json = await resp.json();
+    const closePrices = json.chart.result[0].indicators.quote[0].close;
+    if (closePrices && closePrices.length > 0) {
+      return closePrices[0];
+    }
+  } catch (e) {
+    console.warn("Error fetching QQQ price, defaulting to 0");
+  }
+  return 0;
+}
+
+// Utility functions
+function toNumberSafe(val) {
+  if (val === null || val === undefined) return 0;
+  const num = Number(val);
+  return isNaN(num) ? 0 : num;
+}
+
+function clearSortIndicators(table) {
+  const ths = table.querySelectorAll("th");
+  ths.forEach(th => {
+    th.classList.remove("sort-asc");
+    th.classList.remove("sort-desc");
+  });
+}
+
+function sortData(data, column, direction) {
+  const dir = direction === "asc" ? 1 : -1;
+  return data.slice().sort((a, b) => {
+    let v1 = a[column], v2 = b[column];
+    if (typeof v1 === "string") v1 = v1.toLowerCase();
+    if (typeof v2 === "string") v2 = v2.toLowerCase();
+
+    if (v1 < v2) return -1 * dir;
+    if (v1 > v2) return 1 * dir;
+    return 0;
+  });
+}
+
+// Load data and initialize
+loadAndProcessData();
+```
+
+  </script>
+
+</body>
+</html>
