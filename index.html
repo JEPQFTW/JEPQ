@@ -4,11 +4,7 @@
   <meta charset="UTF-8" />
   <title>JEPQ Holdings</title>
   <style>
-    /* Reset some default browser styles */
-    *, *::before, *::after {
-      box-sizing: border-box;
-    }
-
+    *, *::before, *::after { box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       max-width: 960px;
@@ -16,49 +12,39 @@
       padding: 0 20px 40px;
       background: #fafafa;
       color: #333;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
-
     h1 {
       text-align: center;
       margin-bottom: 15px;
-      color: #1e3a8a; /* Indigo-800 */
+      color: #1e3a8a;
       font-weight: 700;
       font-size: 2.8rem;
       letter-spacing: 1.2px;
-      user-select: none;
     }
-
     #date-select-container {
       text-align: center;
       margin-bottom: 40px;
     }
-
     label[for="date-select"] {
       font-weight: 600;
       font-size: 1.1rem;
       margin-right: 8px;
       color: #555;
     }
-
     #date-select {
       font-size: 1rem;
       padding: 8px 14px;
-      border: 1.8px solid #cbd5e1; /* Light slate gray */
+      border: 1.8px solid #cbd5e1;
       border-radius: 6px;
       background-color: #fff;
-      transition: border-color 0.3s ease;
       cursor: pointer;
       min-width: 150px;
     }
-
     #date-select:focus {
       outline: none;
-      border-color: #2563eb; /* Blue-600 */
+      border-color: #2563eb;
       box-shadow: 0 0 5px rgba(37, 99, 235, 0.5);
     }
-
     section {
       margin-bottom: 50px;
       background: #fff;
@@ -66,98 +52,58 @@
       box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
       padding: 20px 25px 30px;
     }
-
     section h2 {
       margin-top: 0;
       margin-bottom: 20px;
       font-size: 1.6rem;
       font-weight: 700;
       color: #2563eb;
-      user-select: none;
     }
-
-   table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 40px;
-  font-size: 14px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.1);
-  background: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-thead th {
-  background-color: #6c7a89; /* muted blue-gray */
-  color: #f0f4f8; /* soft white */
-  padding: 12px 16px;
-  text-align: left;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  user-select: none;
-}
-
-tbody tr:hover {
-  background-color: #e4ecf7; /* subtle light blue */
-}
-
-tbody td {
-  padding: 12px 16px;
-  border-top: 1px solid #ddd;
-  color: #333;
-}
-
-tfoot td {
-  font-weight: 600;
-  background-color: #f7f9fb;
-  border-top: 2px solid #6c7a89;
-  padding: 12px 16px;
-  color: #444;
-}
-
-.right {
-  text-align: right;
-}
-
-
-    tfoot tr td {
-      padding: 12px 15px;
-      font-weight: 700;
-      border-top: 2px solid #2563eb;
-      background-color: #e0e7ff;
-      color: #1e3a8a;
-      text-align: right;
-      user-select: none;
-      border-radius: 0 0 8px 8px;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 40px;
+      font-size: 14px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
     }
-
-    tfoot tr td:first-child {
+    thead th {
+      background-color: #6c7a89;
+      color: #f0f4f8;
+      padding: 12px 16px;
       text-align: left;
+      font-weight: 600;
+      letter-spacing: 0.03em;
     }
-
-    /* Responsive adjustments */
+    tbody tr:hover {
+      background-color: #e4ecf7;
+    }
+    tbody td {
+      padding: 12px 16px;
+      border-top: 1px solid #ddd;
+      color: #333;
+    }
+    tfoot td {
+      font-weight: 600;
+      background-color: #f7f9fb;
+      border-top: 2px solid #6c7a89;
+      padding: 12px 16px;
+      color: #444;
+    }
+    .right { text-align: right; }
+    tfoot tr td:first-child { text-align: left; }
     @media (max-width: 600px) {
-      body {
-        padding: 0 12px 30px;
-      }
-      table {
-        font-size: 0.85rem;
-      }
-      h1 {
-        font-size: 2rem;
-      }
-      section h2 {
-        font-size: 1.3rem;
-      }
+      table { font-size: 0.85rem; }
+      h1 { font-size: 2rem; }
+      section h2 { font-size: 1.3rem; }
     }
-
-    /* Error message style */
     p.error {
-      color: #b91c1c; /* Red-700 */
+      color: #b91c1c;
       font-weight: 700;
       text-align: center;
       margin-top: 20px;
-      user-select: none;
     }
   </style>
 </head>
@@ -186,7 +132,6 @@ tfoot td {
   </section>
 
   <script>
-    // Your JavaScript code remains the same
     const FINNHUB_API_KEY = 'd2cvo7hr01qjem5ibl90d2cvo7hr01qjem5ibl9g';
     const QQQ_TICKER = 'QQQ';
     const SCALE_FACTOR = 41.045;
@@ -214,7 +159,6 @@ tfoot td {
         return;
       }
 
-      // Create table header using <thead>
       const thead = document.createElement("thead");
       const headerRow = document.createElement("tr");
       columns.forEach(col => {
@@ -225,7 +169,6 @@ tfoot td {
       thead.appendChild(headerRow);
       table.appendChild(thead);
 
-      // Create table body using <tbody>
       const tbody = document.createElement("tbody");
       data.forEach(row => {
         const tr = document.createElement("tr");
@@ -241,20 +184,16 @@ tfoot td {
       });
       table.appendChild(tbody);
 
-      // Add totals row in <tfoot>
       if (showTotals) {
         const tfoot = document.createElement("tfoot");
         const totalRow = document.createElement("tr");
-
         const totalWeight = data.reduce((acc, r) => acc + (parseFloat(r.Weight) || 0), 0).toFixed(2);
         const tdLabel = document.createElement("td");
         tdLabel.setAttribute("colspan", columns.length - 1);
         tdLabel.textContent = "Total Weight (%)";
-
         const tdValue = document.createElement("td");
         tdValue.textContent = totalWeight;
         tdValue.classList.add("right");
-
         totalRow.appendChild(tdLabel);
         totalRow.appendChild(tdValue);
         tfoot.appendChild(totalRow);
@@ -287,8 +226,33 @@ tfoot td {
         const optionsData = await optionsResp.json();
         optionsData.forEach(item => {
           item.UnderlyingPrice = estimatedNasdaqPrice;
+
+          // Upside % Before Cap
+          const strike = parseFloat(item.Strike_Price);
+          const underlying = parseFloat(item.UnderlyingPrice);
+          if (!isNaN(strike) && !isNaN(underlying) && underlying !== 0) {
+            item["Upside % Before Cap"] = (((strike - underlying) / underlying) * 100).toFixed(2) + "%";
+          } else {
+            item["Upside % Before Cap"] = "";
+          }
+
+          // Days to Expiration
+          const today = new Date();
+          const expiry = new Date(item.Expiry_Date);
+          if (isNaN(expiry.getTime())) {
+            item["Days to Expiration"] = "";
+          } else {
+            const diffDays = Math.floor((expiry - today) / (1000 * 60 * 60 * 24));
+            item["Days to Expiration"] = diffDays < 0 ? "Option Expired" : diffDays;
+          }
         });
-        buildTable("options-container", optionsData, ["Ticker", "Weight", "Expiry_Date", "Strike_Price", "UnderlyingPrice"], true);
+
+        buildTable(
+          "options-container",
+          optionsData,
+          ["Ticker", "Weight", "Expiry_Date", "Strike_Price", "UnderlyingPrice", "Upside % Before Cap", "Days to Expiration"],
+          true
+        );
 
         // Load Cash
         const cashResp = await fetch(`./data/JEPQ_Cash${dateSuffix}.json`);
@@ -308,37 +272,25 @@ tfoot td {
 
     async function init() {
       const dates = await loadDates();
-
       const select = document.getElementById("date-select");
       if (dates.length === 0) {
         select.innerHTML = `<option>No dates available</option>`;
         return;
       }
-
-      // Add options to select, latest at the end
       dates.forEach(date => {
         const opt = document.createElement("option");
         opt.value = date;
         opt.textContent = date;
         select.appendChild(opt);
       });
-
-      // Add latest option at the end
       const latestOpt = document.createElement("option");
       latestOpt.value = "";
       latestOpt.textContent = "Latest";
       select.appendChild(latestOpt);
-
-      // Default to latest
       select.value = "";
-
-      // Load initial data for latest
       loadData("");
-
-      // On change, load selected date data
       select.addEventListener("change", () => {
-        const selectedDate = select.value;
-        loadData(selectedDate);
+        loadData(select.value);
       });
     }
 
