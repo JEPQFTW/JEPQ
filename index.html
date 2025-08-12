@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>JEPQ UCITS Holdings</title>
   <style>
-    /* your existing styles here (omitted for brevity) */
     *, *::before, *::after { box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -149,10 +148,10 @@
     }
 
     async function fetchQQQPrice() {
-      const url = `https://finnhub.io/api/v1/quote?symbol=${QQQ_TICKER}&token=${FINNHUB_API_KEY}`;
+      const url = https://finnhub.io/api/v1/quote?symbol=${QQQ_TICKER}&token=${FINNHUB_API_KEY};
       try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error(`API error ${response.status}`);
+        if (!response.ok) throw new Error(API error ${response.status});
         const data = await response.json();
         return data.c ? Number(data.c) : null;
       } catch (err) {
@@ -167,7 +166,7 @@
       table.innerHTML = "";
 
       if (!data.length) {
-        table.innerHTML = `<tr><td colspan='${columns.length}'>No data found</td></tr>`;
+        table.innerHTML = <tr><td colspan='${columns.length}'>No data found</td></tr>;
         return;
       }
 
@@ -186,19 +185,20 @@
         const tr = document.createElement("tr");
         columns.forEach(col => {
           const td = document.createElement("td");
-          let val = row[col];
-          if (typeof val === "number" && col.toLowerCase().includes("price")) {
-            td.textContent = val.toFixed(2);
-            td.classList.add("right");
-          } else if (typeof val === "number" && (col.toLowerCase().includes("percent") || col.toLowerCase().includes("upside"))) {
-            td.textContent = val.toFixed(2) + "%";
-            td.classList.add("right");
-          } else if (typeof val === "number") {
-            td.textContent = val.toLocaleString(undefined, {maximumFractionDigits: 4});
-            td.classList.add("right");
-          } else {
-            td.textContent = val ?? "";
+          let value = row[col] !== undefined && row[col] !== null ? row[col] : '';
+
+          if ((col === "Underlying Price" || col === "Strike Price") && value !== '') {
+            const n = toNumberSafe(value);
+            if (!isNaN(n)) value = n.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
           }
+
+          // Right align numeric columns
+          const rightCols = ["Weight", "Strike Price", "Underlying Price", "Upside % Before Cap", "Days to Expiration"];
+          if (rightCols.includes(col)) {
+            td.classList.add("right");
+          }
+
+          td.textContent = value;
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
@@ -208,156 +208,124 @@
       if (showTotals) {
         const tfoot = document.createElement("tfoot");
         const totalRow = document.createElement("tr");
-
-        columns.forEach(col => {
-          const td = document.createElement("td");
-          if (col === "Weight") {
-            const total = data.reduce((acc, row) => acc + (toNumberSafe(row[col]) || 0), 0);
-            td.textContent = total.toFixed(4);
-            td.classList.add("right");
-          } else {
-            td.textContent = "";
-          }
-          totalRow.appendChild(td);
-        });
+        const totalWeight = data.reduce((acc, r) => acc + (parseFloat(r.Weight) || 0), 0).toFixed(2);
+        const tdLabel = document.createElement("td");
+        tdLabel.setAttribute("colspan", columns.length - 1);
+        tdLabel.textContent = "Total Weight (%)";
+        const tdValue = document.createElement("td");
+        tdValue.textContent = totalWeight;
+        tdValue.classList.add("right");
+        totalRow.appendChild(tdLabel);
+        totalRow.appendChild(tdValue);
         tfoot.appendChild(totalRow);
         table.appendChild(tfoot);
       }
     }
 
-    const keyToLabelMap = {
-      "Ticker": "Ticker",
-      "Weight": "Weight",
-      "Expiry_Date": "Expiry Date",
-      "Strike_Price": "Strike Price",
-      "Underlying_Price": "Underlying Price",
-      "Upside_Percent_Before_Cap": "Upside % Before Cap",
-      "Days_to_Expiration": "Days to Expiration"
-    };
-
-    async function loadData() {
-      // Fetch and parse the holdings JSON (replace with your actual URL)
-      const url = "https://raw.githubusercontent.com/robertmartin8/jepq-v2/main/output/holdings.json";
+    async function loadDates() {
       try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Failed to fetch holdings data");
-        const data = await response.json();
-
-        // Extract and sort dates descending
-        const dates = Object.keys(data).sort((a, b) => new Date(b) - new Date(a));
-
-        const select = document.getElementById("date-select");
-        select.innerHTML = "";
-        dates.forEach(date => {
-          const option = document.createElement("option");
-          option.value = date;
-          option.textContent = date;
-          select.appendChild(option);
-        });
-
-        // Load latest by default
-        select.value = dates[0];
-
-        // Add event listener
-        select.onchange = () => updateTables(data, select.value);
-
-        // Initial load
-        updateTables(data, select.value);
+        const resp = await fetch("./data/available_dates.json");
+        if (!resp.ok) throw new Error("Failed to load dates");
+        const json = await resp.json();
+        return json.dates || [];
       } catch (err) {
-        console.error(err);
-        document.body.insertAdjacentHTML("beforeend", `<p class="error">Error loading data: ${err.message}</p>`);
+        console.error("Error loading dates:", err);
+        return [];
       }
     }
 
-    async function updateTables(data, date) {
-      const dayMs = DAY_MS;
-      const today = new Date();
+    async function loadData(date) {
+      try {
+        const qqqPrice = await fetchQQQPrice();
+        if (qqqPrice === null) throw new Error("QQQ price unavailable");
 
-      const holdings = data[date];
-      if (!holdings) return;
+        const estimatedNasdaqPriceStr = (qqqPrice * SCALE_FACTOR).toFixed(2);
+        const dateSuffix = date ? _${date} : "_latest";
 
-      const optionsData = holdings.options || [];
-      const cashData = holdings.cash || [];
-      const stocksData = holdings.stocks || [];
+        // Load Options
+        const optionsResp = await fetch(./data/JEPQ_Options_-_Index${dateSuffix}.json);
+        if (!optionsResp.ok) throw new Error("Failed to load options file");
+        const optionsData = await optionsResp.json();
 
-      // Get QQQ price once for underlying price calculations
-      const qqqPrice = await fetchQQQPrice();
+        const today = new Date();
+        const todayUTC = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
 
-      // Enhance options with calculated fields:
-      optionsData.forEach(item => {
-        // Underlying Price scaled
-        item.Underlying_Price = qqqPrice ? qqqPrice * SCALE_FACTOR : null;
+        optionsData.forEach(item => {
+          // Normalize property name to match column header exactly
+          item["Underlying Price"] = estimatedNasdaqPriceStr;
 
-        // Parse expiry date and compute days to expiration
-        const expiryDateObj = parseExpiryDate(item.Expiry_Date);
-        if (expiryDateObj) {
-          const daysDiff = Math.max(0, Math.round((expiryDateObj.getTime() - today.getTime()) / dayMs));
-          item.Days_to_Expiration = daysDiff;
-        } else {
-          item.Days_to_Expiration = null;
-        }
+          const strike = toNumberSafe(item["Strike_Price"]);
+          const underlying = toNumberSafe(item["Underlying Price"]);
 
-        // Compute Upside % Before Cap
-        const strike = toNumberSafe(item.Strike_Price);
-        const underlying = item.Underlying_Price;
-        if (strike && underlying) {
-          let upside = ((strike / underlying) - 1) * 100;
-          // Cap upside at 8%
-          upside = Math.min(upside, 8);
-          item.Upside_Percent_Before_Cap = upside;
-        } else {
-          item.Upside_Percent_Before_Cap = null;
-        }
-      });
-
-      // Map keys to friendly labels for options table rendering
-      optionsData.forEach(item => {
-        const mappedItem = {};
-        for (const key in item) {
-          if (Object.hasOwnProperty.call(item, key)) {
-            const label = keyToLabelMap[key] || key;
-            mappedItem[label] = item[key];
+          if (Number.isFinite(strike) && Number.isFinite(underlying) && underlying !== 0) {
+            const upside = ((strike - underlying) / underlying) * 100;
+            item["Upside % Before Cap"] = upside.toFixed(2) + "%";
+          } else {
+            item["Upside % Before Cap"] = "";
           }
-        }
-        // Clear original keys and assign mapped
-        Object.keys(item).forEach(k => delete item[k]);
-        Object.assign(item, mappedItem);
-      });
 
-      // Build tables
-      buildTable(
-        "options-container",
-        optionsData,
-        [
-          "Ticker",
-          "Weight",
-          "Expiry Date",
-          "Strike Price",
-          "Underlying Price",
-          "Upside % Before Cap",
-          "Days to Expiration"
-        ],
-        true
-      );
+          const expiry = parseExpiryDate(item["Expiry_Date"]);
+          if (!expiry || isNaN(expiry.getTime())) {
+            item["Days to Expiration"] = "";
+          } else {
+            const expiryUTC = Date.UTC(expiry.getFullYear(), expiry.getMonth(), expiry.getDate());
+            // Adjust days for trading days approximation
+            const diffDays = Math.floor(((expiryUTC - todayUTC) / DAY_MS) * 5 / 7);
+            item["Days to Expiration"] = diffDays < 0 ? "Option Expired" : (diffDays === 0 ? "Expires Today" : diffDays);
+          }
+        });
 
-      // Cash table
-      buildTable(
-        "cash-container",
-        cashData,
-        ["Ticker", "Weight"],
-        true
-      );
+        buildTable(
+          "options-container",
+          optionsData,
+          ["Ticker", "Weight", "Expiry_Date", "Strike Price", "Underlying Price", "Upside % Before Cap", "Days to Expiration"],
+          true
+        );
 
-      // Stocks table
-      buildTable(
-        "stocks-container",
-        stocksData,
-        ["Ticker", "Weight"],
-        true
-      );
+        // Load Cash
+        const cashResp = await fetch(./data/JEPQ_Cash${dateSuffix}.json);
+        if (!cashResp.ok) throw new Error("Failed to load cash file");
+        const cashData = await cashResp.json();
+        buildTable("cash-container", cashData, ["Ticker", "Weight"], true);
+
+        // Load Stocks
+        const stocksResp = await fetch(./data/JEPQ_Stocks${dateSuffix}.json);
+        if (!stocksResp.ok) throw new Error("Failed to load stocks file");
+        const stocksData = await stocksResp.json();
+        buildTable("stocks-container", stocksData, ["Ticker", "Weight"], true);
+
+      } catch (error) {
+        console.error("Error loading data:", error);
+        const sections = ["options-container", "cash-container", "stocks-container"];
+        sections.forEach(id => {
+          const container = document.getElementById(id);
+          const table = container.querySelector("table");
+          table.innerHTML = <tr><td colspan="7" class="error">Error loading data: ${error.message}</td></tr>;
+        });
+      }
     }
 
-    loadData();
+    async function init() {
+      const dateSelect = document.getElementById("date-select");
+      const dates = await loadDates();
+
+      // Populate dropdown options
+      if (dates.length === 0) {
+        dateSelect.innerHTML = '<option value="">No available dates</option>';
+        return;
+      }
+      dateSelect.innerHTML = dates.map(d => <option value="${d}">${d}</option>).join("");
+
+      // Load default or first date
+      await loadData(dateSelect.value || dates[0]);
+
+      dateSelect.addEventListener("change", async (e) => {
+        await loadData(e.target.value);
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", init);
   </script>
+
 </body>
 </html>
