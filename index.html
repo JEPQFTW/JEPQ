@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>JEPQ Holdings</title>
+  <title>JEPQ (UCITS) Holdings</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
     body {
@@ -212,7 +212,7 @@
           td.textContent = value;
 
           // Right-align numeric-like columns
-          const rightCols = ["Weight", "Strike_Price", "UnderlyingPrice", "Upside % Before Cap", "Days to Expiration"];
+          const rightCols = ["Weight", "Strike Price", "Underlying Price", "Upside % Before Cap", "Days to Expiration"];
           if (rightCols.includes(col)) {
             td.classList.add("right");
           }
@@ -291,7 +291,7 @@
             item["Days to Expiration"] = "";
           } else {
             const expiryUTC = Date.UTC(expiry.getFullYear(), expiry.getMonth(), expiry.getDate());
-            const diffDays = Math.floor((expiryUTC - todayUTC) / DAY_MS);
+            const diffDays = Math.floor(((expiryUTC - todayUTC) / DAY_MS) * 5 / 7);
             item["Days to Expiration"] = diffDays < 0 ? "Option Expired" : (diffDays === 0 ? "Expires Today" : diffDays);
           }
         });
