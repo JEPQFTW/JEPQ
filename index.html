@@ -21,10 +21,7 @@
       font-size: 2.8rem;
       letter-spacing: 1.2px;
     }
-    #date-select-container {
-      text-align: center;
-      margin-bottom: 40px;
-    }
+    #date-select-container { text-align: center; margin-bottom: 40px; }
     label[for="date-select"] {
       font-weight: 600;
       font-size: 1.1rem;
@@ -52,13 +49,7 @@
       box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
       padding: 20px 25px 30px;
     }
-    section h2 {
-      margin-top: 0;
-      margin-bottom: 20px;
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: #2563eb;
-    }
+    section h2 { margin-top: 0; margin-bottom: 20px; font-size: 1.6rem; font-weight: 700; color: #2563eb; }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -77,9 +68,7 @@
       font-weight: 600;
       letter-spacing: 0.03em;
     }
-    tbody tr:hover {
-      background-color: #e4ecf7;
-    }
+    tbody tr:hover { background-color: #e4ecf7; }
     tbody td {
       padding: 12px 16px;
       border-top: 1px solid #ddd;
@@ -135,6 +124,29 @@
     const FINNHUB_API_KEY = 'd2cvo7hr01qjem5ibl90d2cvo7hr01qjem5ibl9g';
     const QQQ_TICKER = 'QQQ';
     const SCALE_FACTOR = 41.045;
+
+    // Helper: remove commas, trim, and convert to number
+    function toNumberSafe(x) {
+      if (x == null) return NaN;
+      if (typeof x === 'number') return x;
+      return Number(String(x).replace(/,/g, '').trim());
+    }
+
+    // Helper: parse "DD MM YYYY" safely
+    function parseExpiryDate(s) {
+      if (!s) return null;
+      s = String(s).trim();
+      const tryBuilt = new Date(s);
+      if (!isNaN(tryBuilt.getTime())) return tryBuilt;
+      const m = s.match(/^(\d{1,2})[\/\-\s](\d{1,2})[\/\-\s](\d{4})$/);
+      if (m) {
+        const day = Number(m[1]);
+        const monthIndex = Number(m[2]) - 1;
+        const year = Number(m[3]);
+        return new Date(year, monthIndex, day);
+      }
+      return null;
+    }
 
     async function fetchQQQPrice() {
       const url = `https://finnhub.io/api/v1/quote?symbol=${QQQ_TICKER}&token=${FINNHUB_API_KEY}`;
@@ -217,7 +229,7 @@
       try {
         const qqqPrice = await fetchQQQPrice();
         if (qqqPrice === null) throw new Error("QQQ price unavailable");
-        const estimatedNasdaqPrice = (qqqPrice * SCALE_FACTOR).toFixed(2);
+        const estimatedNasdaqPriceNum = Number((qqqPrice * SCALE_FACTOR).toFixed(2));
 
         const dateSuffix = date ? `_${date}` : "_latest";
 
@@ -225,25 +237,27 @@
         const optionsResp = await fetch(`./data/JEPQ_Options_-_Index${dateSuffix}.json`);
         const optionsData = await optionsResp.json();
         optionsData.forEach(item => {
-          item.UnderlyingPrice = estimatedNasdaqPrice;
+          item.UnderlyingPrice = estimatedNasdaqPriceNum;
 
           // Upside % Before Cap
-          const strike = parseFloat(item.Strike_Price);
-          const underlying = parseFloat(item.UnderlyingPrice);
-          if (!isNaN(strike) && !isNaN(underlying) && underlying !== 0) {
+          const strike = toNumberSafe(item.Strike_Price);
+          const underlying = toNumberSafe(item.UnderlyingPrice);
+          if (Number.isFinite(strike) && Number.isFinite(underlying) && underlying !== 0) {
             item["Upside % Before Cap"] = (((strike - underlying) / underlying) * 100).toFixed(2) + "%";
           } else {
             item["Upside % Before Cap"] = "";
           }
 
           // Days to Expiration
-          const today = new Date();
-          const expiry = new Date(item.Expiry_Date);
-          if (isNaN(expiry.getTime())) {
+          const expiry = parseExpiryDate(item.Expiry_Date);
+          if (!expiry || isNaN(expiry.getTime())) {
             item["Days to Expiration"] = "";
           } else {
-            const diffDays = Math.floor((expiry - today) / (1000 * 60 * 60 * 24));
-            item["Days to Expiration"] = diffDays < 0 ? "Option Expired" : diffDays;
+            const today = new Date();
+            const todayUTC = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+            const expiryUTC = Date.UTC(expiry.getFullYear(), expiry.getMonth(), expiry.getDate());
+            const diffDays = Math.floor((expiryUTC - todayUTC) / (24 * 60 * 60 * 1000));
+            item["Days to Expiration"] = diffDays < 0 ? "Option Expired" : (diffDays === 0 ? "Expires Today" : diffDays);
           }
         });
 
