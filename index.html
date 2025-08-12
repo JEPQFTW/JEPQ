@@ -156,10 +156,10 @@
     }
 
     async function fetchQQQPrice() {
-      const url = https://finnhub.io/api/v1/quote?symbol=${QQQ_TICKER}&token=${FINNHUB_API_KEY};
+      const url = `https://finnhub.io/api/v1/quote?symbol=${QQQ_TICKER}&token=${FINNHUB_API_KEY}`;
       try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error(API error ${response.status});
+        if (!response.ok) throw new Error(`API error ${response.status}`);
         const data = await response.json();
         return data.c ? Number(data.c) : null;
       } catch (err) {
@@ -260,10 +260,10 @@
         // Keep UnderlyingPrice as a formatted string with two decimals
         const estimatedNasdaqPriceStr = (qqqPrice * SCALE_FACTOR).toFixed(2);
 
-        const dateSuffix = date ? _${date} : "_latest";
+        const dateSuffix = date ? `_${date}` : "_latest";
 
         // Load Options
-        const optionsResp = await fetch(./data/JEPQ_Options_-_Index${dateSuffix}.json);
+        const optionsResp = await fetch(`./data/JEPQ_Options_-_Index${dateSuffix}.json`);
         if (!optionsResp.ok) throw new Error("Failed to load options file");
         const optionsData = await optionsResp.json();
 
@@ -304,13 +304,13 @@
         );
 
         // Load Cash
-        const cashResp = await fetch(./data/JEPQ_Cash${dateSuffix}.json);
+        const cashResp = await fetch(`./data/JEPQ_Cash${dateSuffix}.json`);
         if (!cashResp.ok) throw new Error("Failed to load cash file");
         const cashData = await cashResp.json();
         buildTable("cash-container", cashData, ["Ticker", "Weight"], true);
 
         // Load Stocks
-        const stocksResp = await fetch(./data/JEPQ_Stocks${dateSuffix}.json);
+        const stocksResp = await fetch(`./data/JEPQ_Stocks${dateSuffix}.json`);
         if (!stocksResp.ok) throw new Error("Failed to load stocks file");
         const stocksData = await stocksResp.json();
         buildTable("stocks-container", stocksData, ["Ticker", "Weight"], true);
@@ -319,7 +319,7 @@
         console.error("Error loading data:", err);
         // Avoid appending multiple error paragraphs
         if (!document.querySelector(".error")) {
-          document.body.insertAdjacentHTML("beforeend", <p class="error">Error loading data, check console.</p>);
+          document.body.insertAdjacentHTML("beforeend", `<p class="error">Error loading data, check console.</p>`);
         }
       }
     }
@@ -329,7 +329,7 @@
 
       const select = document.getElementById("date-select");
       if (dates.length === 0) {
-        select.innerHTML = <option>No dates available</option>;
+        select.innerHTML = `<option>No dates available</option>`;
         return;
       }
 
