@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>JEPQ (UCITS) Holdings</title>
+  <title>JEPQ UCITS Holdings</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
     body {
@@ -198,13 +198,13 @@
           let value = row[col] !== undefined && row[col] !== null ? row[col] : '';
 
           // If UnderlyingPrice is numeric string or number, show with two decimals
-          if (col === "UnderlyingPrice" && value !== '') {
+          if (col === "Underlying Price" && value !== '') {
             const n = toNumberSafe(value);
             if (!isNaN(n)) value = n.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
           }
 
           // If Strike_Price is numeric string, normalize display (preserve original if already formatted)
-          if (col === "Strike_Price" && value !== '') {
+          if (col === "Strike Price" && value !== '') {
             const n = toNumberSafe(value);
             if (!isNaN(n)) value = n.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
           }
@@ -299,7 +299,7 @@
         buildTable(
           "options-container",
           optionsData,
-          ["Ticker", "Weight", "Expiry_Date", "Strike_Price", "UnderlyingPrice", "Upside % Before Cap", "Days to Expiration"],
+          ["Ticker", "Weight", "Expiry Date", "Strike Price", "UnderlyingPrice", "Upside % Before Cap", "Days to Expiration"],
           true
         );
 
