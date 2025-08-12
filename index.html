@@ -107,17 +107,17 @@
 
   <section id="options-container">
     <h2>Options - Index</h2>
-    <table id="options-table"></table>
+    <table></table>
   </section>
 
   <section id="cash-container">
     <h2>Cash</h2>
-    <table id="cash-table"></table>
+    <table></table>
   </section>
 
   <section id="stocks-container">
     <h2>Stocks</h2>
-    <table id="stocks-table"></table>
+    <table></table>
   </section>
 
   <script>
@@ -126,32 +126,24 @@
     const SCALE_FACTOR = 41.045;
     const DAY_MS = 24 * 60 * 60 * 1000;
 
-    // Helper: remove commas, trim, and convert to number
     function toNumberSafe(x) {
       if (x == null) return NaN;
       if (typeof x === 'number') return x;
       return Number(String(x).replace(/,/g, '').trim());
     }
 
-    // Helper: parse "DD MM YYYY", "DD/MM/YYYY", "DD-MM-YYYY" (prioritised),
-    // otherwise fall back to Date parsing for ISO-like strings.
     function parseExpiryDate(s) {
       if (!s) return null;
       s = String(s).trim();
-
-      // First try explicit dd mm yyyy (space / slash / dash)
       const m = s.match(/^(\d{1,2})[\/\-\s](\d{1,2})[\/\-\s](\d{2,4})$/);
       if (m) {
         const day = Number(m[1]);
-        const monthIndex = Number(m[2]) - 1; // zero-based
+        const monthIndex = Number(m[2]) - 1;
         const year = Number(m[3]) < 100 ? 2000 + Number(m[3]) : Number(m[3]);
         return new Date(year, monthIndex, day);
       }
-
-      // Fallback: try built-in parser (handles ISO "YYYY-MM-DD", etc.)
       const tryBuilt = new Date(s);
       if (!isNaN(tryBuilt.getTime())) return tryBuilt;
-
       return null;
     }
 
@@ -174,7 +166,7 @@
       table.innerHTML = "";
 
       if (!data.length) {
-        table.innerHTML = "<tr><td colspan='" + columns.length + "'>No data found</td></tr>";
+        table.innerHTML = `<tr><td colspan='${columns.length}'>No data found</td></tr>`;
         return;
       }
 
@@ -193,30 +185,20 @@
         const tr = document.createElement("tr");
         columns.forEach(col => {
           const td = document.createElement("td");
-
-          // Show numbers/strings as present; if field is numeric-like we may format
           let value = row[col] !== undefined && row[col] !== null ? row[col] : '';
 
-          // If UnderlyingPrice is numeric string or number, show with two decimals
-          if (col === "Underlying Price" && value !== '') {
+          if ((col === "Underlying Price" || col === "Strike Price") && value !== '') {
             const n = toNumberSafe(value);
             if (!isNaN(n)) value = n.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
           }
 
-          // If Strike_Price is numeric string, normalize display (preserve original if already formatted)
-          if (col === "Strike Price" && value !== '') {
-            const n = toNumberSafe(value);
-            if (!isNaN(n)) value = n.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-          }
-
-          td.textContent = value;
-
-          // Right-align numeric-like columns
+          // Right align numeric columns
           const rightCols = ["Weight", "Strike Price", "Underlying Price", "Upside % Before Cap", "Days to Expiration"];
           if (rightCols.includes(col)) {
             td.classList.add("right");
           }
 
+          td.textContent = value;
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
@@ -257,9 +239,7 @@
         const qqqPrice = await fetchQQQPrice();
         if (qqqPrice === null) throw new Error("QQQ price unavailable");
 
-        // Keep UnderlyingPrice as a formatted string with two decimals
         const estimatedNasdaqPriceStr = (qqqPrice * SCALE_FACTOR).toFixed(2);
-
         const dateSuffix = date ? `_${date}` : "_latest";
 
         // Load Options
@@ -267,17 +247,16 @@
         if (!optionsResp.ok) throw new Error("Failed to load options file");
         const optionsData = await optionsResp.json();
 
-        // Today's UTC date (stripped time)
         const today = new Date();
         const todayUTC = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
 
         optionsData.forEach(item => {
-          // UnderlyingPrice as formatted string so it displays nicely
-          item.UnderlyingPrice = estimatedNasdaqPriceStr;
+          // Normalize property name to match column header exactly
+          item["Underlying Price"] = estimatedNasdaqPriceStr;
 
-          // Upside % Before Cap
-          const strike = toNumberSafe(item.Strike_Price);
-          const underlying = toNumberSafe(item.UnderlyingPrice);
+          const strike = toNumberSafe(item["Strike_Price"]);
+          const underlying = toNumberSafe(item["Underlying Price"]);
+
           if (Number.isFinite(strike) && Number.isFinite(underlying) && underlying !== 0) {
             const upside = ((strike - underlying) / underlying) * 100;
             item["Upside % Before Cap"] = upside.toFixed(2) + "%";
@@ -285,12 +264,12 @@
             item["Upside % Before Cap"] = "";
           }
 
-          // Days to Expiration: force dd mm yyyy parsing first
-          const expiry = parseExpiryDate(item.Expiry_Date);
+          const expiry = parseExpiryDate(item["Expiry_Date"]);
           if (!expiry || isNaN(expiry.getTime())) {
             item["Days to Expiration"] = "";
           } else {
             const expiryUTC = Date.UTC(expiry.getFullYear(), expiry.getMonth(), expiry.getDate());
+            // Adjust days for trading days approximation
             const diffDays = Math.floor(((expiryUTC - todayUTC) / DAY_MS) * 5 / 7);
             item["Days to Expiration"] = diffDays < 0 ? "Option Expired" : (diffDays === 0 ? "Expires Today" : diffDays);
           }
@@ -299,7 +278,7 @@
         buildTable(
           "options-container",
           optionsData,
-          ["Ticker", "Weight", "Expiry Date", "Strike Price", "UnderlyingPrice", "Upside % Before Cap", "Days to Expiration"],
+          ["Ticker", "Weight", "Expiry_Date", "Strike Price", "Underlying Price", "Upside % Before Cap", "Days to Expiration"],
           true
         );
 
@@ -315,51 +294,37 @@
         const stocksData = await stocksResp.json();
         buildTable("stocks-container", stocksData, ["Ticker", "Weight"], true);
 
-      } catch (err) {
-        console.error("Error loading data:", err);
-        // Avoid appending multiple error paragraphs
-        if (!document.querySelector(".error")) {
-          document.body.insertAdjacentHTML("beforeend", `<p class="error">Error loading data, check console.</p>`);
-        }
+      } catch (error) {
+        console.error("Error loading data:", error);
+        const sections = ["options-container", "cash-container", "stocks-container"];
+        sections.forEach(id => {
+          const container = document.getElementById(id);
+          const table = container.querySelector("table");
+          table.innerHTML = `<tr><td colspan="7" class="error">Error loading data: ${error.message}</td></tr>`;
+        });
       }
     }
 
     async function init() {
+      const dateSelect = document.getElementById("date-select");
       const dates = await loadDates();
 
-      const select = document.getElementById("date-select");
+      // Populate dropdown options
       if (dates.length === 0) {
-        select.innerHTML = `<option>No dates available</option>`;
+        dateSelect.innerHTML = '<option value="">No available dates</option>';
         return;
       }
+      dateSelect.innerHTML = dates.map(d => `<option value="${d}">${d}</option>`).join("");
 
-      // Add options to select
-      dates.forEach(date => {
-        const opt = document.createElement("option");
-        opt.value = date;
-        opt.textContent = date;
-        select.appendChild(opt);
-      });
+      // Load default or first date
+      await loadData(dateSelect.value || dates[0]);
 
-      // Add latest option at the end
-      const latestOpt = document.createElement("option");
-      latestOpt.value = "";
-      latestOpt.textContent = "Latest";
-      select.appendChild(latestOpt);
-
-      // Default to latest
-      select.value = "";
-
-      // Load initial data for latest
-      loadData("");
-
-      // On change, load selected date data
-      select.addEventListener("change", () => {
-        loadData(select.value);
+      dateSelect.addEventListener("change", async (e) => {
+        await loadData(e.target.value);
       });
     }
 
-    init();
+    window.addEventListener("DOMContentLoaded", init);
   </script>
 
 </body>
