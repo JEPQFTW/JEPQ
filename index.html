@@ -67,6 +67,21 @@
       text-align: left;
       font-weight: 600;
       letter-spacing: 0.03em;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+    thead th.sort-asc::after {
+      content: "▲";
+      position: absolute;
+      right: 8px;
+      font-size: 0.7em;
+    }
+    thead th.sort-desc::after {
+      content: "▼";
+      position: absolute;
+      right: 8px;
+      font-size: 0.7em;
     }
     tbody tr:hover { background-color: #e4ecf7; }
     tbody td {
@@ -168,7 +183,11 @@
       }
     }
 
-    function buildTable(containerId, data, columns, showTotals = false) {
+    // Global state for sorting
+    let currentSortColumn = null;
+    let currentSortDirection = 1; // 1=asc, -1=desc
+
+    function buildTable(containerId, data, columns, showTotals = false, sortable = false) {
       const container = document.getElementById(containerId);
       const table = container.querySelector("table");
       table.innerHTML = "";
@@ -183,6 +202,26 @@
       columns.forEach(col => {
         const th = document.createElement("th");
         th.textContent = col;
+
+        if (sortable) {
+          th.style.cursor = "pointer";
+
+          // Add click event to sort by this column
+          th.addEventListener("click", () => {
+            if (currentSortColumn === col) {
+              currentSortDirection = -currentSortDirection; // toggle direction
+            } else {
+              currentSortColumn = col;
+              currentSortDirection = 1;
+            }
+            // Sort data
+            data.sort((a, b) => compareRows(a, b, col) * currentSortDirection);
+            // Rebuild table with sorted data, preserve sorting UI
+            buildTable(containerId, data, columns, showTotals, sortable);
+            updateSortIndicators(thead);
+          });
+        }
+
         headerRow.appendChild(th);
       });
       thead.appendChild(headerRow);
@@ -194,173 +233,18 @@
         columns.forEach(col => {
           const td = document.createElement("td");
 
-          // Show numbers/strings as present; if field is numeric-like we may format
           let value = row[col] !== undefined && row[col] !== null ? row[col] : '';
 
-          // If UnderlyingPrice is numeric string or number, show with two decimals
-          if (col === "UnderlyingPrice" && value !== '') {
-            const n = toNumberSafe(value);
-            if (!isNaN(n)) value = n.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+          // Formatting for Options table
+          if (containerId === "options-container") {
+            if (col === "UnderlyingPrice" && value !== '') {
+              const n = toNumberSafe(value);
+              if (!isNaN(n)) value = n.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            }
+            if (col === "Strike_Price" && value !== '') {
+              const n = toNumberSafe(value);
+              if (!isNaN(n)) value = n.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            }
           }
 
-          // If Strike_Price is numeric string, normalize display (preserve original if already formatted)
-          if (col === "Strike_Price" && value !== '') {
-            const n = toNumberSafe(value);
-            if (!isNaN(n)) value = n.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-          }
-
-          td.textContent = value;
-
-          // Right-align numeric-like columns
-          const rightCols = ["Weight", "Strike_Price", "UnderlyingPrice", "Upside % Before Cap", "Days to Expiration"];
-          if (rightCols.includes(col)) {
-            td.classList.add("right");
-          }
-
-          tr.appendChild(td);
-        });
-        tbody.appendChild(tr);
-      });
-      table.appendChild(tbody);
-
-      if (showTotals) {
-        const tfoot = document.createElement("tfoot");
-        const totalRow = document.createElement("tr");
-        const totalWeight = data.reduce((acc, r) => acc + (parseFloat(r.Weight) || 0), 0).toFixed(2);
-        const tdLabel = document.createElement("td");
-        tdLabel.setAttribute("colspan", columns.length - 1);
-        tdLabel.textContent = "Total Weight (%)";
-        const tdValue = document.createElement("td");
-        tdValue.textContent = totalWeight;
-        tdValue.classList.add("right");
-        totalRow.appendChild(tdLabel);
-        totalRow.appendChild(tdValue);
-        tfoot.appendChild(totalRow);
-        table.appendChild(tfoot);
-      }
-    }
-
-    async function loadDates() {
-      try {
-        const resp = await fetch("./data/available_dates.json");
-        if (!resp.ok) throw new Error("Failed to load dates");
-        const json = await resp.json();
-        return json.dates || [];
-      } catch (err) {
-        console.error("Error loading dates:", err);
-        return [];
-      }
-    }
-
-    async function loadData(date) {
-      try {
-        const qqqPrice = await fetchQQQPrice();
-        if (qqqPrice === null) throw new Error("QQQ price unavailable");
-
-        // Keep UnderlyingPrice as a formatted string with two decimals
-        const estimatedNasdaqPriceStr = (qqqPrice * SCALE_FACTOR).toFixed(2);
-
-        const dateSuffix = date ? `_${date}` : "_latest";
-
-        // Load Options
-        const optionsResp = await fetch(`./data/JEPQ_Options_-_Index${dateSuffix}.json`);
-        if (!optionsResp.ok) throw new Error("Failed to load options file");
-        const optionsData = await optionsResp.json();
-
-        // Today's UTC date (stripped time)
-        const today = new Date();
-        const todayUTC = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
-
-        optionsData.forEach(item => {
-          // UnderlyingPrice as formatted string so it displays nicely
-          item.UnderlyingPrice = estimatedNasdaqPriceStr;
-
-          // Upside % Before Cap
-          const strike = toNumberSafe(item.Strike_Price);
-          const underlying = toNumberSafe(item.UnderlyingPrice);
-          if (Number.isFinite(strike) && Number.isFinite(underlying) && underlying !== 0) {
-            const upside = ((strike - underlying) / underlying) * 100;
-            item["Upside % Before Cap"] = upside.toFixed(2) + "%";
-          } else {
-            item["Upside % Before Cap"] = "";
-          }
-
-          // Days to Expiration: force dd mm yyyy parsing first
-          const expiry = parseExpiryDate(item.Expiry_Date);
-          if (!expiry || isNaN(expiry.getTime())) {
-            item["Days to Expiration"] = "";
-          } else {
-            const expiryUTC = Date.UTC(expiry.getFullYear(), expiry.getMonth(), expiry.getDate());
-            const diffDays = Math.floor((expiryUTC - todayUTC) / DAY_MS);
-            item["Days to Expiration"] = diffDays < 0 ? "Option Expired" : (diffDays === 0 ? "Expires Today" : diffDays);
-          }
-        });
-
-        buildTable(
-          "options-container",
-          optionsData,
-          ["Ticker", "Weight", "Expiry_Date", "Strike_Price", "UnderlyingPrice", "Upside % Before Cap", "Days to Expiration"],
-          true
-        );
-
-        // Load Cash
-        const cashResp = await fetch(`./data/JEPQ_Cash${dateSuffix}.json`);
-        if (!cashResp.ok) throw new Error("Failed to load cash file");
-        const cashData = await cashResp.json();
-        buildTable("cash-container", cashData, ["Ticker", "Weight"], true);
-
-        // Load Stocks
-        const stocksResp = await fetch(`./data/JEPQ_Stocks${dateSuffix}.json`);
-        if (!stocksResp.ok) throw new Error("Failed to load stocks file");
-        const stocksData = await stocksResp.json();
-        buildTable("stocks-container", stocksData, ["Ticker", "Weight"], true);
-
-      } catch (err) {
-        console.error("Error loading data:", err);
-        // Avoid appending multiple error paragraphs
-        if (!document.querySelector(".error")) {
-          document.body.insertAdjacentHTML("beforeend", `<p class="error">Error loading data, check console.</p>`);
-        }
-      }
-    }
-
-    async function init() {
-      const dates = await loadDates();
-
-      const select = document.getElementById("date-select");
-      if (dates.length === 0) {
-        select.innerHTML = `<option>No dates available</option>`;
-        return;
-      }
-
-      // Add options to select
-      dates.forEach(date => {
-        const opt = document.createElement("option");
-        opt.value = date;
-        opt.textContent = date;
-        select.appendChild(opt);
-      });
-
-      // Add latest option at the end
-      const latestOpt = document.createElement("option");
-      latestOpt.value = "";
-      latestOpt.textContent = "Latest";
-      select.appendChild(latestOpt);
-
-      // Default to latest
-      select.value = "";
-
-      // Load initial data for latest
-      loadData("");
-
-      // On change, load selected date data
-      select.addEventListener("change", () => {
-        loadData(select.value);
-      });
-    }
-
-    init();
-  </script>
-
-</body>
-</html>
+          td.text
