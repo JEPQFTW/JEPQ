@@ -7,7 +7,7 @@ from datetime import datetime
 # CONFIG
 # -------------------------
 DATA_FOLDER = "data"
-EXCEL_URL = "https://am.jpmorgan.com/content/dam/jpm-am-aem/emea/gb/en/holdings/je/jepq.xlsx"
+EXCEL_URL = "https://am.jpmorgan.com/FundsMarketingHandler/excel?type=dailyETFHoldings&cusip=IE000U9J8HX9&country=fi&role=adv&fundType=N_ETF&locale=en-FI&isUnderlyingHolding=false&isProxyHolding=false"
 UNDERLYING_API_URL = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=QQQ"
 
 # -------------------------
