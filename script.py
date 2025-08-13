@@ -1,96 +1,94 @@
 import os
-import requests
-import datetime
 import pandas as pd
-import shutil
-import re
-import json
+import requests
+from datetime import datetime
 
+# -------------------------
+# CONFIG
+# -------------------------
 DATA_FOLDER = "data"
-EXCEL_URL = 'https://tinyurl.com/Pr0d1g10s0'
-FINNHUB_API_KEY = "YOUR_FINNHUB_KEY"  # replace with your key
-FINNHUB_QQQ = "https://finnhub.io/api/v1/quote?symbol=QQQ&token=" + FINNHUB_API_KEY
+EXCEL_URL = "https://am.jpmorgan.com/content/dam/jpm-am-aem/emea/gb/en/holdings/je/jepq.xlsx"
+UNDERLYING_API_URL = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=QQQ"
 
+# -------------------------
+# HELPERS
+# -------------------------
 def get_current_date():
-    return datetime.datetime.now().strftime("%Y-%m-%d")
+    return datetime.now().strftime("%Y-%m-%d")
 
-def download_file(url, filename):
-    response = requests.get(url)
-    response.raise_for_status()
-    with open(filename, 'wb') as file:
-        file.write(response.content)
+def download_file(url, local_path):
+    print(f"Downloading Excel from {url}")
+    r = requests.get(url)
+    r.raise_for_status()
+    with open(local_path, 'wb') as f:
+        f.write(r.content)
 
-def parse_option_info(option_str):
+def fetch_live_price():
     try:
-        option_str = option_str.strip()
-        parts = option_str.split()
-        if len(parts) < 2:
-            return None, None, None
-        code = parts[1]
-        date_code = code[:6]
-        expiry_date = datetime.datetime.strptime(date_code, "%y%m%d").strftime("%d %m %Y")
-        option_type = code[6]
-        strike_raw = code[7:]
-        strike_price = f"{int(strike_raw) / 1000:,.2f}"
+        r = requests.get(UNDERLYING_API_URL)
+        r.raise_for_status()
+        data = r.json()
+        return data['quoteResponse']['result'][0]['regularMarketPrice']
+    except Exception as e:
+        print(f"Error fetching live price: {e}")
+        return None
+
+def parse_option_info(option_ticker):
+    try:
+        # Example: 'QQQ 12/20/24 C 400'
+        parts = option_ticker.split()
+        expiry_date = parts[1]
+        option_type = parts[2]
+        strike_price = parts[3]
         return expiry_date, option_type, strike_price
     except Exception:
         return None, None, None
 
-def fetch_live_price():
-    response = requests.get(FINNHUB_QQQ)
-    response.raise_for_status()
-    data = response.json()
-    return round(data['c'], 2)  # current price
-
 def generate_available_dates_json():
-    date_set = set()
-    pattern = re.compile(r"JEPQ_.*_(\d{4}-\d{2}-\d{2})\.json")
+    dates = sorted({
+        f.split('_')[-1].replace('.json', '')
+        for f in os.listdir(DATA_FOLDER)
+        if f.endswith(".json") and "_latest" not in f
+    })
+    output_path = os.path.join(DATA_FOLDER, "available_dates.json")
+    with open(output_path, "w") as f:
+        f.write(pd.Series(dates).to_json(orient="values"))
+    print("Updated available_dates.json")
 
-    for filename in os.listdir(DATA_FOLDER):
-        match = pattern.match(filename)
-        if match:
-            date_set.add(match.group(1))
-
-    dates = sorted(date_set)
-    available_dates = {"dates": dates}
-
-    with open(os.path.join(DATA_FOLDER, "available_dates.json"), "w") as f:
-        json.dump(available_dates, f, indent=2)
-    print(f"Generated available_dates.json with dates: {dates}")
-
+# -------------------------
+# MAIN SCRIPT
+# -------------------------
 def main():
     os.makedirs(DATA_FOLDER, exist_ok=True)
     date_str = get_current_date()
     excel_filename = os.path.join(DATA_FOLDER, f'JEPQ_{date_str}.xlsx')
 
+    # Download Excel if not already downloaded
     if not os.path.exists(excel_filename):
         download_file(EXCEL_URL, excel_filename)
     else:
-        print("file already downloaded.")
+        print("Excel file already exists for today.")
 
-    # Read columns A, B, C, F
+    # Read Excel (columns A, B, C, F starting from row 9)
     df = pd.read_excel(excel_filename, header=None, usecols="A,B,C,F", skiprows=8)
     df.columns = ['Ticker_A', 'Ticker_B', 'Type', 'Weight']
     df = df.dropna(subset=['Type', 'Weight'])
 
     # Assign bucket
-    def assign_bucket(row):
-        if row['Type'] == "Option - Index":
-            return "Options - Index"
-        elif row['Type'] == "Cash":
-            return "Cash"
-        else:
-            return "Stocks"
-
-    df['Bucket'] = df.apply(assign_bucket, axis=1)
+    df['Bucket'] = df['Type'].apply(lambda t: 
+        "Options - Index" if t == "Option - Index" else
+        ("Cash" if t == "Cash" else "Stocks")
+    )
 
     # Fetch live price once
     live_price = fetch_live_price()
-    print(f"Fetched live QQQ price: {live_price}")
+    print(f"Live QQQ Price: {live_price}")
 
-    # Save JSON files by bucket with tailored columns
     for bucket_name in ["Options - Index", "Cash", "Stocks"]:
         subset = df[df['Bucket'] == bucket_name].copy()
+
+        dated_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
+        latest_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_latest.json')
 
         if bucket_name == "Options - Index":
             subset['Ticker'] = subset['Ticker_B']
@@ -98,30 +96,40 @@ def main():
                 lambda val: pd.Series(parse_option_info(val))
             )
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
-            subset['UnderlyingPrice'] = live_price  # add live price
-            subset = subset[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price', 'UnderlyingPrice']]
+
+            # latest.json always gets live price
+            subset_latest = subset.copy()
+            subset_latest['UnderlyingPrice'] = live_price
+            subset_latest[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price', 'UnderlyingPrice']].to_json(
+                latest_file, orient="records"
+            )
+
+            # dated.json gets live price once and never overwrites
+            if not os.path.exists(dated_file):
+                subset_dated = subset.copy()
+                subset_dated['UnderlyingPrice'] = live_price
+                subset_dated[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price', 'UnderlyingPrice']].to_json(
+                    dated_file, orient="records"
+                )
+                print(f"Saved new dated file for '{bucket_name}'")
+            else:
+                print(f"Dated file already exists for '{bucket_name}', skipping overwrite.")
+
         else:
             subset['Ticker'] = subset['Ticker_A']
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
-            subset = subset[['Ticker', 'Weight']]
 
-        if not subset.empty:
-            filename = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
-            subset.to_json(filename, orient="records")
-            print(f"Saved {len(subset)} records to {filename}")
-        else:
-            print(f"No records found for bucket '{bucket_name}'.")
+            # latest.json
+            subset[['Ticker', 'Weight']].to_json(latest_file, orient="records")
 
-    # Copy dated JSON files to "latest" versions
-    for bucket_name in ["Options - Index", "Cash", "Stocks"]:
-        dated_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
-        latest_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_latest.json')
-        if os.path.exists(dated_file):
-            shutil.copyfile(dated_file, latest_file)
-            print(f"Copied {dated_file} to {latest_file}")
+            # dated.json
+            if not os.path.exists(dated_file):
+                subset[['Ticker', 'Weight']].to_json(dated_file, orient="records")
+                print(f"Saved new dated file for '{bucket_name}'")
+            else:
+                print(f"Dated file already exists for '{bucket_name}', skipping overwrite.")
 
-    # Generate the available_dates.json file
     generate_available_dates_json()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
