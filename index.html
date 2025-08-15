@@ -308,5 +308,83 @@ document.querySelectorAll('th').forEach(th => {
 });
 </script>
 
+  <script>
+async function init() {
+  // 1️⃣ Load available dates
+  const response = await fetch('data/available_dates.json');
+  const data = await response.json();
+  const dates = data.dates;
+
+  // 2️⃣ Populate dropdown
+  const select = document.getElementById('dateSelect');
+  dates.forEach(date => {
+    const option = document.createElement('option');
+    option.value = date;
+    option.textContent = date;
+    select.appendChild(option);
+  });
+
+  // 3️⃣ Set default selection to latest date
+  select.value = dates[dates.length - 1];
+
+  // 4️⃣ Load data for selected date
+  await loadData(select.value);
+
+  // 5️⃣ Update on change
+  select.addEventListener('change', async (e) => {
+    await loadData(e.target.value);
+  });
+}
+
+// Function to load JSON files based on date and render tables
+async function loadData(selectedDate) {
+  const buckets = [
+    { id: 'options', file: `data/JEPQ_Options_-_Index_${selectedDate}.json`, tableId: 'optionsTable' },
+    { id: 'cash', file: `data/JEPQ_Cash_${selectedDate}.json`, tableId: 'cashTable' },
+    { id: 'stocks', file: `data/JEPQ_Stocks_${selectedDate}.json`, tableId: 'stocksTable' }
+  ];
+
+  for (const bucket of buckets) {
+    try {
+      const res = await fetch(bucket.file);
+      if (!res.ok) throw new Error('File not found');
+      const json = await res.json();
+      renderTable(bucket.tableId, json);
+    } catch (err) {
+      console.error(`Error loading ${bucket.file}:`, err);
+      document.getElementById(bucket.tableId).innerHTML = '<tr><td colspan="5">Data not available</td></tr>';
+    }
+  }
+}
+
+// Function to render a table from JSON data
+function renderTable(tableId, data) {
+  const table = document.getElementById(tableId);
+  table.innerHTML = ''; // clear previous table
+
+  if (!data.length) return;
+
+  // Header row
+  const header = table.insertRow();
+  Object.keys(data[0]).forEach(key => {
+    const th = document.createElement('th');
+    th.textContent = key;
+    header.appendChild(th);
+  });
+
+  // Data rows
+  data.forEach(row => {
+    const tr = table.insertRow();
+    Object.values(row).forEach(value => {
+      const td = tr.insertCell();
+      td.textContent = value;
+    });
+  });
+}
+
+// Initialize
+init();
+</script>
+
 </body>
 </html>
