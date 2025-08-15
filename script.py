@@ -89,7 +89,7 @@ def main():
                 lambda val: pd.Series(parse_option_info(val))
             )
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
-            subset['UnderlyingPrice'] = 10,000
+            subset['UnderlyingPrice'] = "{:,}".format(10000)
             subset = subset[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price', 'UnderlyingPrice']]
         else:
             subset['Ticker'] = subset['Ticker_A']
