@@ -1,366 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>JEPQ Holdings</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      max-width: 960px;
-      margin: 30px auto;
-      padding: 0 20px 40px;
-      background: #fafafa;
-      color: #333;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 15px;
-      color: #1e3a8a;
-      font-weight: 700;
-      font-size: 2.8rem;
-      letter-spacing: 1.2px;
-    }
-    #date-select-container { text-align: center; margin-bottom: 40px; }
-    label[for="date-select"] {
-      font-weight: 600;
-      font-size: 1.1rem;
-      margin-right: 8px;
-      color: #555;
-    }
-    #date-select {
-      font-size: 1rem;
-      padding: 8px 14px;
-      border: 1.8px solid #cbd5e1;
-      border-radius: 6px;
-      background-color: #fff;
-      cursor: pointer;
-      min-width: 150px;
-    }
-    #date-select:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 5px rgba(37, 99, 235, 0.5);
-    }
-    section {
-      margin-bottom: 50px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
-      padding: 20px 25px 30px;
-    }
-    section h2 { margin-top: 0; margin-bottom: 20px; font-size: 1.6rem; font-weight: 700; color: #2563eb; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 40px;
-      font-size: 14px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    thead th {
-      background-color: #6c7a89;
-      color: #f0f4f8;
-      padding: 12px 16px;
-      text-align: left;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-    }
-    tbody tr:hover { background-color: #e4ecf7; }
-    tbody td {
-      padding: 12px 16px;
-      border-top: 1px solid #ddd;
-      color: #333;
-    }
-    tfoot td {
-      font-weight: 600;
-      background-color: #f7f9fb;
-      border-top: 2px solid #6c7a89;
-      padding: 12px 16px;
-      color: #444;
-    }
-    .right { text-align: right; }
-    tfoot tr td:first-child { text-align: left; }
-    @media (max-width: 600px) {
-      table { font-size: 0.85rem; }
-      h1 { font-size: 2rem; }
-      section h2 { font-size: 1.3rem; }
-    }
-    p.error {
-      color: #b91c1c;
-      font-weight: 700;
-      text-align: center;
-      margin-top: 20px;
-    }
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 80%; margin-bottom: 40px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #f0f0f0; }
+    h2 { margin-top: 40px; }
   </style>
 </head>
 <body>
-
   <h1>JEPQ Holdings</h1>
 
-  <div id="date-select-container">
-    <label for="date-select">Select Date:</label>
-    <select id="date-select"></select>
-  </div>
+  <h2>Options - Index</h2>
+  <table id="options-table">
+    <thead>
+      <tr>
+        <th>Ticker</th>
+        <th>Weight</th>
+        <th>Expiry Date</th>
+        <th>Option Type</th>
+        <th>Strike Price</th>
+        <th>Underlying Price</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-  <section id="options-container">
-    <h2>Options - Index</h2>
-    <table id="options-table"></table>
-  </section>
+  <h2>Cash</h2>
+  <table id="cash-table">
+    <thead>
+      <tr>
+        <th>Ticker</th>
+        <th>Weight</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-  <section id="cash-container">
-    <h2>Cash</h2>
-    <table id="cash-table"></table>
-  </section>
-
-  <section id="stocks-container">
-    <h2>Stocks</h2>
-    <table id="stocks-table"></table>
-  </section>
+  <h2>Stocks</h2>
+  <table id="stocks-table">
+    <thead>
+      <tr>
+        <th>Ticker</th>
+        <th>Weight</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <script>
-    const FINNHUB_API_KEY = 'd2cvo7hr01qjem5ibl90d2cvo7hr01qjem5ibl9g';
-    const QQQ_TICKER = 'QQQ';
-    const SCALE_FACTOR = 41.045;
-    const DAY_MS = 24 * 60 * 60 * 1000;
+    const buckets = [
+      { id: 'options', file: 'data/JEPQ_Options-Index_latest.json' },
+      { id: 'cash', file: 'data/JEPQ_Cash_latest.json' },
+      { id: 'stocks', file: 'data/JEPQ_Stocks_latest.json' }
+    ];
 
-    // Helper: remove commas, trim, and convert to number
-    function toNumberSafe(x) {
-      if (x == null) return NaN;
-      if (typeof x === 'number') return x;
-      return Number(String(x).replace(/,/g, '').trim());
-    }
-
-    // Helper: parse "DD MM YYYY", "DD/MM/YYYY", "DD-MM-YYYY" (prioritised),
-    // otherwise fall back to Date parsing for ISO-like strings.
-    function parseExpiryDate(s) {
-      if (!s) return null;
-      s = String(s).trim();
-
-      // First try explicit dd mm yyyy (space / slash / dash)
-      const m = s.match(/^(\d{1,2})[\/\-\s](\d{1,2})[\/\-\s](\d{2,4})$/);
-      if (m) {
-        const day = Number(m[1]);
-        const monthIndex = Number(m[2]) - 1; // zero-based
-        const year = Number(m[3]) < 100 ? 2000 + Number(m[3]) : Number(m[3]);
-        return new Date(year, monthIndex, day);
-      }
-
-      // Fallback: try built-in parser (handles ISO "YYYY-MM-DD", etc.)
-      const tryBuilt = new Date(s);
-      if (!isNaN(tryBuilt.getTime())) return tryBuilt;
-
-      return null;
-    }
-
-    async function fetchQQQPrice() {
-      const url = `https://finnhub.io/api/v1/quote?symbol=${QQQ_TICKER}&token=${FINNHUB_API_KEY}`;
-      try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`API error ${response.status}`);
-        const data = await response.json();
-        return data.c ? Number(data.c) : null;
-      } catch (err) {
-        console.error("Failed to fetch QQQ price:", err);
-        return null;
-      }
-    }
-
-    function buildTable(containerId, data, columns, showTotals = false) {
-      const container = document.getElementById(containerId);
-      const table = container.querySelector("table");
-      table.innerHTML = "";
-
-      if (!data.length) {
-        table.innerHTML = "<tr><td colspan='" + columns.length + "'>No data found</td></tr>";
-        return;
-      }
-
-      const thead = document.createElement("thead");
-      const headerRow = document.createElement("tr");
-      columns.forEach(col => {
-        const th = document.createElement("th");
-        th.textContent = col;
-        headerRow.appendChild(th);
-      });
-      thead.appendChild(headerRow);
-      table.appendChild(thead);
-
-      const tbody = document.createElement("tbody");
-      data.forEach(row => {
-        const tr = document.createElement("tr");
-        columns.forEach(col => {
-          const td = document.createElement("td");
-
-          // Show numbers/strings as present; if field is numeric-like we may format
-          let value = row[col] !== undefined && row[col] !== null ? row[col] : '';
-
-          // If UnderlyingPrice is numeric string or number, show with two decimals
-          if (col === "UnderlyingPrice" && value !== '') {
-            const n = toNumberSafe(value);
-            if (!isNaN(n)) value = n.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    buckets.forEach(bucket => {
+      fetch(bucket.file)
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.querySelector(`#${bucket.id}-table tbody`);
+          if (data.length === 0) {
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = bucket.id === 'options' ? 6 : 2;
+            td.textContent = "No records available";
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+            return;
           }
 
-          // If Strike_Price is numeric string, normalize display (preserve original if already formatted)
-          if (col === "Strike_Price" && value !== '') {
-            const n = toNumberSafe(value);
-            if (!isNaN(n)) value = n.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-          }
-
-          td.textContent = value;
-
-          // Right-align numeric-like columns
-          const rightCols = ["Weight", "Strike_Price", "UnderlyingPrice", "Upside % Before Cap", "Days to Expiration"];
-          if (rightCols.includes(col)) {
-            td.classList.add("right");
-          }
-
-          tr.appendChild(td);
-        });
-        tbody.appendChild(tr);
-      });
-      table.appendChild(tbody);
-
-      if (showTotals) {
-        const tfoot = document.createElement("tfoot");
-        const totalRow = document.createElement("tr");
-        const totalWeight = data.reduce((acc, r) => acc + (parseFloat(r.Weight) || 0), 0).toFixed(2);
-        const tdLabel = document.createElement("td");
-        tdLabel.setAttribute("colspan", columns.length - 1);
-        tdLabel.textContent = "Total Weight (%)";
-        const tdValue = document.createElement("td");
-        tdValue.textContent = totalWeight;
-        tdValue.classList.add("right");
-        totalRow.appendChild(tdLabel);
-        totalRow.appendChild(tdValue);
-        tfoot.appendChild(totalRow);
-        table.appendChild(tfoot);
-      }
-    }
-
-    async function loadDates() {
-      try {
-        const resp = await fetch("./data/available_dates.json");
-        if (!resp.ok) throw new Error("Failed to load dates");
-        const json = await resp.json();
-        return json.dates || [];
-      } catch (err) {
-        console.error("Error loading dates:", err);
-        return [];
-      }
-    }
-
-    async function loadData(date) {
-      try {
-        const qqqPrice = await fetchQQQPrice();
-        if (qqqPrice === null) throw new Error("QQQ price unavailable");
-
-        // Keep UnderlyingPrice as a formatted string with two decimals
-        const estimatedNasdaqPriceStr = (qqqPrice * SCALE_FACTOR).toFixed(2);
-
-        const dateSuffix = date ? `_${date}` : "_latest";
-
-        // Load Options
-        const optionsResp = await fetch(`./data/JEPQ_Options_-_Index${dateSuffix}.json`);
-        if (!optionsResp.ok) throw new Error("Failed to load options file");
-        const optionsData = await optionsResp.json();
-
-        // Today's UTC date (stripped time)
-        const today = new Date();
-        const todayUTC = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
-
-        optionsData.forEach(item => {
-          // UnderlyingPrice as formatted string so it displays nicely
-          item.UnderlyingPrice = estimatedNasdaqPriceStr;
-
-          // Upside % Before Cap
-          const strike = toNumberSafe(item.Strike_Price);
-          const underlying = toNumberSafe(item.UnderlyingPrice);
-          if (Number.isFinite(strike) && Number.isFinite(underlying) && underlying !== 0) {
-            const upside = ((strike - underlying) / underlying) * 100;
-            item["Upside % Before Cap"] = upside.toFixed(2) + "%";
-          } else {
-            item["Upside % Before Cap"] = "";
-          }
-
-          // Days to Expiration: force dd mm yyyy parsing first
-          const expiry = parseExpiryDate(item.Expiry_Date);
-          if (!expiry || isNaN(expiry.getTime())) {
-            item["Days to Expiration"] = "";
-          } else {
-            const expiryUTC = Date.UTC(expiry.getFullYear(), expiry.getMonth(), expiry.getDate());
-            const diffDays = Math.floor((expiryUTC - todayUTC) / DAY_MS * 5 / 7);
-            item["Days to Expiration"] = diffDays < 0 ? "Option Expired" : (diffDays === 0 ? "Expires Today" : diffDays);
-          }
-        });
-
-        buildTable(
-          "options-container",
-          optionsData,
-          ["Ticker", "Weight", "Expiry_Date", "Strike_Price", "UnderlyingPrice", "Upside % Before Cap", "Days to Expiration"],
-          true
-        );
-
-        // Load Cash
-        const cashResp = await fetch(`./data/JEPQ_Cash${dateSuffix}.json`);
-        if (!cashResp.ok) throw new Error("Failed to load cash file");
-        const cashData = await cashResp.json();
-        buildTable("cash-container", cashData, ["Ticker", "Weight"], true);
-
-        // Load Stocks
-        const stocksResp = await fetch(`./data/JEPQ_Stocks${dateSuffix}.json`);
-        if (!stocksResp.ok) throw new Error("Failed to load stocks file");
-        const stocksData = await stocksResp.json();
-        buildTable("stocks-container", stocksData, ["Ticker", "Weight"], true);
-
-      } catch (err) {
-        console.error("Error loading data:", err);
-        // Avoid appending multiple error paragraphs
-        if (!document.querySelector(".error")) {
-          document.body.insertAdjacentHTML("beforeend", `<p class="error">Error loading data, check console.</p>`);
-        }
-      }
-    }
-
-    async function init() {
-      const dates = await loadDates();
-
-      const select = document.getElementById("date-select");
-      if (dates.length === 0) {
-        select.innerHTML = `<option>No dates available</option>`;
-        return;
-      }
-
-      // Add options to select
-      dates.forEach(date => {
-        const opt = document.createElement("option");
-        opt.value = date;
-        opt.textContent = date;
-        select.appendChild(opt);
-      });
-
-      // Add latest option at the end
-      const latestOpt = document.createElement("option");
-      latestOpt.value = "";
-      latestOpt.textContent = "Latest";
-      select.appendChild(latestOpt);
-
-      // Default to latest
-      select.value = "";
-
-      // Load initial data for latest
-      loadData("");
-
-      // On change, load selected date data
-      select.addEventListener("change", () => {
-        loadData(select.value);
-      });
-    }
-
-    init();
+          data.forEach(item => {
+            const tr = document.createElement('tr');
+            if (bucket.id === 'options') {
+              tr.innerHTML = `
+                <td>${item.Ticker}</td>
+                <td>${item.Weight}</td>
+                <td>${item.Expiry_Date}</td>
+                <td>${item.Option_Type}</td>
+                <td>${item.Strike_Price}</td>
+                <td>${item.UnderlyingPrice}</td>
+              `;
+            } else {
+              tr.innerHTML = `
+                <td>${item.Ticker}</td>
+                <td>${item.Weight}</td>
+              `;
+            }
+            tbody.appendChild(tr);
+          });
+        })
+        .catch(err => console.error(`Failed to load ${bucket.file}:`, err));
+    });
   </script>
-
 </body>
 </html>
