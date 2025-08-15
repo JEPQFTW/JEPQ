@@ -75,11 +75,13 @@
     transition: background 0.3s;
   }
 
-  tr:nth-child(even) td {
+  /* Alternating row colors, but skip status cells */
+  tr:nth-child(even) td:not(.itm):not(.otm) {
     background: rgba(255,255,255,0.7);
   }
 
-  tr:hover td {
+  /* Hover effect, skip status cells */
+  tr:hover td:not(.itm):not(.otm) {
     background: rgba(255,255,255,0.95);
   }
 
@@ -87,6 +89,7 @@
   .itm { background-color: rgba(248,215,218,0.8); } /* light red */
   .otm { background-color: rgba(212,237,218,0.8); } /* light green */
 </style>
+
 </head>
 <body>
 
