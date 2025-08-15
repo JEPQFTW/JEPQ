@@ -75,12 +75,13 @@
           data.forEach(item => {
             const tr = document.createElement('tr');
             if (bucket.id === 'options') {
+              const scaledPrice = (item.UnderlyingPrice * 41.09).toFixed(2);
               tr.innerHTML = `
                 <td>${item.Ticker}</td>
                 <td>${item.Weight}</td>
                 <td>${item.Expiry_Date}</td>
                 <td>${item.Strike_Price}</td>
-                <td>${item.UnderlyingPrice}</td>
+                <td>${item.scaledPrice}</td>
               `;
             } else {
               tr.innerHTML = `
