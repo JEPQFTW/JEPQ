@@ -5,7 +5,7 @@ import pandas as pd
 import shutil
 
 DATA_FOLDER = "data"
-URL = 'https://tinyurl.com/Pr0d1g10s0'
+EXCEL_URL = 'https://tinyurl.com/Pr0d1g10s0'
 
 def get_current_date():
     return datetime.datetime.now().strftime("%Y-%m-%d")
