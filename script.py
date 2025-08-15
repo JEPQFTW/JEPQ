@@ -46,6 +46,16 @@ def parse_option_info(option_str):
     except Exception:
         return None, None, None
 
+def fetch_live_price():
+    try:
+        r = requests.get(UNDERLYING_API_URL)
+        r.raise_for_status()
+        data = r.json()
+        return data['quoteResponse']['result'][0]['regularMarketPrice']
+    except Exception as e:
+        print(f"Error fetching live price: {e}")
+        return None
+
 
 def main():
     os.makedirs(DATA_FOLDER, exist_ok=True)
