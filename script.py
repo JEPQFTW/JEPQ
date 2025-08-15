@@ -86,7 +86,7 @@ def main():
         else:
             print(f"No records found for bucket '{bucket_name}'.")
 
-            import shutil
+            
 
 # After saving each dated JSON file, also copy to "latest" filename
     for bucket_name in ["Options - Index", "Cash", "Stocks"]:
