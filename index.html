@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <title>JEPQ Holdings</title>
 <style>
-  /* ----- Background ----- */
-  body, html {
+/* ----- Background ----- */
+body, html {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -16,36 +16,36 @@
     background-size: 400% 400%;
     animation: gradientBG 30s ease infinite;
     color: #333;
-  }
+}
 
-  @keyframes gradientBG {
+@keyframes gradientBG {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
-  }
+}
 
-  canvas#bgCanvas {
+canvas#bgCanvas {
     position: fixed;
     top: 0;
     left: 0;
     z-index: -1;
     pointer-events: none;
-  }
+}
 
-  /* ----- Layout ----- */
-  .container {
+/* ----- Layout ----- */
+.container {
     margin: 20px auto;
     max-width: 1200px;
     padding: 0 20px;
-  }
+}
 
-  h1, h2 {
+h1, h2 {
     text-align: center;
     color: #222;
-  }
+}
 
-  /* ----- Table Styling ----- */
-  table {
+/* ----- Table Styling ----- */
+table {
     border-collapse: separate;
     border-spacing: 0;
     width: 100%;
@@ -55,338 +55,261 @@
     overflow: hidden;
     background: rgba(255,255,255,0.85);
     backdrop-filter: blur(5px);
-  }
+}
 
-  th, td {
+th, td {
     padding: 12px 15px;
     text-align: center;
-  }
+}
 
-  th {
+th {
     background: rgba(255,255,255,0.9);
     cursor: pointer;
     position: sticky;
     top: 0;
     z-index: 1;
     font-weight: 600;
-  }
+}
 
-  tr {
+tr {
     transition: background 0.3s;
-  }
+}
 
-  tr:nth-child(even) td:not(.itm):not(.otm) {
+tr:nth-child(even) td:not(.itm):not(.otm) {
     background: rgba(255,255,255,0.7);
-  }
+}
 
-  tr:hover td:not(.itm):not(.otm) {
+tr:hover td:not(.itm):not(.otm) {
     background: rgba(255,255,255,0.95);
-  }
+}
 
-  .itm { background-color: rgba(248,215,218,0.8); }
-  .otm { background-color: rgba(212,237,218,0.8); }
+.itm { background-color: rgba(248,215,218,0.8); }
+.otm { background-color: rgba(212,237,218,0.8); }
 
-  tfoot tr {
+tfoot tr {
     font-weight: bold;
     background: rgba(0,0,0,0.05);
-  }
+}
 </style>
 </head>
 <body>
-
 <canvas id="bgCanvas"></canvas>
 
 <div class="container">
-  <h1>JEPQ Holdings</h1>
-  
-  <label for="dateSelect">Select Date:</label>
-  <select id="dateSelect"></select>
-  
-  <h2>Options - Index</h2>
-<table id="optionsTable"></table>
+    <h1>JEPQ Holdings</h1>
 
-    <thead>
-      <tr>
-        <th data-type="string">Ticker</th>
-        <th data-type="number">Weight</th>
-        <th data-type="date">Expiry Date</th>
-        <th data-type="number">Strike Price</th>
-        <th data-type="number">Underlying Price</th>
-        <th data-type="number">Upside % Before Cap</th>
-        <th data-type="string">Status</th>
-        <th data-type="number">Forgone Gains</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-    <tfoot>
-      <tr>
-        <td>Total</td>
-        <td id="options-total">0%</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
-    </tfoot>
-  </table>
+    <h2>Options - Index</h2>
+    <table id="options-table">
+        <thead>
+            <tr>
+                <th data-type="string">Ticker</th>
+                <th data-type="number">Weight</th>
+                <th data-type="date">Expiry Date</th>
+                <th data-type="number">Strike Price</th>
+                <th data-type="number">Underlying Price</th>
+                <th data-type="number">Upside % Before Cap</th>
+                <th data-type="string">Status</th>
+                <th data-type="number">Forgone Gains</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+            <tr>
+                <td>Total</td>
+                <td id="options-total">0%</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
 
-  <h2>Cash</h2>
-<table id="cashTable"></table>
-    <thead>
-      <tr>
-        <th data-type="string">Ticker</th>
-        <th data-type="number">Weight</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-    <tfoot><tr><td>Total</td><td id="cash-total">0%</td></tr></tfoot>
-  </table>
+    <h2>Cash</h2>
+    <table id="cash-table">
+        <thead>
+            <tr>
+                <th data-type="string">Ticker</th>
+                <th data-type="number">Weight</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+            <tr>
+                <td>Total</td>
+                <td id="cash-total">0%</td>
+            </tr>
+        </tfoot>
+    </table>
 
-  <h2>Stocks</h2>
-<table id="stocksTable"></table>
-    <thead>
-      <tr>
-        <th data-type="string">Ticker</th>
-        <th data-type="number">Weight</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-    <tfoot><tr><td>Total</td><td id="stocks-total">0%</td></tr></tfoot>
-  </table>
+    <h2>Stocks</h2>
+    <table id="stocks-table">
+        <thead>
+            <tr>
+                <th data-type="string">Ticker</th>
+                <th data-type="number">Weight</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+            <tr>
+                <td>Total</td>
+                <td id="stocks-total">0%</td>
+            </tr>
+        </tfoot>
+    </table>
 </div>
 
 <script>
-/* ----- Floating Particles ----- */
+// ----- Floating Particles -----
 const canvas = document.getElementById('bgCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 let particles = [];
-for(let i=0;i<120;i++){
-  particles.push({
-    x: Math.random()*canvas.width,
-    y: Math.random()*canvas.height,
-    r: Math.random()*2+1,
-    dx: (Math.random()-0.5)/3,
-    dy: (Math.random()-0.5)/3
-  });
+for(let i = 0; i < 120; i++) {
+    particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 2 + 1,
+        dx: (Math.random() - 0.5) / 3,
+        dy: (Math.random() - 0.5) / 3
+    });
 }
 
-function animateParticles(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  particles.forEach(p => {
-    p.x += p.dx; p.y += p.dy;
-    if(p.x<0||p.x>canvas.width) p.dx*=-1;
-    if(p.y<0||p.y>canvas.height) p.dy*=-1;
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fillStyle='rgba(255,255,255,0.3)';
-    ctx.fill();
-  });
-  requestAnimationFrame(animateParticles);
+function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+        p.x += p.dx;
+        p.y += p.dy;
+        if(p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if(p.y < 0 || p.y > canvas.height) p.dy *= -1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.fill();
+    });
+    requestAnimationFrame(animateParticles);
 }
+
 animateParticles();
+
 window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 });
 
+// ----- Data Loading -----
 const buckets = [
-  { id: 'options', file: 'data/JEPQ_Options_-_Index_latest.json' },
-  { id: 'cash', file: 'data/JEPQ_Cash_latest.json' },
-  { id: 'stocks', file: 'data/JEPQ_Stocks_latest.json' }
+    { id: 'options', file: 'data/JEPQ_Options_-_Index_latest.json' },
+    { id: 'cash', file: 'data/JEPQ_Cash_latest.json' },
+    { id: 'stocks', file: 'data/JEPQ_Stocks_latest.json' }
 ];
 
 buckets.forEach(bucket => {
-  fetch(bucket.file)
+    fetch(bucket.file)
     .then(res => res.json())
     .then(data => {
-      const tbody = document.querySelector(`#${bucket.id}-table tbody`);
-      let totalWeight = 0;
+        const tbody = document.querySelector(`#${bucket.id}-table tbody`);
+        let totalWeight = 0;
 
-      if (data.length === 0) {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = bucket.id === 'options' ? 8 : 2;
-        td.textContent = "No records available";
-        tr.appendChild(td);
-        tbody.appendChild(tr);
-        return;
-      }
-
-      data.forEach(item => {
-        const tr = document.createElement('tr');
-        if (bucket.id === 'options') {
-          const [year, month, day] = item.Expiry_Date.split('-'); // YYYY-MM-DD
-          const displayDate = `${day}/${month}/${year}`;
-          const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
-          const opening = parseFloat(item.OpeningPrice);
-          const upside = (strike - opening) / opening * 100;
-
-          let status = '';
-          let statusClass = '';
-          let forgoneGains = '';
-          if (upside < 0) {
-            status = 'ITM';
-            statusClass = 'itm';
-            forgoneGains = `${(upside * item.Weight).toFixed(2)}%`;
-          } else {
-            status = 'OTM';
-            statusClass = 'otm';
-            forgoneGains = '';
-          }
-
-          tr.innerHTML = `
-            <td>${item.Ticker}</td>
-            <td>${item.Weight}%</td>
-            <td data-value="${item.Expiry_Date}">${displayDate}</td>
-            <td>${item.Strike_Price}</td>
-            <td>${item.OpeningPrice}</td>
-            <td>${upside.toFixed(2)}%</td>
-            <td class="${statusClass}">${status}</td>
-            <td>${forgoneGains}</td>
-          `;
-        } else {
-          tr.innerHTML = `
-            <td>${item.Ticker}</td>
-            <td>${item.Weight}%</td>
-          `;
+        if (data.length === 0) {
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = bucket.id === 'options' ? 8 : 2;
+            td.textContent = "No records available";
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+            return;
         }
-        // Appended Code Up to Query Selector with closing bracket  
-        if (bucket.id === 'options') {
-  const forgoneSum = data.reduce((sum, item) => {
-    const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
-    const opening = parseFloat(item.OpeningPrice);
-    const upside = (strike - opening) / opening * 100;
-    return upside < 0 ? sum + (upside * item.Weight) : sum;
-  }, 0);
 
-  // Add sum to the last cell in the footer
-  document.querySelector('#options-table tfoot td:last-child').textContent = forgoneSum.toFixed(2) + '%';
-}
+        data.forEach(item => {
+            const tr = document.createElement('tr');
 
-        totalWeight += parseFloat(item.Weight) || 0;
-        tbody.appendChild(tr);
-      });
+            if(bucket.id === 'options') {
+                const [year, month, day] = item.Expiry_Date.split('-');
+                const displayDate = `${day}/${month}/${year}`;
+                const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
+                const opening = parseFloat(item.OpeningPrice);
+                const upside = (strike - opening) / opening * 100;
+                let status = '', statusClass = '', forgoneGains = '';
 
-      document.getElementById(`${bucket.id}-total`).textContent = totalWeight.toFixed(2) + '%';
+                if (upside < 0) {
+                    status = 'ITM';
+                    statusClass = 'itm';
+                    forgoneGains = `${(upside * item.Weight).toFixed(2)}%`;
+                } else {
+                    status = 'OTM';
+                    statusClass = 'otm';
+                }
+
+                tr.innerHTML = `
+                    <td>${item.Ticker}</td>
+                    <td>${item.Weight}%</td>
+                    <td data-value="${item.Expiry_Date}">${displayDate}</td>
+                    <td>${item.Strike_Price}</td>
+                    <td>${item.OpeningPrice}</td>
+                    <td>${upside.toFixed(2)}%</td>
+                    <td class="${statusClass}">${status}</td>
+                    <td>${forgoneGains}</td>
+                `;
+            } else {
+                tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
+            }
+
+            totalWeight += parseFloat(item.Weight) || 0;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById(`${bucket.id}-total`).textContent = totalWeight.toFixed(2) + '%';
+
+        if(bucket.id === 'options') {
+            const forgoneSum = data.reduce((sum, item) => {
+                const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
+                const opening = parseFloat(item.OpeningPrice);
+                const upside = (strike - opening) / opening * 100;
+                return upside < 0 ? sum + (upside * item.Weight) : sum;
+            }, 0);
+            document.querySelector('#options-table tfoot td:last-child').textContent = forgoneSum.toFixed(2) + '%';
+        }
     })
     .catch(err => console.error(`Failed to load ${bucket.file}:`, err));
 });
 
-// Sorting function remains unchanged
+// ----- Sorting -----
 document.querySelectorAll('th').forEach(th => {
-  th.addEventListener('click', () => {
-    const table = th.closest('table');
-    const tbody = table.querySelector('tbody');
-    const index = th.cellIndex;
-    const type = th.dataset.type;
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-    const asc = th.classList.toggle('asc');
+    th.addEventListener('click', () => {
+        const table = th.closest('table');
+        const tbody = table.querySelector('tbody');
+        const index = th.cellIndex;
+        const type = th.dataset.type;
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const asc = th.classList.toggle('asc');
 
-    rows.sort((a, b) => {
-      let aText = a.cells[index].dataset.value || a.cells[index].textContent.trim().replace('%','');
-      let bText = b.cells[index].dataset.value || b.cells[index].textContent.trim().replace('%','');
+        rows.sort((a, b) => {
+            let aText = a.cells[index].dataset.value || a.cells[index].textContent.trim().replace('%','');
+            let bText = b.cells[index].dataset.value || b.cells[index].textContent.trim().replace('%','');
 
-      if (type === 'number') {
-        aText = parseFloat(aText) || 0;
-        bText = parseFloat(bText) || 0;
-      } else if (type === 'date') {
-        aText = new Date(aText);
-        bText = new Date(bText);
-      }
+            if(type === 'number') {
+                aText = parseFloat(aText) || 0;
+                bText = parseFloat(bText) || 0;
+            } else if(type === 'date') {
+                aText = new Date(aText);
+                bText = new Date(bText);
+            }
 
-      if (aText < bText) return asc ? -1 : 1;
-      if (aText > bText) return asc ? 1 : -1;
-      return 0;
+            if(aText < bText) return asc ? -1 : 1;
+            if(aText > bText) return asc ? 1 : -1;
+            return 0;
+        });
+
+        tbody.innerHTML = '';
+        rows.forEach(row => tbody.appendChild(row));
     });
-
-    tbody.innerHTML = '';
-    rows.forEach(row => tbody.appendChild(row));
-  });
 });
 </script>
-
-  <script>
-async function init() {
-  // 1️⃣ Load available dates
-  const response = await fetch('data/available_dates.json');
-  const data = await response.json();
-  const dates = data.dates;
-
-  // 2️⃣ Populate dropdown
-  const select = document.getElementById('dateSelect');
-  dates.forEach(date => {
-    const option = document.createElement('option');
-    option.value = date;
-    option.textContent = date;
-    select.appendChild(option);
-  });
-
-  // 3️⃣ Set default selection to latest date
-  select.value = dates[dates.length - 1];
-
-  // 4️⃣ Load data for selected date
-  await loadData(select.value);
-
-  // 5️⃣ Update on change
-  select.addEventListener('change', async (e) => {
-    await loadData(e.target.value);
-  });
-}
-
-// Function to load JSON files based on date and render tables
-async function loadData(selectedDate) {
-  const buckets = [
-    { id: 'options', file: `data/JEPQ_Options_-_Index_${selectedDate}.json`, tableId: 'optionsTable' },
-    { id: 'cash', file: `data/JEPQ_Cash_${selectedDate}.json`, tableId: 'cashTable' },
-    { id: 'stocks', file: `data/JEPQ_Stocks_${selectedDate}.json`, tableId: 'stocksTable' }
-  ];
-
-  for (const bucket of buckets) {
-    try {
-      const res = await fetch(bucket.file);
-      if (!res.ok) throw new Error('File not found');
-      const json = await res.json();
-      renderTable(bucket.tableId, json);
-    } catch (err) {
-      console.error(`Error loading ${bucket.file}:`, err);
-      document.getElementById(bucket.tableId).innerHTML = '<tr><td colspan="5">Data not available</td></tr>';
-    }
-  }
-}
-
-// Function to render a table from JSON data
-function renderTable(tableId, data) {
-  const table = document.getElementById(tableId);
-  table.innerHTML = ''; // clear previous table
-
-  if (!data.length) return;
-
-  // Header row
-  const header = table.insertRow();
-  Object.keys(data[0]).forEach(key => {
-    const th = document.createElement('th');
-    th.textContent = key;
-    header.appendChild(th);
-  });
-
-  // Data rows
-  data.forEach(row => {
-    const tr = table.insertRow();
-    Object.values(row).forEach(value => {
-      const td = tr.insertCell();
-      td.textContent = value;
-    });
-  });
-}
-
-// Initialize
-init();
-</script>
-
 </body>
 </html>
