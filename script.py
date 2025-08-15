@@ -28,7 +28,7 @@ def parse_option_info(option_str):
             return None, None, None
         code = parts[1]
         date_code = code[:6]
-        expiry_date = datetime.datetime.strptime(date_code, "%y%m%d").strftime("%d %m %Y")
+        expiry_date = datetime.datetime.strptime(date_code, "%y%m%d").strftime("%Y-%m-%d")
         option_type = code[6]
         strike_raw = code[7:]
         strike_price = f"{int(strike_raw) / 1000:,.2f}"
