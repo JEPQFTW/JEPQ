@@ -9,7 +9,6 @@ import json
 DATA_FOLDER = "data"
 EXCEL_URL = 'https://tinyurl.com/Pr0d1g10s0'
 
-
 def get_current_date():
     return datetime.datetime.now().strftime("%Y-%m-%d")
 
@@ -34,7 +33,6 @@ def parse_option_info(option_str):
         return expiry_date, option_type, strike_price
     except Exception:
         return None, None, None
-
 
 def generate_available_dates_json():
     date_set = set()
@@ -78,7 +76,6 @@ def main():
 
     df['Bucket'] = df.apply(assign_bucket, axis=1)
 
-
     # Save JSON files by bucket with tailored columns
     for bucket_name in ["Options - Index", "Cash", "Stocks"]:
         subset = df[df['Bucket'] == bucket_name].copy()
@@ -89,8 +86,9 @@ def main():
                 lambda val: pd.Series(parse_option_info(val))
             )
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
-            subset['UnderlyingPrice'] = 10000
-            subset = subset[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price', 'UnderlyingPrice']]
+            subset['ClosingPrice'] = None  # placeholder for actual closing price
+            subset['OpeningPrice'] = 23809  # hardcoded opening price
+            subset = subset[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price', 'ClosingPrice', 'OpeningPrice']]
         else:
             subset['Ticker'] = subset['Ticker_A']
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
