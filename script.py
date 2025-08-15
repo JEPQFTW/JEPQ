@@ -2,22 +2,18 @@ import os
 import requests
 import datetime
 import pandas as pd
-import shutil
 
-# Config
 DATA_FOLDER = "data"
-URL = 'https://tinyurl.com/Pr0d1g10s0'  # JEPQ Excel file
+URL = 'https://tinyurl.com/Pr0d1g10s0'
 
 def get_current_date():
     return datetime.datetime.now().strftime("%Y-%m-%d")
 
 def download_file(url, filename):
-    print(f"Downloading Excel from {url}")
-    r = requests.get(url)
-    r.raise_for_status()
+    response = requests.get(url)
+    response.raise_for_status()
     with open(filename, 'wb') as file:
-        file.write(r.content)
-    print(f"Saved Excel to {filename}")
+        file.write(response.content)
 
 def parse_option_info(option_str):
     try:
@@ -27,7 +23,8 @@ def parse_option_info(option_str):
             return None, None, None
 
         code = parts[1]
-        date_code = code[:6]  # YYMMDD
+        date_code = code[:6]
+        # Format: day, month, year
         expiry_date = datetime.datetime.strptime(date_code, "%y%m%d").strftime("%d %m %Y")
         option_type = code[6]
         strike_raw = code[7:]
@@ -36,6 +33,7 @@ def parse_option_info(option_str):
         return expiry_date, option_type, strike_price
     except Exception:
         return None, None, None
+
 
 def main():
     os.makedirs(DATA_FOLDER, exist_ok=True)
@@ -46,14 +44,14 @@ def main():
     if not os.path.exists(excel_filename):
         download_file(URL, excel_filename)
     else:
-        print("File already downloaded today.")
+        print("file already downloaded.")
 
-    # Read columns A, B, C, F from Excel (skip first 8 rows)
+    # Read columns A, B, C, F
     df = pd.read_excel(excel_filename, header=None, usecols="A,B,C,F", skiprows=8)
     df.columns = ['Ticker_A', 'Ticker_B', 'Type', 'Weight']
     df = df.dropna(subset=['Type', 'Weight'])
 
-    # Bucket assignment
+    # Assign bucket
     def assign_bucket(row):
         if row['Type'] == "Option - Index":
             return "Options - Index"
@@ -64,7 +62,7 @@ def main():
 
     df['Bucket'] = df.apply(assign_bucket, axis=1)
 
-    # Process & save each bucket
+    # Save JSON files by bucket with tailored columns
     for bucket_name in ["Options - Index", "Cash", "Stocks"]:
         subset = df[df['Bucket'] == bucket_name].copy()
 
@@ -81,15 +79,20 @@ def main():
             subset = subset[['Ticker', 'Weight']]
 
         if not subset.empty:
-            dated_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
-            latest_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_latest.json')
-
-            subset.to_json(dated_file, orient="records")
-            shutil.copyfile(dated_file, latest_file)
-
-            print(f"Saved {len(subset)} records to {dated_file} and {latest_file}")
+            filename = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
+            subset.to_json(filename, orient="records")
+            print(f"Saved {len(subset)} records to {filename}")
         else:
             print(f"No records found for bucket '{bucket_name}'.")
+
+            import shutil
+
+# After saving each dated JSON file, also copy to "latest" filename
+for bucket_name in ["Options - Index", "Cash", "Stocks"]:
+    dated_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
+    latest_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_latest.json')
+    if os.path.exists(dated_file):
+        shutil.copyfile(dated_file, latest_file)
 
 if __name__ == '__main__':
     main()
