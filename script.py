@@ -8,8 +8,7 @@ import json
 
 DATA_FOLDER = "data"
 EXCEL_URL = 'https://tinyurl.com/Pr0d1g10s0'
-FINNHUB_API_KEY = "d2cvo7hr01qjem5ibl90d2cvo7hr01qjem5ibl9g"  # replace with your key
-FINNHUB_QQQ = "https://finnhub.io/api/v1/quote?symbol=QQQ&token=" + FINNHUB_API_KEY
+
 
 def get_current_date():
     return datetime.datetime.now().strftime("%Y-%m-%d")
@@ -36,11 +35,6 @@ def parse_option_info(option_str):
     except Exception:
         return None, None, None
 
-def fetch_live_price():
-    response = requests.get(FINNHUB_QQQ)
-    response.raise_for_status()
-    data = response.json()
-    return round(data['c'], 2)  # current price
 
 def generate_available_dates_json():
     date_set = set()
@@ -84,9 +78,6 @@ def main():
 
     df['Bucket'] = df.apply(assign_bucket, axis=1)
 
-    # Fetch live price once
-    live_price = fetch_live_price()
-    print(f"Fetched live QQQ price: {live_price}")
 
     # Save JSON files by bucket with tailored columns
     for bucket_name in ["Options - Index", "Cash", "Stocks"]:
@@ -98,7 +89,7 @@ def main():
                 lambda val: pd.Series(parse_option_info(val))
             )
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
-            subset['UnderlyingPrice'] = live_price  # add live price
+            subset['UnderlyingPrice'] = 10,000  #Update Manually
             subset = subset[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price', 'UnderlyingPrice']]
         else:
             subset['Ticker'] = subset['Ticker_A']
