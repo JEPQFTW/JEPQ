@@ -1,139 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>JEPQ Holdings</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    table { border-collapse: collapse; width: 80%; margin-bottom: 40px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    th { background-color: #f0f0f0; cursor: pointer; }
-    h2 { margin-top: 40px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Overview</title>
+<style>
+  table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  th { cursor: pointer; background-color: #f0f0f0; }
+  tfoot td { font-weight: bold; }
+</style>
 </head>
 <body>
-  <h1>JEPQ Holdings</h1>
 
-  <h2>Options - Index</h2>
-  <table id="options-table">
-    <thead>
-      <tr>
-        <th data-type="string">Ticker</th>
-        <th data-type="number">Weight</th>
-        <th data-type="date">Expiry Date</th>
-        <th data-type="number">Strike Price</th>
-        <th data-type="number">Opening Price</th>
-        <th data-type="number">Upside % Before Cap</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<h2>Options</h2>
+<table id="options-table">
+  <thead>
+    <tr>
+      <th>Ticker</th>
+      <th>Weight %</th>
+      <th>Expiry Date</th>
+      <th>Strike Price</th>
+      <th>Opening Price</th>
+      <th>Upside %</th>
+      <th>Weighted Lost Upside %</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
-  <h2>Cash</h2>
-  <table id="cash-table">
-    <thead>
-      <tr>
-        <th data-type="string">Ticker</th>
-        <th data-type="number">Weight</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<h2>Stocks</h2>
+<table id="stocks-table">
+  <thead>
+    <tr>
+      <th>Ticker</th>
+      <th>Weight %</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
-  <h2>Stocks</h2>
-  <table id="stocks-table">
-    <thead>
-      <tr>
-        <th data-type="string">Ticker</th>
-        <th data-type="number">Weight</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<h2>Cash</h2>
+<table id="cash-table">
+  <thead>
+    <tr>
+      <th>Ticker</th>
+      <th>Weight %</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
-  <script>
-    const buckets = [
-      { id: 'options', file: 'data/JEPQ_Options_-_Index_latest.json' },
-      { id: 'cash', file: 'data/JEPQ_Cash_latest.json' },
-      { id: 'stocks', file: 'data/JEPQ_Stocks_latest.json' }
-    ];
+<script>
+const buckets = [
+  { id: 'options', file: 'data/JEPQ_Options_-_Index_latest.json' },
+  { id: 'stocks', file: 'data/JEPQ_Stocks_latest.json' },
+  { id: 'cash', file: 'data/JEPQ_Cash_latest.json' }
+];
 
-    buckets.forEach(bucket => {
-      fetch(bucket.file)
-        .then(res => res.json())
-        .then(data => {
-          const tbody = document.querySelector(`#${bucket.id}-table tbody`);
-          if (data.length === 0) {
-            const tr = document.createElement('tr');
-            const td = document.createElement('td');
-            td.colSpan = bucket.id === 'options' ? 6 : 2;
-            td.textContent = "No records available";
-            tr.appendChild(td);
-            tbody.appendChild(tr);
-            return;
-          }
+function sortTable(table, colIndex, numeric = false) {
+  const tbody = table.tBodies[0];
+  Array.from(tbody.rows)
+    .sort((a, b) => {
+      let valA = numeric ? parseFloat(a.cells[colIndex].textContent.replace('%','')) : a.cells[colIndex].textContent;
+      let valB = numeric ? parseFloat(b.cells[colIndex].textContent.replace('%','')) : b.cells[colIndex].textContent;
+      return valA > valB ? 1 : valA < valB ? -1 : 0;
+    })
+    .forEach(row => tbody.appendChild(row));
+}
 
-          data.forEach(item => {
-            const tr = document.createElement('tr');
-            if (bucket.id === 'options') {
-              const [year, month, day] = item.Expiry_Date.split('-'); // YYYY-MM-DD
-              const displayDate = `${day}/${month}/${year}`;
-              const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
-              const opening = parseFloat(item.OpeningPrice);
-              const upside = (strike - opening) / opening * 100;
+buckets.forEach(bucket => {
+  fetch(bucket.file)
+    .then(res => res.json())
+    .then(data => {
+      const table = document.querySelector(`#${bucket.id}-table`);
+      const tbody = table.querySelector('tbody');
+      const tfoot = document.createElement('tfoot');
+      tbody.innerHTML = '';
 
-              tr.innerHTML = `
-                <td>${item.Ticker}</td>
-                <td>${item.Weight}</td>
-                <td data-value="${item.Expiry_Date}">${displayDate}</td>
-                <td>${item.Strike_Price}</td>
-                <td>${item.OpeningPrice}</td>
-                <td>${upside.toFixed(2)}%</td>
-              `;
-            } else {
-              tr.innerHTML = `
-                <td>${item.Ticker}</td>
-                <td>${item.Weight}</td>
-              `;
-            }
-            tbody.appendChild(tr);
-          });
-        })
-        .catch(err => console.error(`Failed to load ${bucket.file}:`, err));
-    });
+      if (data.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = bucket.id === 'options' ? 7 : 2;
+        td.textContent = "No records available";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+      }
 
-    // Sorting function
-    document.querySelectorAll('th').forEach(th => {
-      th.addEventListener('click', () => {
-        const table = th.closest('table');
-        const tbody = table.querySelector('tbody');
-        const index = th.cellIndex;
-        const type = th.dataset.type;
-        const rows = Array.from(tbody.querySelectorAll('tr'));
+      let sumWeight = 0;
+      let sumLostUpside = 0;
 
-        const asc = th.classList.toggle('asc');
+      data.forEach(item => {
+        const tr = document.createElement('tr');
+        if (bucket.id === 'options') {
+          const [day, month, year] = item.Expiry_Date.split('/');
+          const displayDate = `${day}/${month}/${year}`;
+          const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
+          const opening = parseFloat(item.OpeningPrice);
+          const upside = (strike - opening) / opening * 100;
+          const weight = parseFloat(item.Weight);
+          const lostUpside = weight * upside;
 
-        rows.sort((a, b) => {
-          let aText = a.cells[index].dataset.value || a.cells[index].textContent.trim();
-          let bText = b.cells[index].dataset.value || b.cells[index].textContent.trim();
+          sumWeight += weight;
+          sumLostUpside += lostUpside;
 
-          if (type === 'number') {
-            aText = parseFloat(aText) || 0;
-            bText = parseFloat(bText) || 0;
-          } else if (type === 'date') {
-            aText = new Date(aText);
-            bText = new Date(bText);
-          }
+          // Color coding
+          let color = '';
+          if (opening < strike) color = 'green';
+          else if (opening > strike) color = 'red';
+          else color = 'yellow';
+          tr.style.backgroundColor = color;
 
-          if (aText < bText) return asc ? -1 : 1;
-          if (aText > bText) return asc ? 1 : -1;
-          return 0;
-        });
-
-        tbody.innerHTML = '';
-        rows.forEach(row => tbody.appendChild(row));
+          tr.innerHTML = `
+            <td>${item.Ticker}</td>
+            <td>${(weight*100).toFixed(2)}%</td>
+            <td data-value="${item.Expiry_Date}">${displayDate}</td>
+            <td>${item.Strike_Price}</td>
+            <td>${item.OpeningPrice}</td>
+            <td>${upside.toFixed(2)}%</td>
+            <td>${lostUpside.toFixed(2)}%</td>
+          `;
+        } else {
+          const weight = parseFloat(item.Weight);
+          sumWeight += weight;
+          tr.innerHTML = `
+            <td>${item.Ticker}</td>
+            <td>${(weight*100).toFixed(2)}%</td>
+          `;
+        }
+        tbody.appendChild(tr);
       });
-    });
-  </script>
+
+      // Footer
+      const footerTr = document.createElement('tr');
+      footerTr.style.fontWeight = 'bold';
+      if (bucket.id === 'options') {
+        footerTr.innerHTML = `
+          <td>Total</td>
+          <td>${(sumWeight*100).toFixed(2)}%</td>
+          <td colspan="4"></td>
+          <td>${sumLostUpside.toFixed(2)}%</td>
+        `;
+      } else {
+        footerTr.innerHTML = `
+          <td>Total</td>
+          <td>${(sumWeight*100).toFixed(2)}%</td>
+        `;
+      }
+      tfoot.appendChild(footerTr);
+      table.appendChild(tfoot);
+
+      // Make headers sortable
+      Array.from(table.querySelectorAll('th')).forEach((th, index) => {
+        th.addEventListener('click', () => sortTable(table, index, index !== 0));
+      });
+
+    })
+    .catch(err => console.error(`Failed to load ${bucket.file}:`, err));
+});
+</script>
+
 </body>
 </html>
