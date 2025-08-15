@@ -22,7 +22,8 @@
         <th data-type="number">Weight</th>
         <th data-type="date">Expiry Date</th>
         <th data-type="number">Strike Price</th>
-        <th data-type="number">Closing Price</th>
+        <th data-type="number">Opening Price</th>
+        <th data-type="number">Upside % Before Cap</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -65,7 +66,7 @@
           if (data.length === 0) {
             const tr = document.createElement('tr');
             const td = document.createElement('td');
-            td.colSpan = bucket.id === 'options' ? 5 : 2;
+            td.colSpan = bucket.id === 'options' ? 6 : 2;
             td.textContent = "No records available";
             tr.appendChild(td);
             tbody.appendChild(tr);
@@ -77,12 +78,17 @@
             if (bucket.id === 'options') {
               const [year, month, day] = item.Expiry_Date.split('-'); // YYYY-MM-DD
               const displayDate = `${day}/${month}/${year}`;
+              const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
+              const opening = parseFloat(item.OpeningPrice);
+              const upside = (strike - opening) / opening * 100;
+
               tr.innerHTML = `
                 <td>${item.Ticker}</td>
                 <td>${item.Weight}</td>
                 <td data-value="${item.Expiry_Date}">${displayDate}</td>
                 <td>${item.Strike_Price}</td>
-                <td>${item.UnderlyingPrice}</td>
+                <td>${item.OpeningPrice}</td>
+                <td>${upside.toFixed(2)}%</td>
               `;
             } else {
               tr.innerHTML = `
