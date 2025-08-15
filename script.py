@@ -2,6 +2,7 @@ import os
 import requests
 import datetime
 import pandas as pd
+import shutil
 
 DATA_FOLDER = "data"
 URL = 'https://tinyurl.com/Pr0d1g10s0'
@@ -92,7 +93,7 @@ def main():
         dated_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
         latest_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_latest.json')
         if os.path.exists(dated_file):
-        shutil.copyfile(dated_file, latest_file)
+            shutil.copyfile(dated_file, latest_file)
 
 if __name__ == '__main__':
     main()
