@@ -8,7 +8,7 @@ import json
 
 DATA_FOLDER = "data"
 EXCEL_URL = 'https://tinyurl.com/Pr0d1g10s0'
-FINNHUB_API_KEY = "YOUR_FINNHUB_KEY"  # replace with your key
+FINNHUB_API_KEY = "d2cvo7hr01qjem5ibl90d2cvo7hr01qjem5ibl9g"  # replace with your key
 FINNHUB_QQQ = "https://finnhub.io/api/v1/quote?symbol=QQQ&token=" + FINNHUB_API_KEY
 
 def get_current_date():
