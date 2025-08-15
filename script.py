@@ -16,6 +16,17 @@ def download_file(url, filename):
     with open(filename, 'wb') as file:
         file.write(response.content)
 
+def generate_available_dates_json():
+    dates = sorted({
+        f.split('_')[-1].replace('.json', '')
+        for f in os.listdir(DATA_FOLDER)
+        if f.endswith(".json") and "_latest" not in f
+    })
+    output_path = os.path.join(DATA_FOLDER, "available_dates.json")
+    with open(output_path, "w") as f:
+        f.write(pd.Series(dates).to_json(orient="values"))
+    print("Updated available_dates.json")
+
 def parse_option_info(option_str):
     try:
         option_str = option_str.strip()
@@ -39,33 +50,34 @@ def parse_option_info(option_str):
 def main():
     os.makedirs(DATA_FOLDER, exist_ok=True)
     date_str = get_current_date()
-
     excel_filename = os.path.join(DATA_FOLDER, f'JEPQ_{date_str}.xlsx')
 
+    # Download Excel if not already downloaded
     if not os.path.exists(excel_filename):
-        download_file(URL, excel_filename)
+        download_file(EXCEL_URL, excel_filename)
     else:
-        print("file already downloaded.")
+        print("Excel file already exists for today.")
 
-    # Read columns A, B, C, F
+    # Read Excel (columns A, B, C, F starting from row 9)
     df = pd.read_excel(excel_filename, header=None, usecols="A,B,C,F", skiprows=8)
     df.columns = ['Ticker_A', 'Ticker_B', 'Type', 'Weight']
     df = df.dropna(subset=['Type', 'Weight'])
 
     # Assign bucket
-    def assign_bucket(row):
-        if row['Type'] == "Option - Index":
-            return "Options - Index"
-        elif row['Type'] == "Cash":
-            return "Cash"
-        else:
-            return "Stocks"
+    df['Bucket'] = df['Type'].apply(lambda t: 
+        "Options - Index" if t == "Option - Index" else
+        ("Cash" if t == "Cash" else "Stocks")
+    )
 
-    df['Bucket'] = df.apply(assign_bucket, axis=1)
+    # Fetch live price once
+    live_price = fetch_live_price()
+    print(f"Live QQQ Price: {live_price}")
 
-    # Save JSON files by bucket with tailored columns
     for bucket_name in ["Options - Index", "Cash", "Stocks"]:
         subset = df[df['Bucket'] == bucket_name].copy()
+
+        dated_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
+        latest_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_latest.json')
 
         if bucket_name == "Options - Index":
             subset['Ticker'] = subset['Ticker_B']
@@ -73,27 +85,41 @@ def main():
                 lambda val: pd.Series(parse_option_info(val))
             )
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
-            subset = subset[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price']]
+
+            # latest.json always gets live price
+            subset_latest = subset.copy()
+            subset_latest['UnderlyingPrice'] = live_price
+            subset_latest[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price', 'UnderlyingPrice']].to_json(
+                latest_file, orient="records"
+            )
+
+            # dated.json gets live price once and never overwrites
+            if not os.path.exists(dated_file):
+                subset_dated = subset.copy()
+                subset_dated['UnderlyingPrice'] = live_price
+                subset_dated[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price', 'UnderlyingPrice']].to_json(
+                    dated_file, orient="records"
+                )
+                print(f"Saved new dated file for '{bucket_name}'")
+            else:
+                print(f"Dated file already exists for '{bucket_name}', skipping overwrite.")
+
         else:
             subset['Ticker'] = subset['Ticker_A']
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
-            subset = subset[['Ticker', 'Weight']]
 
-        if not subset.empty:
-            filename = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
-            subset.to_json(filename, orient="records")
-            print(f"Saved {len(subset)} records to {filename}")
-        else:
-            print(f"No records found for bucket '{bucket_name}'.")
+            # latest.json
+            subset[['Ticker', 'Weight']].to_json(latest_file, orient="records")
 
-            
+            # dated.json
+            if not os.path.exists(dated_file):
+                subset[['Ticker', 'Weight']].to_json(dated_file, orient="records")
+                print(f"Saved new dated file for '{bucket_name}'")
+            else:
+                print(f"Dated file already exists for '{bucket_name}', skipping overwrite.")
 
-# After saving each dated JSON file, also copy to "latest" filename
-    for bucket_name in ["Options - Index", "Cash", "Stocks"]:
-        dated_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
-        latest_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_latest.json')
-        if os.path.exists(dated_file):
-            shutil.copyfile(dated_file, latest_file)
+    generate_available_dates_json()
+
 
 if __name__ == '__main__':
     main()
