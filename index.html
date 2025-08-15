@@ -75,21 +75,22 @@
     transition: background 0.3s;
   }
 
-  /* Alternating row colors, but skip status cells */
   tr:nth-child(even) td:not(.itm):not(.otm) {
     background: rgba(255,255,255,0.7);
   }
 
-  /* Hover effect, skip status cells */
   tr:hover td:not(.itm):not(.otm) {
     background: rgba(255,255,255,0.95);
   }
 
-  /* Status colors */
-  .itm { background-color: rgba(248,215,218,0.8); } /* light red */
-  .otm { background-color: rgba(212,237,218,0.8); } /* light green */
-</style>
+  .itm { background-color: rgba(248,215,218,0.8); }
+  .otm { background-color: rgba(212,237,218,0.8); }
 
+  tfoot tr {
+    font-weight: bold;
+    background: rgba(0,0,0,0.05);
+  }
+</style>
 </head>
 <body>
 
@@ -113,6 +114,7 @@
       </tr>
     </thead>
     <tbody></tbody>
+    <tfoot><tr><td>Total</td><td id="options-total">0%</td><td colspan="6"></td></tr></tfoot>
   </table>
 
   <h2>Cash</h2>
@@ -124,6 +126,7 @@
       </tr>
     </thead>
     <tbody></tbody>
+    <tfoot><tr><td>Total</td><td id="cash-total">0%</td></tr></tfoot>
   </table>
 
   <h2>Stocks</h2>
@@ -135,6 +138,7 @@
       </tr>
     </thead>
     <tbody></tbody>
+    <tfoot><tr><td>Total</td><td id="stocks-total">0%</td></tr></tfoot>
   </table>
 </div>
 
@@ -174,6 +178,7 @@ window.addEventListener('resize', () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 });
+
 const buckets = [
   { id: 'options', file: 'data/JEPQ_Options_-_Index_latest.json' },
   { id: 'cash', file: 'data/JEPQ_Cash_latest.json' },
@@ -185,6 +190,8 @@ buckets.forEach(bucket => {
     .then(res => res.json())
     .then(data => {
       const tbody = document.querySelector(`#${bucket.id}-table tbody`);
+      let totalWeight = 0;
+
       if (data.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
@@ -204,7 +211,6 @@ buckets.forEach(bucket => {
           const opening = parseFloat(item.OpeningPrice);
           const upside = (strike - opening) / opening * 100;
 
-          // Determine status and forgone gains
           let status = '';
           let statusClass = '';
           let forgoneGains = '';
@@ -234,13 +240,17 @@ buckets.forEach(bucket => {
             <td>${item.Weight}%</td>
           `;
         }
+
+        totalWeight += parseFloat(item.Weight) || 0;
         tbody.appendChild(tr);
       });
+
+      document.getElementById(`${bucket.id}-total`).textContent = totalWeight.toFixed(2) + '%';
     })
     .catch(err => console.error(`Failed to load ${bucket.file}:`, err));
 });
 
-// Sorting function
+// Sorting function remains unchanged
 document.querySelectorAll('th').forEach(th => {
   th.addEventListener('click', () => {
     const table = th.closest('table');
