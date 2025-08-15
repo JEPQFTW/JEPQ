@@ -22,7 +22,7 @@
         <th data-type="number">Weight</th>
         <th data-type="date">Expiry Date</th>
         <th data-type="number">Strike Price</th>
-        <th data-type="number">Underlying Price</th>
+        <th data-type="number">Closing Price</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -82,7 +82,7 @@
                 <td>${item.Weight}</td>
                 <td data-value="${item.Expiry_Date}">${displayDate}</td>
                 <td>${item.Strike_Price}</td>
-                <td>${(item.UnderlyingPrice * 41.09).toFixed(2)}</td>
+                <td>${item.UnderlyingPrice}</td>
               `;
             } else {
               tr.innerHTML = `
