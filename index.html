@@ -1,182 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>JEPQ Holdings</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        table {
-            border-collapse: collapse;
-            width: 80%;
-            margin-bottom: 40px;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: center;
-        }
-        th {
-            background-color: #f0f0f0;
-            cursor: pointer;
-        }
-        h2 {
-            margin-top: 40px;
-        }
-        .itm {
-            background-color: #f8d7da; /* light red */
-        }
-        .otm {
-            background-color: #d4edda; /* light green */
-        }
-    </style>
+<meta charset="UTF-8">
+<title>JEPQ Holdings</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  table { border-collapse: collapse; width: 80%; margin-bottom: 40px; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  th { background-color: #f0f0f0; cursor: pointer; }
+  h2 { margin-top: 40px; }
+  .itm { background-color: #f8d7da; /* light red */ }
+  .otm { background-color: #d4edda; /* light green */ }
+</style>
 </head>
 <body>
-    <h1>JEPQ Holdings</h1>
 
-    <h2>Options - Index</h2>
-    <table id="options-table">
-        <thead>
-            <tr>
-                <th data-type="string">Ticker</th>
-                <th data-type="number">Weight</th>
-                <th data-type="date">Expiry Date</th>
-                <th data-type="number">Strike Price</th>
-                <th data-type="number">Underlying Price</th>
-                <th data-type="number">Upside % Before Cap</th>
-                <th data-type="string">Status</th>
-                <th data-type="number">Forgone Gains</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+<h1>JEPQ Holdings</h1>
 
-    <h2>Cash</h2>
-    <table id="cash-table">
-        <thead>
-            <tr>
-                <th data-type="string">Ticker</th>
-                <th data-type="number">Weight</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+<h2>Options - Index</h2>
+<table id="options-table">
+  <thead>
+    <tr>
+      <th data-type="string">Ticker</th>
+      <th data-type="number">Weight</th>
+      <th data-type="date">Expiry Date</th>
+      <th data-type="number">Strike Price</th>
+      <th data-type="number">Underlying Price</th>
+      <th data-type="number">Upside % Before Cap</th>
+      <th data-type="string">Status</th>
+      <th data-type="number">Forgone Gains</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
-    <h2>Stocks</h2>
-    <table id="stocks-table">
-        <thead>
-            <tr>
-                <th data-type="string">Ticker</th>
-                <th data-type="number">Weight</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+<h2>Cash</h2>
+<table id="cash-table">
+  <thead>
+    <tr>
+      <th data-type="string">Ticker</th>
+      <th data-type="number">Weight</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
-    <script>
-        const buckets = [
-            { id: 'options', file: 'data/JEPQ_Options_-_Index_latest.json' },
-            { id: 'cash', file: 'data/JEPQ_Cash_latest.json' },
-            { id: 'stocks', file: 'data/JEPQ_Stocks_latest.json' }
-        ];
+<h2>Stocks</h2>
+<table id="stocks-table">
+  <thead>
+    <tr>
+      <th data-type="string">Ticker</th>
+      <th data-type="number">Weight</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
-        buckets.forEach(bucket => {
-            fetch(bucket.file)
-                .then(res => res.json())
-                .then(data => {
-                    const tbody = document.querySelector(`#${bucket.id}-table tbody`);
-                    
-                    if (data.length === 0) {
-                        const tr = document.createElement('tr');
-                        const td = document.createElement('td');
-                        td.colSpan = bucket.id === 'options' ? 8 : 2;
-                        td.textContent = "No records available";
-                        tr.appendChild(td);
-                        tbody.appendChild(tr);
-                        return;
-                    }
+<script>
+const buckets = [
+  { id: 'options', file: 'data/JEPQ_Options_-_Index_latest.json' },
+  { id: 'cash', file: 'data/JEPQ_Cash_latest.json' },
+  { id: 'stocks', file: 'data/JEPQ_Stocks_latest.json' }
+];
 
-                    data.forEach(item => {
-                        const tr = document.createElement('tr');
+buckets.forEach(bucket => {
+  fetch(bucket.file)
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.querySelector(`#${bucket.id}-table tbody`);
+      if (data.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = bucket.id === 'options' ? 8 : 2;
+        td.textContent = "No records available";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+      }
 
-                        if (bucket.id === 'options') {
-                            const [year, month, day] = item.Expiry_Date.split('-'); // YYYY-MM-DD
-                            const displayDate = `${day}/${month}/${year}`;
-                            const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
-                            const opening = parseFloat(item.OpeningPrice);
-                            const upside = (strike - opening) / opening * 100;
+      data.forEach(item => {
+        const tr = document.createElement('tr');
+        if (bucket.id === 'options') {
+          const [year, month, day] = item.Expiry_Date.split('-'); // YYYY-MM-DD
+          const displayDate = `${day}/${month}/${year}`;
+          const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
+          const opening = parseFloat(item.OpeningPrice);
+          const upside = (strike - opening) / opening * 100;
 
-                            // Determine status and forgone gains
-                            let status = '';
-                            let statusClass = '';
-                            let forgoneGains = '';
+          // Determine status and forgone gains
+          let status = '';
+          let statusClass = '';
+          let forgoneGains = '';
+          if (upside < 0) {
+            status = 'ITM';
+            statusClass = 'itm';
+            forgoneGains = `${(upside * item.Weight).toFixed(2)}%`;
+          } else {
+            status = 'OTM';
+            statusClass = 'otm';
+            forgoneGains = '';
+          }
 
-                            if (upside < 0) {
-                                status = 'ITM';
-                                statusClass = 'itm';
-                                forgoneGains = (upside * item.Weight).toFixed(2);
-                            } else {
-                                status = 'OTM';
-                                statusClass = 'otm';
-                                forgoneGains = '';
-                            }
+          tr.innerHTML = `
+            <td>${item.Ticker}</td>
+            <td>${item.Weight}%</td>
+            <td data-value="${item.Expiry_Date}">${displayDate}</td>
+            <td>${item.Strike_Price}</td>
+            <td>${item.OpeningPrice}</td>
+            <td>${upside.toFixed(2)}%</td>
+            <td class="${statusClass}">${status}</td>
+            <td>${forgoneGains}</td>
+          `;
+        } else {
+          tr.innerHTML = `
+            <td>${item.Ticker}</td>
+            <td>${item.Weight}%</td>
+          `;
+        }
+        tbody.appendChild(tr);
+      });
+    })
+    .catch(err => console.error(`Failed to load ${bucket.file}:`, err));
+});
 
-                            tr.innerHTML = `
-                                <td>${item.Ticker}</td>
-                                <td>${item.Weight}</td>
-                                <td data-value="${item.Expiry_Date}">${displayDate}</td>
-                                <td>${item.Strike_Price}</td>
-                                <td>${item.OpeningPrice}</td>
-                                <td>${upside.toFixed(2)}%</td>
-                                <td class="${statusClass}">${status}</td>
-                                <td>${forgoneGains}</td>
-                            `;
-                        } else {
-                            tr.innerHTML = `
-                                <td>${item.Ticker}</td>
-                                <td>${item.Weight}</td>
-                            `;
-                        }
+// Sorting function
+document.querySelectorAll('th').forEach(th => {
+  th.addEventListener('click', () => {
+    const table = th.closest('table');
+    const tbody = table.querySelector('tbody');
+    const index = th.cellIndex;
+    const type = th.dataset.type;
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    const asc = th.classList.toggle('asc');
 
-                        tbody.appendChild(tr);
-                    });
-                })
-                .catch(err => console.error(`Failed to load ${bucket.file}:`, err));
-        });
+    rows.sort((a, b) => {
+      let aText = a.cells[index].dataset.value || a.cells[index].textContent.trim().replace('%','');
+      let bText = b.cells[index].dataset.value || b.cells[index].textContent.trim().replace('%','');
 
-        // Sorting function
-        document.querySelectorAll('th').forEach(th => {
-            th.addEventListener('click', () => {
-                const table = th.closest('table');
-                const tbody = table.querySelector('tbody');
-                const index = th.cellIndex;
-                const type = th.dataset.type;
-                const rows = Array.from(tbody.querySelectorAll('tr'));
-                const asc = th.classList.toggle('asc');
+      if (type === 'number') {
+        aText = parseFloat(aText) || 0;
+        bText = parseFloat(bText) || 0;
+      } else if (type === 'date') {
+        aText = new Date(aText);
+        bText = new Date(bText);
+      }
 
-                rows.sort((a, b) => {
-                    let aText = a.cells[index].dataset.value || a.cells[index].textContent.trim();
-                    let bText = b.cells[index].dataset.value || b.cells[index].textContent.trim();
+      if (aText < bText) return asc ? -1 : 1;
+      if (aText > bText) return asc ? 1 : -1;
+      return 0;
+    });
 
-                    if (type === 'number') {
-                        aText = parseFloat(aText) || 0;
-                        bText = parseFloat(bText) || 0;
-                    } else if (type === 'date') {
-                        aText = new Date(aText);
-                        bText = new Date(bText);
-                    }
+    tbody.innerHTML = '';
+    rows.forEach(row => tbody.appendChild(row));
+  });
+});
+</script>
 
-                    if (aText < bText) return asc ? -1 : 1;
-                    if (aText > bText) return asc ? 1 : -1;
-                    return 0;
-                });
-
-                tbody.innerHTML = '';
-                rows.forEach(row => tbody.appendChild(row));
-            });
-        });
-    </script>
 </body>
 </html>
