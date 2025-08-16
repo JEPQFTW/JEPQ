@@ -98,6 +98,11 @@ tfoot tr {
 <div class="container">
     <h1>JEPQ Holdings</h1>
 
+    <div style="text-align:center; margin:20px;">
+  <label for="dateSelect"><strong>Select Date:</strong></label>
+  <select id="dateSelect"></select>
+</div>
+    
     <h2>Options - Index</h2>
     <table id="options-table">
         <thead>
@@ -163,83 +168,108 @@ tfoot tr {
 </div>
 
 <script>
-
-// ----- Data Loading -----
 const buckets = [
-    { id: 'options', file: 'data/JEPQ_Options_-_Index_latest.json' },
-    { id: 'cash', file: 'data/JEPQ_Cash_latest.json' },
-    { id: 'stocks', file: 'data/JEPQ_Stocks_latest.json' }
+    { id: 'options', prefix: 'data/JEPQ_Options_-_Index_' },
+    { id: 'cash',    prefix: 'data/JEPQ_Cash_' },
+    { id: 'stocks',  prefix: 'data/JEPQ_Stocks_' }
 ];
 
-buckets.forEach(bucket => {
-    fetch(bucket.file)
-    .then(res => res.json())
-    .then(data => {
-        const tbody = document.querySelector(`#${bucket.id}-table tbody`);
-        let totalWeight = 0;
+const dateSelect = document.getElementById("dateSelect");
 
-        if (data.length === 0) {
-            const tr = document.createElement('tr');
-            const td = document.createElement('td');
-            td.colSpan = bucket.id === 'options' ? 8 : 2;
-            td.textContent = "No records available";
-            tr.appendChild(td);
-            tbody.appendChild(tr);
-            return;
-        }
+// Load available dates and populate dropdown
+fetch("data/available_dates.json")
+  .then(res => res.json())
+  .then(data => {
+      data.dates.forEach(date => {
+          const opt = document.createElement("option");
+          opt.value = date;
+          opt.textContent = date;
+          dateSelect.appendChild(opt);
+      });
 
-        data.forEach(item => {
-            const tr = document.createElement('tr');
+      // Default: last date (latest available)
+      dateSelect.value = data.dates[data.dates.length - 1];
+      loadTables(dateSelect.value);
+  })
+  .catch(err => console.error("Failed to load available_dates.json:", err));
 
-            if(bucket.id === 'options') {
-                const [year, month, day] = item.Expiry_Date.split('-');
-                const displayDate = `${day}/${month}/${year}`;
-                const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
-                const opening = parseFloat(item.OpeningPrice);
-                const upside = (strike - opening) / opening * 100;
-                let status = '', statusClass = '', forgoneGains = '';
-
-                if (upside < 0) {
-                    status = 'ITM';
-                    statusClass = 'itm';
-                    forgoneGains = `${(upside * item.Weight).toFixed(2)}%`;
-                } else {
-                    status = 'OTM';
-                    statusClass = 'otm';
-                }
-
-                tr.innerHTML = `
-                    <td>${item.Ticker}</td>
-                    <td>${item.Weight}%</td>
-                    <td data-value="${item.Expiry_Date}">${displayDate}</td>
-                    <td>${item.Strike_Price}</td>
-                    <td>${item.OpeningPrice}</td>
-                    <td>${upside.toFixed(2)}%</td>
-                    <td class="${statusClass}">${status}</td>
-                    <td>${forgoneGains}</td>
-                `;
-            } else {
-                tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
-            }
-
-            totalWeight += parseFloat(item.Weight) || 0;
-            tbody.appendChild(tr);
-        });
-
-        document.getElementById(`${bucket.id}-total`).textContent = totalWeight.toFixed(2) + '%';
-
-        if(bucket.id === 'options') {
-            const forgoneSum = data.reduce((sum, item) => {
-                const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
-                const opening = parseFloat(item.OpeningPrice);
-                const upside = (strike - opening) / opening * 100;
-                return upside < 0 ? sum + (upside * item.Weight) : sum;
-            }, 0);
-            document.querySelector('#options-table tfoot td:last-child').textContent = forgoneSum.toFixed(2) + '%';
-        }
-    })
-    .catch(err => console.error(`Failed to load ${bucket.file}:`, err));
+// When user selects a date
+dateSelect.addEventListener("change", () => {
+    loadTables(dateSelect.value);
 });
+
+function loadTables(date) {
+    buckets.forEach(bucket => {
+        const file = `${bucket.prefix}${date}.json`;
+        fetch(file)
+          .then(res => res.json())
+          .then(data => {
+              const tbody = document.querySelector(`#${bucket.id}-table tbody`);
+              tbody.innerHTML = ""; // clear old data
+              let totalWeight = 0;
+
+              if (data.length === 0) {
+                  const tr = document.createElement('tr');
+                  const td = document.createElement('td');
+                  td.colSpan = bucket.id === 'options' ? 8 : 2;
+                  td.textContent = "No records available";
+                  tr.appendChild(td);
+                  tbody.appendChild(tr);
+                  return;
+              }
+
+              data.forEach(item => {
+                  const tr = document.createElement('tr');
+                  if(bucket.id === 'options') {
+                      const [year, month, day] = item.Expiry_Date.split('-');
+                      const displayDate = `${day}/${month}/${year}`;
+                      const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
+                      const opening = parseFloat(item.OpeningPrice);
+                      const upside = (strike - opening) / opening * 100;
+                      let status = '', statusClass = '', forgoneGains = '';
+
+                      if (upside < 0) {
+                          status = 'ITM';
+                          statusClass = 'itm';
+                          forgoneGains = `${(upside * item.Weight).toFixed(2)}%`;
+                      } else {
+                          status = 'OTM';
+                          statusClass = 'otm';
+                      }
+
+                      tr.innerHTML = `
+                          <td>${item.Ticker}</td>
+                          <td>${item.Weight}%</td>
+                          <td data-value="${item.Expiry_Date}">${displayDate}</td>
+                          <td>${item.Strike_Price}</td>
+                          <td>${item.OpeningPrice}</td>
+                          <td>${upside.toFixed(2)}%</td>
+                          <td class="${statusClass}">${status}</td>
+                          <td>${forgoneGains}</td>
+                      `;
+                  } else {
+                      tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
+                  }
+
+                  totalWeight += parseFloat(item.Weight) || 0;
+                  tbody.appendChild(tr);
+              });
+
+              document.getElementById(`${bucket.id}-total`).textContent = totalWeight.toFixed(2) + '%';
+
+              if(bucket.id === 'options') {
+                  const forgoneSum = data.reduce((sum, item) => {
+                      const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
+                      const opening = parseFloat(item.OpeningPrice);
+                      const upside = (strike - opening) / opening * 100;
+                      return upside < 0 ? sum + (upside * item.Weight) : sum;
+                  }, 0);
+                  document.querySelector('#options-table tfoot td:last-child').textContent = forgoneSum.toFixed(2) + '%';
+              }
+          })
+          .catch(err => console.error(`Failed to load ${file}:`, err));
+    });
+}
 
 // ----- Sorting -----
 document.querySelectorAll('th').forEach(th => {
@@ -273,5 +303,6 @@ document.querySelectorAll('th').forEach(th => {
     });
 });
 </script>
+
 </body>
 </html>
