@@ -86,7 +86,7 @@ def main():
                 lambda val: pd.Series(parse_option_info(val))
             )
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
-            subset['OpeningPrice'] = 23752.19  # hardcoded underlying price
+            subset['OpeningPrice'] = 23712.07  # hardcoded underlying price
             subset = subset[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price', 'OpeningPrice']]
         else:
             subset['Ticker'] = subset['Ticker_A']
