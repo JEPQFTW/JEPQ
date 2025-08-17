@@ -1,4 +1,4 @@
-/* ----- Background ----- */
+/* ----- Background (Desktop Default) ----- */
 body, html {
     margin: 0;
     padding: 0;
@@ -6,10 +6,22 @@ body, html {
     font-family: Arial, sans-serif;
     overflow-x: hidden;
     position: relative;
-    background: linear-gradient(-45deg, #a1c4fd, #c2e9fb, #fbc2eb, #a6c1ee);
-    background-size: 400% 400%;
-    animation: gradientBG 7s ease infinite;
     color: #333;
+}
+
+/* Animated background layer */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(-45deg, #a1c4fd, #c2e9fb, #fbc2eb, #a6c1ee);
+    background-size: 300% 300%;
+    animation: gradientBG 18s ease infinite;
+    z-index: -2;
+    will-change: background-position;
 }
 
 @keyframes gradientBG {
@@ -83,4 +95,17 @@ tr:hover td:not(.itm):not(.otm) {
 tfoot tr {
     font-weight: bold;
     background: rgba(0,0,0,0.05);
+}
+
+/* ----- Mobile Fallback ----- */
+@media (max-width: 768px) {
+    body::before {
+        background-size: 200% 200%;   /* smaller movement */
+        animation: gradientBG 40s ease infinite; /* slower for smoother UX */
+    }
+
+    table {
+        background: rgba(255,255,255,0.9); /* more solid background */
+        backdrop-filter: none; /* disable blur for big perf boost */
+    }
 }
