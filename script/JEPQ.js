@@ -1,4 +1,3 @@
-
 const buckets = [
     { id: 'options', prefix: '/JEPQ/data/JEPQ_Options_-_Index_' },
     { id: 'cash',    prefix: '/JEPQ/data/JEPQ_Cash_' },
@@ -133,4 +132,3 @@ document.querySelectorAll('th').forEach(th => {
         rows.forEach(row => tbody.appendChild(row));
     });
 });
-
