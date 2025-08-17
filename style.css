@@ -8,7 +8,7 @@ body, html {
     position: relative;
     background: linear-gradient(-45deg, #a1c4fd, #c2e9fb, #fbc2eb, #a6c1ee);
     background-size: 400% 400%;
-    animation: gradientBG 4s ease infinite;
+    animation: gradientBG 7s ease infinite;
     color: #333;
 }
 
