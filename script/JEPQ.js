@@ -1,14 +1,14 @@
 <script>
 const buckets = [
-    { id: 'options', prefix: 'data/JEPQ_Options_-_Index_' },
-    { id: 'cash',    prefix: 'data/JEPQ_Cash_' },
-    { id: 'stocks',  prefix: 'data/JEPQ_Stocks_' }
+    { id: 'options', prefix: 'JEPQ/data/JEPQ_Options_-_Index_' },
+    { id: 'cash',    prefix: 'JEPQ/data/JEPQ_Cash_' },
+    { id: 'stocks',  prefix: 'JEPQ/data/JEPQ_Stocks_' }
 ];
 
 const dateSelect = document.getElementById("dateSelect");
 
 // Load available dates and populate dropdown
-fetch("data/available_dates.json")
+fetch("JEPQ/data/available_dates.json")
   .then(res => res.json())
   .then(data => {
       data.dates.forEach(date => {
