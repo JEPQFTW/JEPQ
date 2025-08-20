@@ -1,7 +1,7 @@
 const buckets = [
     { id: 'options', prefix: '/JEPQ/data/JEPQ-Files/JEPQ_Options_-_Index_' },
     { id: 'cash',    prefix: '/JEPQ/data/JEPQ-Files/JEPQ_Cash_' },
-    { id: 'stocks',  prefix: '/JEPQ/data/JEPQ-FilesJEPQ_Stocks_' }
+    { id: 'stocks',  prefix: '/JEPQ/data/JEPQ-Files/JEPQ_Stocks_' }
 ];
 
 const dateSelect = document.getElementById("dateSelect");
@@ -66,7 +66,6 @@ function loadTables(date) {
                           forgoneGains = (parseFloat(item.ForgoneGainPct) * 100).toFixed(2) + '%';
                       } else {
                           status = 'OTM';
-                          statusClass = 'otm';
                       }
 
                       tr.innerHTML = `
@@ -89,14 +88,16 @@ function loadTables(date) {
 
               document.getElementById(`${bucket.id}-total`).textContent = totalWeight.toFixed(2) + '%';
 
+              // Sum of all Forgone Gains for options table
               if(bucket.id === 'options') {
-                  const forgoneSum = data.reduce((sum, item) => {
-                      const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
-                      const opening = parseFloat(item.OpeningPrice);
-                      const upside = (strike - opening) / opening * 100;
-                      return upside < 0 ? sum + (upside * item.Weight) : sum;
-                  }, 0);
-                  document.querySelector('#options-table tfoot td:last-child').textContent = forgoneSum.toFixed(2) + '%';
+                  const tfootCell = document.querySelector('#options-table tfoot td:last-child');
+                  const forgoneCells = document.querySelectorAll('#options-table tbody td:nth-child(8)');
+                  let forgoneSum = 0;
+                  forgoneCells.forEach(td => {
+                      const val = parseFloat(td.textContent.replace('%',''));
+                      if(!isNaN(val)) forgoneSum += val;
+                  });
+                  tfootCell.textContent = forgoneSum.toFixed(2) + '%';
               }
           })
           .catch(err => console.error(`Failed to load ${file}:`, err));
