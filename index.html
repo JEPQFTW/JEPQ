@@ -4,20 +4,108 @@
 <meta charset="UTF-8">
 <title>ETF Dashboard</title>
 <link rel="stylesheet" href="style.css">
+<style>
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background-color: #f5f5f5;
+}
+
+/* Sidebar */
+.sidebar {
+    height: 100vh;
+    width: 220px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #2c3e50;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar a {
+    padding: 15px 20px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #ecf0f1;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidebar a:hover {
+    background-color: #34495e;
+    color: #fff;
+}
+
+/* Main content */
+.main {
+    margin-left: 220px;
+    padding: 40px;
+}
+
+.main h1 {
+    color: #2c3e50;
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.card a {
+    text-decoration: none;
+    color: #2980b9;
+    font-weight: bold;
+}
+</style>
 </head>
 <body>
-<canvas id="bgCanvas"></canvas>
 
-<div class="container">
-    <h1>ETF Dashboard</h1>
-    <p>Welcome! Choose a page below to view tables and analysis:</p>
-    
-    <ul>
-        <li><a href="pages/JEPQ-Holdings.html">JEPQ Holdings</a></li>
-        <li><a href="pages/AnotherETF.html">Another ETF</a></li>
-        <li><a href="pages/Dividends.html">Dividends</a></li>
-        <li><a href="pages/WeeklyAnalysis.html">Weekly Analysis</a></li>
-    </ul>
+<div class="sidebar">
+    <a href="pages/JEPQ.html">JEPQ Holdings</a>
+    <a href="pages/AnotherETF.html">Another ETF</a>
+    <a href="pages/Dividends.html">Dividends</a>
+    <a href="pages/WeeklyAnalysis.html">Weekly Analysis</a>
 </div>
+
+<div class="main">
+    <h1>Welcome to the ETF Dashboard</h1>
+    <p>Select a page from the sidebar or explore the sections below:</p>
+
+    <div class="card">
+        <h2>JEPQ Holdings</h2>
+        <p>View detailed options, cash, and stock holdings for JEPQ.</p>
+        <a href="pages/JEPQ.html">Go to JEPQ</a>
+    </div>
+
+    <div class="card">
+        <h2>Another ETF</h2>
+        <p>Check out tables and data for another ETF of interest.</p>
+        <a href="pages/AnotherETF.html">Explore</a>
+    </div>
+
+    <div class="card">
+        <h2>Dividends</h2>
+        <p>Track dividend history and upcoming payouts.</p>
+        <a href="pages/Dividends.html">See Dividends</a>
+    </div>
+
+    <div class="card">
+        <h2>Weekly Analysis</h2>
+        <p>Check weekly performance insights and analysis.</p>
+        <a href="pages/WeeklyAnalysis.html">View Analysis</a>
+    </div>
+</div>
+
 </body>
 </html>
