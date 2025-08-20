@@ -61,7 +61,7 @@ function loadTables(date) {
                       if (upside < 0) {
                           status = 'ITM';
                           statusClass = 'itm';
-                          forgoneGains = `${(upside * item.Weight).toFixed(2)}%`;
+                          forgoneGains = (parseFloat(item.ForgoneGainPct) * 100).toFixed(2) + '%';
                       } else {
                           status = 'OTM';
                           statusClass = 'otm';
