@@ -75,26 +75,28 @@ def main():
     # Total portfolio Base Market Value (for % calculation)
     total_base_mv = df['BaseMV'].sum()
 
-    # Process each bucket
-    for bucket_name in ["Options - Index", "Cash", "Stocks"]:
-        subset = df[df['Bucket'] == bucket_name].copy()
+for bucket_name in ["Options - Index", "Cash", "Stocks"]:
+    subset = df[df['Bucket'] == bucket_name].copy()
 
-        if bucket_name == "Options - Index":
-            subset['Ticker'] = subset['Ticker_B']
-            subset[['Expiry_Date', 'Option_Type', 'Strike_Price']] = subset['Ticker_B'].apply(
-                lambda val: pd.Series(parse_option_info(val))
-            )
+    if bucket_name == "Options - Index":
+        subset['Ticker'] = subset['Ticker_B']
+        subset[['Expiry_Date', 'Option_Type', 'Strike_Price']] = subset['Ticker_B'].apply(
+            lambda val: pd.Series(parse_option_info(val))
+        )
 
-            opening_price = 23384  # hardcoded underlying price
+        opening_price = 23384  # hardcoded underlying price
 
-            # Calculate Contracts
-            subset['Contracts'] = subset['BaseMV'] / subset['Price']
+        # Calculate Contracts
+        subset['Contracts'] = -subset['BaseMV'] / subset['Price']
 
-            # Calculate ForgoneGain
-            subset['ForgoneGain'] = (opening_price - subset['Strike_Price']) * subset['Contracts']
+        # Calculate ForgoneGain only if OpeningPrice > Strike_Price
+        subset['ForgoneGain'] = ((opening_price - subset['Strike_Price']) * subset['Contracts']).where(
+            opening_price > subset['Strike_Price'], 0
+        )
 
-            # Calculate ForgoneGainPct
-            subset['ForgoneGainPct'] = subset['ForgoneGain'] / total_base_mv
+        # Calculate ForgoneGainPct
+        subset['ForgoneGainPct'] = subset['ForgoneGain'] / total_base_mv
+
 
             # Format weight for JSON
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
