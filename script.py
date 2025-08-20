@@ -6,7 +6,7 @@ import shutil
 import re
 import json
 
-DATA_FOLDER = "data"
+DATA_FOLDER = "data/JEPQ-Files"
 EXCEL_URL = 'https://tinyurl.com/Pr0d1g10s0'
 
 def get_current_date():
