@@ -26,7 +26,7 @@ jobs:
         pip install pandas requests openpyxl
 
     - name: Run script
-      run: python script.py
+      run: python script-JEPQ.py
 
     - name: Force a file update to trigger commit
       run: |
