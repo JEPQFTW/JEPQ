@@ -29,8 +29,10 @@ dateSelect.addEventListener("change", () => {
 });
 
 function loadTables(date) {
+    const timestamp = new Date().getTime(); // unique per call
+    
     buckets.forEach(bucket => {
-        const file = `${bucket.prefix}${date}.json`;
+        const file = `${bucket.prefix}${date}.json?ts=${timestamp}`; // cache-busting
         fetch(file)
           .then(res => res.json())
           .then(data => {
