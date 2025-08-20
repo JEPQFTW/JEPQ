@@ -99,16 +99,16 @@ for bucket_name in ["Options - Index", "Cash", "Stocks"]:
 
 
             # Format weight for JSON
-            subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
+        subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
 
             # Format Strike_Price and numerical columns for JSON
-            subset['Strike_Price'] = subset['Strike_Price'].map(lambda x: f"{x:,.2f}")
-            subset['OpeningPrice'] = opening_price
-            subset['Contracts'] = subset['Contracts'].map(lambda x: f"{x:,.2f}")
-            subset['ForgoneGain'] = subset['ForgoneGain'].map(lambda x: f"{x:,.2f}")
-            subset['ForgoneGainPct'] = subset['ForgoneGainPct'].map(lambda x: f"{x:.6f}")
+        subset['Strike_Price'] = subset['Strike_Price'].map(lambda x: f"{x:,.2f}")
+        subset['OpeningPrice'] = opening_price
+        subset['Contracts'] = subset['Contracts'].map(lambda x: f"{x:,.2f}")
+        subset['ForgoneGain'] = subset['ForgoneGain'].map(lambda x: f"{x:,.2f}")
+        subset['ForgoneGainPct'] = subset['ForgoneGainPct'].map(lambda x: f"{x:.6f}")
 
-            subset = subset[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price', 'OpeningPrice',
+        subset = subset[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price', 'OpeningPrice',
                              'Contracts', 'ForgoneGain', 'ForgoneGainPct']]
         else:
             subset['Ticker'] = subset['Ticker_A']
