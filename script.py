@@ -52,10 +52,11 @@ def main():
     date_str = get_current_date()
     excel_filename = os.path.join(DATA_FOLDER, f'JEPQ_{date_str}.xlsx')
 
+    # Download Excel if not already present
     if not os.path.exists(excel_filename):
         download_file(EXCEL_URL, excel_filename)
     else:
-        print("file already downloaded.")
+        print("File already downloaded.")
 
     # Read relevant columns
     df = pd.read_excel(excel_filename, header=None, usecols="A,B,C,F,G,H", skiprows=8)
@@ -70,46 +71,46 @@ def main():
             return "Cash"
         else:
             return "Stocks"
+
     df['Bucket'] = df.apply(assign_bucket, axis=1)
 
     # Total portfolio Base Market Value (for % calculation)
     total_base_mv = df['BaseMV'].sum()
 
-for bucket_name in ["Options - Index", "Cash", "Stocks"]:
-    subset = df[df['Bucket'] == bucket_name].copy()
+    # Process each bucket
+    for bucket_name in ["Options - Index", "Cash", "Stocks"]:
+        subset = df[df['Bucket'] == bucket_name].copy()
 
-    if bucket_name == "Options - Index":
-        subset['Ticker'] = subset['Ticker_B']
-        subset[['Expiry_Date', 'Option_Type', 'Strike_Price']] = subset['Ticker_B'].apply(
-            lambda val: pd.Series(parse_option_info(val))
-        )
+        if bucket_name == "Options - Index":
+            subset['Ticker'] = subset['Ticker_B']
+            subset[['Expiry_Date', 'Option_Type', 'Strike_Price']] = subset['Ticker_B'].apply(
+                lambda val: pd.Series(parse_option_info(val))
+            )
 
-        opening_price = 23384  # hardcoded underlying price
+            opening_price = 23384  # hardcoded underlying price
 
-        # Calculate Contracts
-        subset['Contracts'] = -subset['BaseMV'] / subset['Price']
+            # Calculate Contracts
+            subset['Contracts'] = -subset['BaseMV'] / subset['Price']
 
-        # Calculate ForgoneGain only if OpeningPrice > Strike_Price
-        subset['ForgoneGain'] = ((opening_price - subset['Strike_Price']) * subset['Contracts']).where(
-            opening_price > subset['Strike_Price'], 0
-        )
+            # Calculate ForgoneGain only if OpeningPrice > Strike_Price
+            subset['ForgoneGain'] = ((opening_price - subset['Strike_Price']) * subset['Contracts']).where(
+                opening_price > subset['Strike_Price'], 0
+            )
 
-        # Calculate ForgoneGainPct
-        subset['ForgoneGainPct'] = subset['ForgoneGain'] / total_base_mv
+            # Calculate ForgoneGainPct
+            subset['ForgoneGainPct'] = subset['ForgoneGain'] / total_base_mv
 
+            # Format for JSON
+            subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
+            subset['Strike_Price'] = subset['Strike_Price'].map(lambda x: f"{x:,.2f}")
+            subset['OpeningPrice'] = opening_price
+            subset['Contracts'] = subset['Contracts'].map(lambda x: f"{x:,.2f}")
+            subset['ForgoneGain'] = subset['ForgoneGain'].map(lambda x: f"{x:,.2f}")
+            subset['ForgoneGainPct'] = subset['ForgoneGainPct'].map(lambda x: f"{x:.6f}")
 
-            # Format weight for JSON
-        subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
+            subset = subset[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price',
+                             'OpeningPrice', 'Contracts', 'ForgoneGain', 'ForgoneGainPct']]
 
-            # Format Strike_Price and numerical columns for JSON
-        subset['Strike_Price'] = subset['Strike_Price'].map(lambda x: f"{x:,.2f}")
-        subset['OpeningPrice'] = opening_price
-        subset['Contracts'] = subset['Contracts'].map(lambda x: f"{x:,.2f}")
-        subset['ForgoneGain'] = subset['ForgoneGain'].map(lambda x: f"{x:,.2f}")
-        subset['ForgoneGainPct'] = subset['ForgoneGainPct'].map(lambda x: f"{x:.6f}")
-
-        subset = subset[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price', 'OpeningPrice',
-                             'Contracts', 'ForgoneGain', 'ForgoneGainPct']]
         else:
             subset['Ticker'] = subset['Ticker_A']
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
@@ -133,6 +134,7 @@ for bucket_name in ["Options - Index", "Cash", "Stocks"]:
 
     # Generate available dates JSON
     generate_available_dates_json()
+
 
 if __name__ == '__main__':
     main()
