@@ -51,34 +51,60 @@ function loadTables(date) {
               }
 
               data.forEach(item => {
-                  const tr = document.createElement('tr');
-                  if(bucket.id === 'options') {
-                      const [year, month, day] = item.Expiry_Date.split('-');
-                      const displayDate = `${day}/${month}/${year}`;
-                      const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
-                      const opening = parseFloat(item.OpeningPrice);
-                      const upside = (strike - opening) / opening * 100;
-                      let status = '', statusClass = '', forgoneGains = '';
+if (bucket.id === 'options') {
+    const [year, month, day] = item.Expiry_Date.split('-');
+    const displayDate = `${day}/${month}/${year}`;
+    const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
+    const opening = parseFloat(item.OpeningPrice);
+    const upside = (strike - opening) / opening * 100;
+    let status = '', statusClass = '', forgoneGains = '';
 
-                      if (upside < 0) {
-                          status = 'ITM';
-                          statusClass = 'itm';
-                          forgoneGains = (parseFloat(item.ForgoneGainPct) * 100).toFixed(2) + '%';
-                      } else {
-                          status = 'OTM';
-                          statusClass = 'otm';
-                      }
+    if (upside < 0) {
+        status = 'ITM';
+        statusClass = 'itm';
+        forgoneGains = (parseFloat(item.ForgoneGainPct) * 100).toFixed(2) + '%';
+    } else {
+        status = 'OTM';
+        statusClass = 'otm';
+    }
 
-                      tr.innerHTML = `
-                          <td>${item.Ticker}</td>
-                          <td>${item.Weight}%</td>
-                          <td data-value="${item.Expiry_Date}">${displayDate}</td>
-                          <td>${item.Strike_Price}</td>
-                          <td>${item.OpeningPrice}</td>
-                          <td>${upside.toFixed(2)}%</td>
-                          <td class="${statusClass}">${status}</td>
-                          <td>${forgoneGains}</td>
-                      `;
+    // Create <td> elements one by one
+    const tdTicker   = document.createElement('td');
+    tdTicker.textContent = item.Ticker;
+
+    const tdWeight   = document.createElement('td');
+    tdWeight.textContent = item.Weight + '%';
+
+    const tdDate     = document.createElement('td');
+    tdDate.dataset.value = item.Expiry_Date;
+    tdDate.textContent = displayDate;
+
+    const tdStrike   = document.createElement('td');
+    tdStrike.textContent = item.Strike_Price;
+
+    const tdOpening  = document.createElement('td');
+    tdOpening.textContent = item.OpeningPrice;
+
+    const tdUpside   = document.createElement('td');
+    tdUpside.textContent = upside.toFixed(2) + '%';
+
+    const tdStatus   = document.createElement('td');
+    tdStatus.textContent = status;
+    if (statusClass) tdStatus.classList.add(statusClass);
+
+    const tdForgone  = document.createElement('td');
+    tdForgone.textContent = forgoneGains;
+
+    // Append in correct order
+    tr.appendChild(tdTicker);
+    tr.appendChild(tdWeight);
+    tr.appendChild(tdDate);
+    tr.appendChild(tdStrike);
+    tr.appendChild(tdOpening);
+    tr.appendChild(tdUpside);
+    tr.appendChild(tdStatus);
+    tr.appendChild(tdForgone);
+}
                   } else {
                       tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
                   }
