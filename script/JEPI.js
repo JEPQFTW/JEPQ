@@ -1,7 +1,7 @@
 const buckets = [
-    { id: 'options', prefix: '/JEPQ/data/JEPI-Files/JEPQ_Options_-_Index_' },
-    { id: 'cash',    prefix: '/JEPQ/data/JEPI-Files/JEPQ_Cash_' },
-    { id: 'stocks',  prefix: '/JEPQ/data/JEPI-Files/JEPQ_Stocks_' }
+    { id: 'options', prefix: '/JEPQ/data/JEPI-Files/JEPI_Options_-_Index_' },
+    { id: 'cash',    prefix: '/JEPQ/data/JEPI-Files/JEPI_Cash_' },
+    { id: 'stocks',  prefix: '/JEPQ/data/JEPI-Files/JEPI_Stocks_' }
 ];
 
 const dateSelect = document.getElementById("dateSelect");
