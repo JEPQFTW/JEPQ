@@ -66,6 +66,7 @@ function loadTables(date) {
                           forgoneGains = (parseFloat(item.ForgoneGainPct) * 100).toFixed(2) + '%';
                       } else {
                           status = 'OTM';
+                          statusClass = 'otm';
                       }
 
                       tr.innerHTML = `
