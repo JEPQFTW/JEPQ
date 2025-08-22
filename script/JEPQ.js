@@ -57,12 +57,11 @@ function loadTables(date) {
           if (bucket.id === 'options') {
             const [year, month, day] = item.Expiry_Date.split('-');
             const displayDate = `${day}/${month}/${year}`;
-
-            const strike  = parseFloat(item.Strike_Price.replace(/,/g, ''));
+            const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
             const opening = parseFloat(item.OpeningPrice);
-            const upside  = (strike - opening) / opening * 100;
-
+            const upside = (strike - opening) / opening * 100;
             let status = '', statusClass = '', forgoneGains = '';
+
             if (upside < 0) {
               status = 'ITM';
               statusClass = 'itm';
@@ -82,7 +81,6 @@ function loadTables(date) {
               <td class="${statusClass}">${status}</td>
               <td>${forgoneGains}</td>
             `;
-
           } else {
             tr.innerHTML = `
               <td>${item.Ticker}</td>
@@ -94,17 +92,16 @@ function loadTables(date) {
           tbody.appendChild(tr);
         });
 
-        document.getElementById(`${bucket.id}-total`).textContent =
-          totalWeight.toFixed(2) + '%';
+        document.getElementById(`${bucket.id}-total`).textContent = totalWeight.toFixed(2) + '%';
 
         // Sum of all Forgone Gains for options table
         if (bucket.id === 'options') {
           const tfootCell = document.querySelector('#options-table tfoot td:last-child');
           const forgoneCells = document.querySelectorAll('#options-table tbody td:nth-child(8)');
-
           let forgoneSum = 0;
+
           forgoneCells.forEach(td => {
-            const val = parseFloat(td.textContent.replace('%', ''));
+            const val = parseFloat(td.textContent.replace('%',''));
             if (!isNaN(val)) forgoneSum += val;
           });
 
@@ -126,8 +123,8 @@ document.querySelectorAll('th').forEach(th => {
     const asc = th.classList.toggle('asc');
 
     rows.sort((a, b) => {
-      let aText = a.cells[index].dataset.value || a.cells[index].textContent.trim().replace('%', '');
-      let bText = b.cells[index].dataset.value || b.cells[index].textContent.trim().replace('%', '');
+      let aText = a.cells[index].dataset.value || a.cells[index].textContent.trim().replace('%','');
+      let bText = b.cells[index].dataset.value || b.cells[index].textContent.trim().replace('%','');
 
       if (type === 'number') {
         aText = parseFloat(aText) || 0;
