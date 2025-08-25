@@ -1,13 +1,13 @@
 const buckets = [
-    { id: 'options', prefix: '/QQQI/data/QQQI-Files/QQQI_Options_-_Index_' },
-    { id: 'cash',    prefix: '/QQQI/data/QQQI-Files/QQQI_Cash_' },
-    { id: 'stocks',  prefix: '/QQQI/data/QQQI-Files/QQQI_Stocks_' }
+    { id: 'options', prefix: 'data/QQQI-Files/QQQI_Options_-_Index_' },
+    { id: 'cash',    prefix: 'data/QQQI-Files/QQQI_Cash_' },
+    { id: 'stocks',  prefix: 'data/QQQI-Files/QQQI_Stocks_' }
 ];
 
 const dateSelect = document.getElementById("dateSelect");
 
 // Load available dates and populate dropdown
-fetch("/JEPQ/data/QQQI-Files/available_dates.json")
+fetch("data/QQQI-Files/available_dates.json")
   .then(res => res.json())
   .then(data => {
       data.dates.forEach(date => {
@@ -32,18 +32,18 @@ function loadTables(date) {
     const timestamp = new Date().getTime(); // cache-busting
     
     buckets.forEach(bucket => {
-        const file = `${bucket.prefix}${date}.json?ts=${timestamp}`;
+        const file = `${bucket.prefix}${date}.json?ts=${timestamp}`; // cache-busting
         fetch(file)
           .then(res => res.json())
           .then(data => {
               const tbody = document.querySelector(`#${bucket.id}-table tbody`);
-              tbody.innerHTML = ""; 
+              tbody.innerHTML = ""; // clear old data
               let totalWeight = 0;
 
               if (data.length === 0) {
                   const tr = document.createElement('tr');
                   const td = document.createElement('td');
-                  td.colSpan = bucket.id === 'options' ? 9 : 2;
+                  td.colSpan = bucket.id === 'options' ? 8 : 2;
                   td.textContent = "No records available";
                   tr.appendChild(td);
                   tbody.appendChild(tr);
@@ -67,14 +67,13 @@ function loadTables(date) {
                       } else {
                           status = 'OTM';
                           statusClass = 'otm';
-                          forgoneGains = '0.00%';
+                          forgoneGains = 0.00 + '%';
                       }
 
                       tr.innerHTML = `
-                          <td>${item.StockTicker}</td>
-                          <td>${item.Weightings}%</td>
+                          <td>${item.Ticker}</td>
+                          <td>${item.Weight}%</td>
                           <td data-value="${item.Expiry_Date}">${displayDate}</td>
-                          <td>${item.Option_Type}</td>
                           <td>${item.Strike_Price}</td>
                           <td>${item.OpeningPrice}</td>
                           <td>${upside.toFixed(2)}%</td>
@@ -82,10 +81,10 @@ function loadTables(date) {
                           <td>${forgoneGains}</td>
                       `;
                   } else {
-                      tr.innerHTML = `<td>${item.StockTicker}</td><td>${item.Weightings}%</td>`;
+                      tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
                   }
 
-                  totalWeight += parseFloat(item.Weightings) || 0;
+                  totalWeight += parseFloat(item.Weight) || 0;
                   tbody.appendChild(tr);
               });
 
@@ -94,7 +93,7 @@ function loadTables(date) {
               // Sum of all Forgone Gains for options table
               if(bucket.id === 'options') {
                   const tfootCell = document.querySelector('#options-table tfoot td:last-child');
-                  const forgoneCells = document.querySelectorAll('#options-table tbody td:last-child');
+                  const forgoneCells = document.querySelectorAll('#options-table tbody td:nth-child(8)');
                   let forgoneSum = 0;
                   forgoneCells.forEach(td => {
                       const val = parseFloat(td.textContent.replace('%',''));
