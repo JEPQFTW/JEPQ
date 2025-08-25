@@ -22,10 +22,6 @@ def download_file(url, filename):
         f.write(response.content)
 
 def parse_option_info(option_str):
-    """
-    Parse option ticker to get expiry date, option type, and strike price.
-    Example: 'NDX 250919C23775000'
-    """
     try:
         option_str = option_str.strip()
         parts = option_str.split()
@@ -42,9 +38,6 @@ def parse_option_info(option_str):
         return None, None, None
 
 def assign_bucket_from_ticker(ticker):
-    """
-    Assign bucket based on the content of the ticker
-    """
     if isinstance(ticker, str):
         if ticker.startswith("NDX"):
             return "Options - Index"
@@ -83,6 +76,12 @@ def main():
     df = pd.read_csv(csv_filename, header=None, usecols=[4,6,7,8], skiprows=2)
     df.columns = ['Ticker', 'Price', 'BaseMV', 'Weight']
     df = df.dropna(subset=['Ticker', 'Weight'])
+
+    # Clean numeric columns
+    df['Price'] = pd.to_numeric(df['Price'].astype(str).str.replace(',', ''), errors='coerce')
+    df['BaseMV'] = pd.to_numeric(df['BaseMV'].astype(str).str.replace(',', ''), errors='coerce')
+    df['Weight'] = pd.to_numeric(df['Weight'].astype(str).str.replace(',', ''), errors='coerce')
+    df = df.dropna(subset=['Price', 'BaseMV'])
 
     # Assign bucket based on ticker content
     df['Bucket'] = df['Ticker'].apply(assign_bucket_from_ticker)
