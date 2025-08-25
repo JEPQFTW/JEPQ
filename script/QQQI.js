@@ -7,7 +7,7 @@ const buckets = [
 const dateSelect = document.getElementById("dateSelect");
 
 // Load available dates and populate dropdown
-fetch("data/QQQI-Files/available_dates.json")
+fetch("JEPQ/data/QQQI-Files/available_dates.json")
   .then(res => res.json())
   .then(data => {
       data.dates.forEach(date => {
