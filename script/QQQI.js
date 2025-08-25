@@ -1,7 +1,7 @@
 const buckets = [
-    { id: 'options', prefix: 'data/QQQI-Files/QQQI_Options_-_Index_' },
-    { id: 'cash',    prefix: 'data/QQQI-Files/QQQI_Cash_' },
-    { id: 'stocks',  prefix: 'data/QQQI-Files/QQQI_Stocks_' }
+    { id: 'options', prefix: 'JEPQ/data/QQQI-Files/QQQI_Options_-_Index_' },
+    { id: 'cash',    prefix: 'JEPQ/data/QQQI-Files/QQQI_Cash_' },
+    { id: 'stocks',  prefix: 'JEPQ/data/QQQI-Files/QQQI_Stocks_' }
 ];
 
 const dateSelect = document.getElementById("dateSelect");
