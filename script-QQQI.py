@@ -39,7 +39,7 @@ def assign_bucket_from_ticker(ticker):
 def generate_available_dates_json():
     date_set = set()
     for filename in os.listdir(DATA_FOLDER):
-        if filename.startswith("JEPQ_") and filename.endswith(".json") and "latest" not in filename:
+        if filename.startswith("QQQI_") and filename.endswith(".json") and "latest" not in filename:
             parts = filename.split("_")
             date_str = parts[-1].replace(".json","")
             date_set.add(date_str)
@@ -102,11 +102,11 @@ def main():
             subset['Weightings'] = subset['Weightings'].map(lambda x: f"{x:.2f}")
             subset = subset[['StockTicker','Weightings']]
 
-        filename = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ","_")}_{date_str}.json')
+        filename = os.path.join(DATA_FOLDER, f'QQQI_{bucket_name.replace(" ","_")}_{date_str}.json')
         subset.to_json(filename, orient="records", indent=2)
         print(f"Saved {len(subset)} records to {filename}")
 
-        latest_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ","_")}_latest.json')
+        latest_file = os.path.join(DATA_FOLDER, f'QQQI_{bucket_name.replace(" ","_")}_latest.json')
         shutil.copyfile(filename, latest_file)
 
     generate_available_dates_json()
