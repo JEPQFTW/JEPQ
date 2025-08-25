@@ -1,0 +1,24 @@
+[
+  {
+    "StockTicker":"NDX   250919C23775000",
+    "Weightings":"-0.38",
+    "Expiry_Date":"2025-09-19",
+    "Option_Type":"C",
+    "Strike_Price":"23,775.00",
+    "OpeningPrice":23433,
+    "Contracts":"57,600.00",
+    "ForgoneGain":"0.00",
+    "ForgoneGainPct":"0.000000"
+  },
+  {
+    "StockTicker":"NDX   250919C24100000",
+    "Weightings":"-0.21",
+    "Expiry_Date":"2025-09-19",
+    "Option_Type":"C",
+    "Strike_Price":"24,100.00",
+    "OpeningPrice":23433,
+    "Contracts":"57,600.00",
+    "ForgoneGain":"0.00",
+    "ForgoneGainPct":"0.000000"
+  }
+]
