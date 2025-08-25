@@ -1,4 +1,4 @@
-name: Daily JEPQ Data Fetch
+name: Daily QQQI Data Fetch
 
 on:
   schedule:
