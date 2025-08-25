@@ -7,16 +7,19 @@ import re
 import json
 
 DATA_FOLDER = "data/QQQI-Files"
-EXCEL_URL = 'https://tinyurl.com/QQQI-Link'
+CSV_URL = 'https://tinyurl.com/QQQI-Link'  # points to your CSV file
 
 def get_current_date():
     return datetime.datetime.now().strftime("%Y-%m-%d")
 
 def download_file(url, filename):
-    response = requests.get(url)
+    response = requests.get(url, allow_redirects=True)
     response.raise_for_status()
-    with open(filename, 'wb') as file:
-        file.write(response.content)
+    content_type = response.headers.get('Content-Type', '')
+    if 'text/csv' not in content_type and 'application/octet-stream' not in content_type:
+        print("Warning: downloaded file may not be a CSV!")
+    with open(filename, 'wb') as f:
+        f.write(response.content)
 
 def parse_option_info(option_str):
     """
@@ -53,7 +56,7 @@ def assign_bucket_from_ticker(ticker):
 
 def generate_available_dates_json():
     date_set = set()
-    pattern = re.compile(r"QQQI_.*_(\d{4}-\d{2}-\d{2})\.json")
+    pattern = re.compile(r"JEPQ_.*_(\d{4}-\d{2}-\d{2})\.json")
     for filename in os.listdir(DATA_FOLDER):
         match = pattern.match(filename)
         if match:
@@ -67,17 +70,17 @@ def generate_available_dates_json():
 def main():
     os.makedirs(DATA_FOLDER, exist_ok=True)
     date_str = get_current_date()
-    excel_filename = os.path.join(DATA_FOLDER, f'QQQI_{date_str}.xlsx')
+    csv_filename = os.path.join(DATA_FOLDER, f'QQQI_{date_str}.csv')
 
-    # Download Excel if not already present
-    if not os.path.exists(excel_filename):
-        print(f"Downloading Excel file for {date_str}...")
-        download_file(EXCEL_URL, excel_filename)
+    # Download CSV if not already present
+    if not os.path.exists(csv_filename):
+        print(f"Downloading CSV file for {date_str}...")
+        download_file(CSV_URL, csv_filename)
     else:
         print("File already downloaded.")
 
-    # Read relevant columns from Excel
-    df = pd.read_excel(excel_filename, header=None, usecols="E,G,H,I", skiprows=2)
+    # Read relevant columns from CSV (0-indexed)
+    df = pd.read_csv(csv_filename, header=None, usecols=[4,6,7,8], skiprows=2)
     df.columns = ['Ticker', 'Price', 'BaseMV', 'Weight']
     df = df.dropna(subset=['Ticker', 'Weight'])
 
@@ -129,14 +132,14 @@ def main():
 
         # Save JSON if any records exist
         if not subset.empty:
-            filename = os.path.join(DATA_FOLDER, f'QQQI_{bucket_name.replace(" ", "_")}_{date_str}.json')
+            filename = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
             subset.to_json(filename, orient="records")
             print(f"Saved {len(subset)} records to {filename}")
         else:
             print(f"No records found for bucket '{bucket_name}'.")
 
         # Copy dated JSON to "latest"
-        latest_file = os.path.join(DATA_FOLDER, f'QQQI_{bucket_name.replace(" ", "_")}_latest.json')
+        latest_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_latest.json')
         if not subset.empty:
             shutil.copyfile(filename, latest_file)
             print(f"Copied {filename} to {latest_file}")
