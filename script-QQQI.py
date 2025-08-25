@@ -1,22 +1,14 @@
 import os
-import requests
-import datetime
 import pandas as pd
-import shutil
-import re
+import datetime
 import json
+import shutil
 
 DATA_FOLDER = "data/QQQI-Files"
-CSV_URL = 'https://tinyurl.com/QQQI-Link'  # points to your CSV file
+CSV_URL = 'https://tinyurl.com/QQQI-Link'  # Replace with your CSV URL if downloading
 
 def get_current_date():
     return datetime.datetime.now().strftime("%Y-%m-%d")
-
-def download_file(url, filename):
-    response = requests.get(url, allow_redirects=True)
-    response.raise_for_status()
-    with open(filename, 'wb') as f:
-        f.write(response.content)
 
 def parse_option_info(option_str):
     try:
@@ -46,11 +38,11 @@ def assign_bucket_from_ticker(ticker):
 
 def generate_available_dates_json():
     date_set = set()
-    pattern = re.compile(r"JEPQ_.*_(\d{4}-\d{2}-\d{2})\.json")
     for filename in os.listdir(DATA_FOLDER):
-        match = pattern.match(filename)
-        if match:
-            date_set.add(match.group(1))
+        if filename.startswith("JEPQ_") and filename.endswith(".json") and "latest" not in filename:
+            parts = filename.split("_")
+            date_str = parts[-1].replace(".json","")
+            date_set.add(date_str)
     dates = sorted(date_set)
     available_dates = {"dates": dates}
     with open(os.path.join(DATA_FOLDER, "available_dates.json"), "w") as f:
@@ -62,85 +54,61 @@ def main():
     date_str = get_current_date()
     csv_filename = os.path.join(DATA_FOLDER, f'QQQI_{date_str}.csv')
 
-    # Download CSV if not already present
-    if not os.path.exists(csv_filename):
-        print(f"Downloading CSV file for {date_str}...")
-        download_file(CSV_URL, csv_filename)
-    else:
-        print("File already downloaded.")
+    # If CSV is already downloaded, skip. Otherwise you could download here.
 
     # Read CSV
-    df = pd.read_csv(csv_filename, header=None, usecols=[4,6,7,8], skiprows=2)
-    df.columns = ['Ticker', 'Price', 'BaseMV', 'Weight']
-    df = df.dropna(subset=['Ticker', 'Weight'])
+    df = pd.read_csv(csv_filename, usecols=['StockTicker','Price','MarketValue','Weightings'])
+    df = df.dropna(subset=['StockTicker', 'Weightings'])
 
     # Clean numeric columns
-    df['Price'] = pd.to_numeric(df['Price'].astype(str).str.replace(',', ''), errors='coerce')
-    df['BaseMV'] = pd.to_numeric(df['BaseMV'].astype(str).str.replace(',', ''), errors='coerce')
-    df['Weight'] = pd.to_numeric(df['Weight'].astype(str).str.replace(',', ''), errors='coerce')
-    df = df.dropna(subset=['Price', 'BaseMV'])
+    df['Price'] = pd.to_numeric(df['Price'].astype(str).str.replace('$','').str.replace(',',''), errors='coerce')
+    df['MarketValue'] = pd.to_numeric(df['MarketValue'].astype(str).str.replace('$','').str.replace(',',''), errors='coerce')
+    df['Weightings'] = pd.to_numeric(df['Weightings'].astype(str).str.replace('%','').str.replace(',',''), errors='coerce')
+    df = df.dropna(subset=['Price','MarketValue'])
 
     # Assign bucket
-    df['Bucket'] = df['Ticker'].apply(assign_bucket_from_ticker)
+    df['Bucket'] = df['StockTicker'].apply(assign_bucket_from_ticker)
 
-    # Total portfolio Base Market Value
-    total_base_mv = df['BaseMV'].sum()
+    total_base_mv = df['MarketValue'].sum()
+    opening_price = 23433  # Example hardcoded
 
-    # Hardcoded underlying price for options calculations
-    opening_price = 23433
-
-    # Process each bucket
     for bucket_name in ["Options - Index", "Cash", "Stocks"]:
         subset = df[df['Bucket'] == bucket_name].copy()
-
         if subset.empty:
             print(f"No records found for bucket '{bucket_name}'.")
             continue
 
         if bucket_name == "Options - Index":
-            # Parse option info
-            subset[['Expiry_Date', 'Option_Type', 'Strike_Price']] = subset['Ticker'].apply(
+            subset[['Expiry_Date', 'Option_Type', 'Strike_Price']] = subset['StockTicker'].apply(
                 lambda val: pd.Series(parse_option_info(val))
             )
-
-            # Calculate contracts (negative for short positions)
-            subset['Contracts'] = -subset['BaseMV'] / subset['Price']
-
-            # Forgone gain
+            subset['Contracts'] = -subset['MarketValue'] / subset['Price']
             subset['ForgoneGain'] = ((opening_price - subset['Strike_Price']) * subset['Contracts']).where(
                 opening_price > subset['Strike_Price'], 0
             )
-
-            # % of total portfolio
             subset['ForgoneGainPct'] = subset['ForgoneGain'] / total_base_mv
 
-            # Formatting
-            subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
+            subset['Weightings'] = subset['Weightings'].map(lambda x: f"{x:.2f}")
             subset['Strike_Price'] = subset['Strike_Price'].map(lambda x: f"{x:,.2f}")
             subset['OpeningPrice'] = opening_price
             subset['Contracts'] = subset['Contracts'].map(lambda x: f"{x:,.2f}")
             subset['ForgoneGain'] = subset['ForgoneGain'].map(lambda x: f"{x:,.2f}")
             subset['ForgoneGainPct'] = subset['ForgoneGainPct'].map(lambda x: f"{x:.6f}")
 
-            subset = subset[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price',
-                             'OpeningPrice', 'Contracts', 'ForgoneGain', 'ForgoneGainPct']]
+            subset = subset[['StockTicker', 'Weightings', 'Expiry_Date', 'Option_Type',
+                             'Strike_Price', 'OpeningPrice', 'Contracts', 'ForgoneGain', 'ForgoneGainPct']]
 
         else:
-            # Cash or Stocks
-            subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
-            subset = subset[['Ticker', 'Weight']]
+            subset['Weightings'] = subset['Weightings'].map(lambda x: f"{x:.2f}")
+            subset = subset[['StockTicker','Weightings']]
 
-        # Save **one JSON per bucket**
-        filename = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
+        filename = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ","_")}_{date_str}.json')
         subset.to_json(filename, orient="records", indent=2)
         print(f"Saved {len(subset)} records to {filename}")
 
-        # Update latest copy
-        latest_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_latest.json')
+        latest_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ","_")}_latest.json')
         shutil.copyfile(filename, latest_file)
-        print(f"Copied {filename} to {latest_file}")
 
-    # Generate available dates JSON
     generate_available_dates_json()
 
 if __name__ == '__main__':
