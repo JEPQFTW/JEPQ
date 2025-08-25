@@ -15,9 +15,6 @@ def get_current_date():
 def download_file(url, filename):
     response = requests.get(url, allow_redirects=True)
     response.raise_for_status()
-    content_type = response.headers.get('Content-Type', '')
-    if 'text/csv' not in content_type and 'application/octet-stream' not in content_type:
-        print("Warning: downloaded file may not be a CSV!")
     with open(filename, 'wb') as f:
         f.write(response.content)
 
@@ -49,7 +46,7 @@ def assign_bucket_from_ticker(ticker):
 
 def generate_available_dates_json():
     date_set = set()
-    pattern = re.compile(r"JEPQ_.*_(\d{4}-\d{2}-\d{2})\.json")
+    pattern = re.compile(r"QQQI_.*_(\d{4}-\d{2}-\d{2})\.json")
     for filename in os.listdir(DATA_FOLDER):
         match = pattern.match(filename)
         if match:
@@ -92,11 +89,15 @@ def main():
     # Hardcoded underlying price for options calculations
     opening_price = 23433
 
-    # Process each bucket
+    # Process each bucket and save a single JSON per bucket
     for bucket_name in ["Options - Index", "Cash", "Stocks"]:
         subset = df[df['Bucket'] == bucket_name].copy()
 
-        if bucket_name == "Options - Index" and not subset.empty:
+        if subset.empty:
+            print(f"No records found for bucket '{bucket_name}'.")
+            continue
+
+        if bucket_name == "Options - Index":
             # Parse option info
             subset[['Expiry_Date', 'Option_Type', 'Strike_Price']] = subset['Ticker'].apply(
                 lambda val: pd.Series(parse_option_info(val))
@@ -113,7 +114,7 @@ def main():
             # % of total portfolio
             subset['ForgoneGainPct'] = subset['ForgoneGain'] / total_base_mv
 
-            # Formatting for JSON
+            # Formatting
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
             subset['Strike_Price'] = subset['Strike_Price'].map(lambda x: f"{x:,.2f}")
             subset['OpeningPrice'] = opening_price
@@ -124,24 +125,20 @@ def main():
             subset = subset[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price',
                              'OpeningPrice', 'Contracts', 'ForgoneGain', 'ForgoneGainPct']]
 
-        elif bucket_name != "Options - Index" and not subset.empty:
+        else:
             # For Cash or Stocks
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
             subset = subset[['Ticker', 'Weight']]
 
-        # Save JSON if any records exist
-        if not subset.empty:
-            filename = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
-            subset.to_json(filename, orient="records")
-            print(f"Saved {len(subset)} records to {filename}")
-        else:
-            print(f"No records found for bucket '{bucket_name}'.")
+        # Save JSON for the entire bucket
+        filename = os.path.join(DATA_FOLDER, f'QQQI_{bucket_name.replace(" ", "_")}_{date_str}.json')
+        subset.to_json(filename, orient="records", indent=2)
+        print(f"Saved {len(subset)} records to {filename}")
 
-        # Copy dated JSON to "latest"
-        latest_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_latest.json')
-        if not subset.empty:
-            shutil.copyfile(filename, latest_file)
-            print(f"Copied {filename} to {latest_file}")
+        # Update "latest" copy
+        latest_file = os.path.join(DATA_FOLDER, f'QQQI_{bucket_name.replace(" ", "_")}_latest.json')
+        shutil.copyfile(filename, latest_file)
+        print(f"Copied {filename} to {latest_file}")
 
     # Generate available dates JSON
     generate_available_dates_json()
