@@ -46,7 +46,7 @@ def assign_bucket_from_ticker(ticker):
 
 def generate_available_dates_json():
     date_set = set()
-    pattern = re.compile(r"QQQI_.*_(\d{4}-\d{2}-\d{2})\.json")
+    pattern = re.compile(r"JEPQ_.*_(\d{4}-\d{2}-\d{2})\.json")
     for filename in os.listdir(DATA_FOLDER):
         match = pattern.match(filename)
         if match:
@@ -69,7 +69,7 @@ def main():
     else:
         print("File already downloaded.")
 
-    # Read relevant columns from CSV (0-indexed)
+    # Read CSV
     df = pd.read_csv(csv_filename, header=None, usecols=[4,6,7,8], skiprows=2)
     df.columns = ['Ticker', 'Price', 'BaseMV', 'Weight']
     df = df.dropna(subset=['Ticker', 'Weight'])
@@ -80,7 +80,7 @@ def main():
     df['Weight'] = pd.to_numeric(df['Weight'].astype(str).str.replace(',', ''), errors='coerce')
     df = df.dropna(subset=['Price', 'BaseMV'])
 
-    # Assign bucket based on ticker content
+    # Assign bucket
     df['Bucket'] = df['Ticker'].apply(assign_bucket_from_ticker)
 
     # Total portfolio Base Market Value
@@ -89,7 +89,7 @@ def main():
     # Hardcoded underlying price for options calculations
     opening_price = 23433
 
-    # Process each bucket and save a single JSON per bucket
+    # Process each bucket
     for bucket_name in ["Options - Index", "Cash", "Stocks"]:
         subset = df[df['Bucket'] == bucket_name].copy()
 
@@ -106,7 +106,7 @@ def main():
             # Calculate contracts (negative for short positions)
             subset['Contracts'] = -subset['BaseMV'] / subset['Price']
 
-            # Forgone gain (only if underlying > strike)
+            # Forgone gain
             subset['ForgoneGain'] = ((opening_price - subset['Strike_Price']) * subset['Contracts']).where(
                 opening_price > subset['Strike_Price'], 0
             )
@@ -126,17 +126,17 @@ def main():
                              'OpeningPrice', 'Contracts', 'ForgoneGain', 'ForgoneGainPct']]
 
         else:
-            # For Cash or Stocks
+            # Cash or Stocks
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
             subset = subset[['Ticker', 'Weight']]
 
-        # Save JSON for the entire bucket
-        filename = os.path.join(DATA_FOLDER, f'QQQI_{bucket_name.replace(" ", "_")}_{date_str}.json')
+        # Save **one JSON per bucket**
+        filename = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
         subset.to_json(filename, orient="records", indent=2)
         print(f"Saved {len(subset)} records to {filename}")
 
-        # Update "latest" copy
-        latest_file = os.path.join(DATA_FOLDER, f'QQQI_{bucket_name.replace(" ", "_")}_latest.json')
+        # Update latest copy
+        latest_file = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_latest.json')
         shutil.copyfile(filename, latest_file)
         print(f"Copied {filename} to {latest_file}")
 
