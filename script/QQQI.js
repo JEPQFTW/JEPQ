@@ -71,8 +71,8 @@ function loadTables(date) {
                       }
 
                       tr.innerHTML = `
-                          <td>${item.Ticker}</td>
-                          <td>${item.Weight}%</td>
+                          <td>${item.StockTIcker}</td>
+                          <td>${item.Weightings}%</td>
                           <td data-value="${item.Expiry_Date}">${displayDate}</td>
                           <td>${item.Strike_Price}</td>
                           <td>${item.OpeningPrice}</td>
@@ -81,10 +81,10 @@ function loadTables(date) {
                           <td>${forgoneGains}</td>
                       `;
                   } else {
-                      tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
+                      tr.innerHTML = `<td>${item.StockTIcker}</td><td>${item.Weightings}%</td>`;
                   }
 
-                  totalWeight += parseFloat(item.Weight) || 0;
+                  totalWeight += parseFloat(item.Weightings) || 0;
                   tbody.appendChild(tr);
               });
 
