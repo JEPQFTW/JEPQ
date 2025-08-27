@@ -20,6 +20,13 @@ jobs:
         persist-credentials: true
         fetch-depth: 0
 
+    - name: Sync repo with remote
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git fetch origin main
+        git pull --rebase origin main
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -39,10 +46,6 @@ jobs:
 
     - name: Commit and push changes
       run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        git fetch origin main
-        git pull --rebase origin main
         git add -A
         git commit -m "Force update JEPQ data [skip ci]" || echo "No changes to commit"
         git push
