@@ -52,8 +52,8 @@ def main():
     date_str = get_current_date()
 
     print(f"Downloading CSV for {date_str} ...")
-    df = pd.read_csv(CSV_URL, usecols=['SecurityName','Price','MarketValue','Weightings'])
-    df = df.dropna(subset=['SecurityName','Weightings'])
+    df = pd.read_csv(CSV_URL, usecols=['StockTicker','Price','MarketValue','Weightings'])
+    df = df.dropna(subset=['StockTicker','Weightings'])
 
     # Clean numeric fields
     df['Price'] = pd.to_numeric(df['Price'].astype(str).str.replace('$','').str.replace(',',''), errors='coerce')
@@ -62,7 +62,7 @@ def main():
     df = df.dropna(subset=['Price','MarketValue'])
 
     # Assign buckets
-    df['Bucket'] = df['SecurityName'].apply(assign_bucket_from_ticker)
+    df['Bucket'] = df['StockTicker'].apply(assign_bucket_from_ticker)
     total_base_mv = df['MarketValue'].sum()
 
     for bucket_name in ["Options - Index", "Cash", "Stocks"]:
@@ -72,7 +72,7 @@ def main():
             continue
 
         if bucket_name == "Options - Index":
-            subset[['Expiry_Date', 'Option_Type', 'Strike_Price']] = subset['SecurityName'].apply(
+            subset[['Expiry_Date', 'Option_Type', 'Strike_Price']] = subset['StockTicker'].apply(
                 lambda val: pd.Series(parse_option_info(val))
             )
             subset['Contracts'] = -subset['MarketValue'] / subset['Price']
@@ -89,12 +89,12 @@ def main():
             subset['ForgoneGain'] = subset['ForgoneGain'].map(lambda x: f"{x:,.2f}")
             subset['ForgoneGainPct'] = subset['ForgoneGainPct'].map(lambda x: f"{x:.6f}")
 
-            subset = subset[['SecurityName', 'Weightings', 'Expiry_Date', 'Option_Type',
+            subset = subset[['StockTicker', 'Weightings', 'Expiry_Date', 'Option_Type',
                              'Strike_Price', 'OpeningPrice', 'Contracts', 'ForgoneGain', 'ForgoneGainPct']]
 
         else:
             subset['Weightings'] = subset['Weightings'].map(lambda x: f"{x:.2f}")
-            subset = subset[['SecurityName','Weightings']]
+            subset = subset[['StockTicker','Weightings']]
 
         # Save dated JSON
         filename = os.path.join(DATA_FOLDER, f'QQQI_{bucket_name.replace(" ","_")}_{date_str}.json')
