@@ -94,7 +94,7 @@ def main():
 
         else:
             subset['Weightings'] = subset['Weightings'].map(lambda x: f"{x:.2f}")
-            subset = subset[['SecurityName','Weightings']]
+            subset = subset[['StockTicker','SecurityName','Weightings']]
 
         # Save dated JSON
         filename = os.path.join(DATA_FOLDER, f'QQQI_{bucket_name.replace(" ","_")}_{date_str}.json')
