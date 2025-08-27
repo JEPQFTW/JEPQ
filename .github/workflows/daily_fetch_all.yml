@@ -1,0 +1,57 @@
+name: Daily ETF Data Fetch
+
+on:
+  schedule:
+    - cron: '0 7 * * *'   # Runs every day at 07:00 UTC
+  workflow_dispatch:       # Also allows manual trigger from GitHub UI
+
+jobs:
+  fetch-and-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+      with:
+        persist-credentials: true
+        fetch-depth: 0
+
+    - name: Sync repo with remote
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git fetch origin main
+        git pull --rebase origin main
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas requests openpyxl
+
+    # Run all scripts sequentially
+    - name: Run JEPI script
+      run: python script-JEPI.py
+
+    - name: Run JEPQ script
+      run: python script-JEPQ.py
+
+    - name: Run QQQI script
+      run: python script-QQQI.py
+
+    # Touch markers so Git always sees changes
+    - name: Force a file update
+      run: |
+        touch data/JEPI-Files/.force_update
+        touch data/JEPQ-Files/.force_update
+        touch data/QQQI-Files/.force_update
+
+    - name: Commit and push changes
+      run: |
+        git add -A
+        git commit -m "Daily ETF data update [skip ci]" || echo "No changes to commit"
+        git push
