@@ -81,7 +81,7 @@ function loadTables(date) {
                           <td>${forgoneGains}</td>
                       `;
                   } else {
-                      tr.innerHTML = `<td>${item.StockTicker}</td><td>${item.CompanyName}</td><td>${item.Weightings}%</td>`;
+                      tr.innerHTML = `<td>${item.StockTicker}</td><td>${item.SecurityName}</td><td>${item.Weightings}%</td>`;
                   }
 
                   totalWeight += parseFloat(item.Weightings) || 0;
