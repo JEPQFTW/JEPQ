@@ -52,7 +52,7 @@ def main():
     date_str = get_current_date()
 
     print(f"Downloading CSV for {date_str} ...")
-    df = pd.read_csv(CSV_URL, usecols=['StockTicker','Price','MarketValue','Weightings','SecurityName'])
+    df = pd.read_csv(CSV_URL, usecols=['StockTicker','Price','MarketValue','Weightings'])
     df = df.dropna(subset=['StockTicker','Weightings'])
 
     # Clean numeric fields
@@ -94,7 +94,7 @@ def main():
 
         else:
             subset['Weightings'] = subset['Weightings'].map(lambda x: f"{x:.2f}")
-            subset = subset[['StockTicker','SecurityName','Weightings']]
+            subset = subset[['StockTicker','Weightings']]
 
         # Save dated JSON
         filename = os.path.join(DATA_FOLDER, f'QQQI_{bucket_name.replace(" ","_")}_{date_str}.json')
