@@ -9,6 +9,10 @@ import json
 DATA_FOLDER = "data/JEPQ-Files"
 EXCEL_URL = 'https://tinyurl.com/Pr0d1g10s0'
 
+with open(config.json) as f:
+    CONFIG = json.load(f)
+    
+
 def get_current_date():
     return datetime.datetime.now().strftime("%Y-%m-%d")
 
@@ -87,7 +91,7 @@ def main():
                 lambda val: pd.Series(parse_option_info(val))
             )
 
-            opening_price = 23433  # hardcoded underlying price
+            opening_price = CONFIG["NDX]  # hardcoded underlying price
 
             # Calculate Contracts
             subset['Contracts'] = -subset['BaseMV'] / subset['Price']
