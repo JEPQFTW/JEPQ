@@ -2085,16 +2085,6 @@
     "Weightings":"0.33"
   },
   {
-    "StockTicker":"SPX   250919C06470000",
-    "SecurityName":"SPX US 09\/19\/25 C6470",
-    "Weightings":"-0.50"
-  },
-  {
-    "StockTicker":"SPX   250919C06540000",
-    "SecurityName":"SPX US 09\/19\/25 C6540",
-    "Weightings":"-0.28"
-  },
-  {
     "StockTicker":"SRE",
     "SecurityName":"Sempra",
     "Weightings":"0.11"

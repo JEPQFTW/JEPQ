@@ -1,0 +1,24 @@
+[
+  {
+    "StockTicker":"SPX   250919C06470000",
+    "Weightings":"-0.50",
+    "Expiry_Date":"2025-09-19",
+    "Option_Type":"C",
+    "Strike_Price":"6,470.00",
+    "OpeningPrice":23433,
+    "Contracts":"276,300.00",
+    "ForgoneGain":"4,686,876,900.00",
+    "ForgoneGainPct":"0.942477"
+  },
+  {
+    "StockTicker":"SPX   250919C06540000",
+    "Weightings":"-0.28",
+    "Expiry_Date":"2025-09-19",
+    "Option_Type":"C",
+    "Strike_Price":"6,540.00",
+    "OpeningPrice":23433,
+    "Contracts":"276,300.00",
+    "ForgoneGain":"4,667,535,900.00",
+    "ForgoneGainPct":"0.938588"
+  }
+]
