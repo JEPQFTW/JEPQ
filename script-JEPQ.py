@@ -91,7 +91,7 @@ def main():
                 lambda val: pd.Series(parse_option_info(val))
             )
 
-            opening_price = CONFIG["NDX]  # hardcoded underlying price
+            opening_price = CONFIG["NDX"]  # hardcoded underlying price
 
             # Calculate Contracts
             subset['Contracts'] = -subset['BaseMV'] / subset['Price']
