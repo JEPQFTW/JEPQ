@@ -43,12 +43,16 @@ jobs:
     - name: Run QQQI script
       run: python script-QQQI.py
 
+    - name: Run SPYI script
+      run: python script-SPYI.py
+
     # Touch markers so Git always sees changes
     - name: Force a file update
       run: |
         touch data/JEPI-Files/.force_update
         touch data/JEPQ-Files/.force_update
         touch data/QQQI-Files/.force_update
+        touch data/SPYI-Files/.force_update
 
     - name: Commit and push changes
       run: |
