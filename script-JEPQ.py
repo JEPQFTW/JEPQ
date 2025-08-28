@@ -9,7 +9,7 @@ import json
 DATA_FOLDER = "data/JEPQ-Files"
 EXCEL_URL = 'https://tinyurl.com/Pr0d1g10s0'
 
-with open(config.json) as f:
+with open("config.json") as f:
     CONFIG = json.load(f)
     
 
