@@ -1,1 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SPYI Holdings</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
 
+<div class="container">
+    <h1>SPYI Holdings</h1>
+
+    <div style="text-align:center; margin:20px;">
+        <label for="dateSelect"><strong>Select Date:</strong></label>
+        <select id="dateSelect"></select>
+    </div>
+    
+    <h2>Options - Index</h2>
+    <table id="options-table">
+        <thead>
+            <tr>
+                <th data-type="string">Ticker</th>
+                <th data-type="number">Weight</th>
+                <th data-type="date">Expiry Date</th>
+                <th data-type="number">Strike Price</th>
+                <th data-type="number">Underlying Price</th>
+                <th data-type="number">Upside % Before Cap</th>
+                <th data-type="string">Status</th>
+                <th data-type="number">Forgone Gains</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+            <tr>
+                <td>Total</td>
+                <td id="options-total">0%</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <h2>Cash</h2>
+    <table id="cash-table">
+        <thead>
+            <tr>
+                <th data-type="string">Ticker</th>
+                <th data-type="string">Description</th>    
+                <th data-type="number">Weight</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+            <tr>
+                <td>Total</td>
+                <td></td>
+                <td id="cash-total">0%</td>              
+            </tr>
+        </tfoot>
+    </table>
+
+    <h2>Stocks</h2>
+    <table id="stocks-table">
+        <thead>
+            <tr>
+                <th data-type="string">Ticker</th>
+                <th data-type="string">Company Name</th>
+                <th data-type="number">Weight</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+            <tr>
+                <td>Total</td>
+                <td></td>
+                <td id="stocks-total">0%</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<script src="../script/SPYI.js"></script>
+</body>
+</html>
