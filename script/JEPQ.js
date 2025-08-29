@@ -54,7 +54,7 @@ function loadTables(date) {
               if (data.length === 0) {
                   const tr = document.createElement('tr');
                   const td = document.createElement('td');
-                  td.colSpan = bucket.id === 'options' ? 8 : 2;
+                  td.colSpan = bucket.id === 'options' ? 9 : 2; // updated for new column
                   td.textContent = "No records available";
                   tr.appendChild(td);
                   tbody.appendChild(tr);
@@ -83,6 +83,12 @@ function loadTables(date) {
                           forgoneGains = "0.00%";
                       }
 
+                      // --- Trading Days to Expiration ---
+                      const expiryDate = new Date(item.Expiry_Date);
+                      const currentDate = new Date();
+                      const diffDays = (expiryDate - currentDate) / (1000 * 60 * 60 * 24); // calendar days
+                      const tradingDays = Math.max(0, Math.round(diffDays * 5 / 7));
+
                       tr.innerHTML = `
                           <td>${item.Ticker}</td>
                           <td>${item.Weight}%</td>
@@ -92,6 +98,7 @@ function loadTables(date) {
                           <td>${upside.toFixed(2)}%</td>
                           <td class="${statusClass}">${status}</td>
                           <td>${forgoneGains}</td>
+                          <td>${tradingDays}</td>
                       `;
                   } else {
                       tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
@@ -105,7 +112,7 @@ function loadTables(date) {
 
               // Sum of all Forgone Gains for options table
               if(bucket.id === 'options') {
-                  const tfootCell = document.querySelector('#options-table tfoot td:last-child');
+                  const tfootCell = document.querySelector('#options-table tfoot td:nth-child(8)');
                   const forgoneCells = document.querySelectorAll('#options-table tbody td:nth-child(8)');
                   let forgoneSum = 0;
                   forgoneCells.forEach(td => {
