@@ -9,6 +9,11 @@ import json
 DATA_FOLDER = "data/JEPI-Files"
 EXCEL_URL = 'https://tinyurl.com/JepiFTWx'
 
+with open("config.json") as f:
+    CONFIG = json.load(f)
+
+OPENING_PRICE = CONFIG["SPX"]
+
 def get_current_date():
     return datetime.datetime.now().strftime("%Y-%m-%d")
 
@@ -87,14 +92,12 @@ def main():
                 lambda val: pd.Series(parse_option_info(val))
             )
 
-            opening_price = 6472  # hardcoded underlying price
-
             # Calculate Contracts
             subset['Contracts'] = -subset['BaseMV'] / subset['Price']
 
             # Calculate ForgoneGain only if OpeningPrice > Strike_Price
-            subset['ForgoneGain'] = ((opening_price - subset['Strike_Price']) * subset['Contracts']).where(
-                opening_price > subset['Strike_Price'], 0
+            subset['ForgoneGain'] = ((OPENING_PRICE - subset['Strike_Price']) * subset['Contracts']).where(
+                OPENING_PRICE > subset['Strike_Price'], 0
             )
 
             # Calculate ForgoneGainPct
@@ -103,7 +106,7 @@ def main():
             # Format for JSON
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
             subset['Strike_Price'] = subset['Strike_Price'].map(lambda x: f"{x:,.2f}")
-            subset['OpeningPrice'] = opening_price
+            subset['OpeningPrice'] = OPENING_PRICE
             subset['Contracts'] = subset['Contracts'].map(lambda x: f"{x:,.2f}")
             subset['ForgoneGain'] = subset['ForgoneGain'].map(lambda x: f"{x:,.2f}")
             subset['ForgoneGainPct'] = subset['ForgoneGainPct'].map(lambda x: f"{x:.6f}")
