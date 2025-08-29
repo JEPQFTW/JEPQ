@@ -72,19 +72,20 @@ function loadTables(date) {
                       const opening = currentIndex !== null ? currentIndex : parseFloat(item.OpeningPrice);
                       const upside = (strike - opening) / opening * 100;
 
+                      // --- Dynamic ITM/OTM + Forgone Gains ---
                       let status = '', statusClass = '', forgoneGains = '';
-
-                      if (upside < 0) {
+                      if (opening > strike) {
                           status = 'ITM';
                           statusClass = 'itm';
-                          forgoneGains = (parseFloat(item.ForgoneGainPct) * 100).toFixed(2) + '%';
+                          // dynamically calculate forgone gains %
+                          forgoneGains = ((opening - strike) / opening * 100).toFixed(2) + '%';
                       } else {
                           status = 'OTM';
                           statusClass = 'otm';
                           forgoneGains = "0.00%";
                       }
 
-                      // Trading Days to Expiration calculation
+                      // Trading Days to Expiration
                       const expiryDate = new Date(item.Expiry_Date);
                       const currentDate = new Date();
                       const diffDays = (expiryDate - currentDate) / (1000 * 60 * 60 * 24); // calendar days
