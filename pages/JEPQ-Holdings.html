@@ -2,14 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>JEPQ Holdings</title>
+<title>JEPQ (UCITS) Holdings</title>
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <canvas id="bgCanvas"></canvas>
 
 <div class="container">
-    <h1>JEPQ Holdings</h1>
+    <h1>JEPQ (UCITS) Holdings</h1>
+
+    <div style="text-align:center; margin: 20px;">
+    <label for="userIndex"><strong>Current Index Value:</strong></label>
+    <input type="number" id="userIndex" placeholder="Enter current index value">
+    <button id="updateIndex">Update</button>
+</div>
 
     <div style="text-align:center; margin:20px;">
         <label for="dateSelect"><strong>Select Date:</strong></label>
