@@ -44,11 +44,12 @@ function renderTable(bucketId, data) {
     const tbody = document.querySelector(`#${bucketId}-table tbody`);
     tbody.innerHTML = "";
     let totalWeight = 0;
+    const today = new Date();
 
     if (!data || data.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = bucketId === 'options' ? 8 : 2;
+        td.colSpan = bucketId === 'options' ? 9 : 2; // TDTE adds one column
         td.textContent = "No records available";
         tr.appendChild(td);
         tbody.appendChild(tr);
@@ -60,7 +61,12 @@ function renderTable(bucketId, data) {
 
         if(bucketId === 'options') {
             const [year, month, day] = item.Expiry_Date.split('-');
+            const expiryDate = new Date(`${year}-${month}-${day}`);
             const displayDate = `${day}/${month}/${year}`;
+
+            // Trading Days to Expiration formula
+            const tdte = Math.max(0, Math.round((expiryDate - today) / (1000*60*60*24) * 5/7));
+
             const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
             const opening = parseFloat(item.OpeningPrice);
             const upside = (strike - opening) / opening * 100;
@@ -80,6 +86,7 @@ function renderTable(bucketId, data) {
                 <td>${item.Ticker}</td>
                 <td>${item.Weight}%</td>
                 <td data-value="${item.Expiry_Date}">${displayDate}</td>
+                <td>${tdte}</td>
                 <td>${item.Strike_Price}</td>
                 <td>${item.OpeningPrice}</td>
                 <td>${upside.toFixed(2)}%</td>
@@ -140,28 +147,27 @@ updateButton.addEventListener("click", () => {
     let forgoneSum = 0;
 
     rows.forEach(row => {
-        const strike = parseFloat(row.cells[3].textContent.replace(/,/g,''));
-        const contracts = parseFloat(row.cells[8].textContent.replace(/,/g,''));
-        const totalBaseMV = parseFloat(row.cells[9].textContent);
+        const strike = parseFloat(row.cells[4].textContent.replace(/,/g,''));
+        const contracts = parseFloat(row.cells[9].textContent.replace(/,/g,''));
+        const totalBaseMV = parseFloat(row.cells[10].textContent);
 
         const upside = (strike - userIndex) / userIndex * 100;
-        row.cells[5].textContent = upside.toFixed(2) + "%";
+        row.cells[6].textContent = upside.toFixed(2) + "%";
 
         let status = '', statusClass = '', forgone = 0;
         if(upside < 0){
             status = 'ITM';
             statusClass = 'itm';
             forgone = ((userIndex - strike) * contracts) / totalBaseMV * 100;
-            row.cells[7].textContent = forgone.toFixed(2) + "%";
-            row.cells[6].textContent = status;
-            row.cells[6].className = statusClass;
+            row.cells[8].textContent = forgone.toFixed(2) + "%";
         } else {
             status = 'OTM';
             statusClass = 'otm';
-            row.cells[7].textContent = '0.00%';
-            row.cells[6].textContent = status;
-            row.cells[6].className = statusClass;
+            row.cells[8].textContent = '0.00%';
         }
+
+        row.cells[7].textContent = status;
+        row.cells[7].className = statusClass;
 
         forgoneSum += forgone;
     });
