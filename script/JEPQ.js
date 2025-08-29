@@ -48,7 +48,7 @@ function renderTable(bucketId, data) {
     if (!data || data.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = bucketId === 'options' ? 10 : 2;
+        td.colSpan = bucketId === 'options' ? 8 : 2;
         td.textContent = "No records available";
         tr.appendChild(td);
         tbody.appendChild(tr);
@@ -85,8 +85,8 @@ function renderTable(bucketId, data) {
                 <td>${upside.toFixed(2)}%</td>
                 <td class="${statusClass}">${status}</td>
                 <td>${forgoneGains}</td>
-                <td>${item.Contracts}</td>
-                <td>${item.TotalBaseMV}</td>
+                <td style="display:none;">${item.Contracts}</td>
+                <td style="display:none;">${item.TotalBaseMV}</td>
             `;
         } else {
             tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
@@ -141,9 +141,8 @@ updateButton.addEventListener("click", () => {
 
     rows.forEach(row => {
         const strike = parseFloat(row.cells[3].textContent.replace(/,/g,''));
-        const opening = parseFloat(row.cells[4].textContent);
-        const totalBaseMV = parseFloat(row.cells[9].textContent);
         const contracts = parseFloat(row.cells[8].textContent.replace(/,/g,''));
+        const totalBaseMV = parseFloat(row.cells[9].textContent);
 
         const upside = (strike - userIndex) / userIndex * 100;
         row.cells[5].textContent = upside.toFixed(2) + "%";
