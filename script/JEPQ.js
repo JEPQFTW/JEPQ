@@ -122,8 +122,8 @@ document.querySelectorAll('th').forEach(th => {
             let bText = b.cells[index].dataset.value || b.cells[index].textContent.trim().replace('%','');
 
             if(type === 'number') {
-                aText = parseFloat(aText) || 0;
-                bText = parseFloat(bText) || 0;
+                aText = parseFloat(aText.replace(/,/g,'')) || 0;
+                bText = parseFloat(bText.replace(/,/g,'')) || 0;
             } else if(type === 'date') {
                 aText = new Date(aText);
                 bText = new Date(bText);
