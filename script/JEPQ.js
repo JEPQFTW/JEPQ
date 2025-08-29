@@ -55,7 +55,7 @@ function loadTables(date) {
               if (data.length === 0) {
                   const tr = document.createElement('tr');
                   const td = document.createElement('td');
-                  td.colSpan = bucket.id === 'options' ? 9 : 2; // include new column
+                  td.colSpan = bucket.id === 'options' ? 9 : 2;
                   td.textContent = "No records available";
                   tr.appendChild(td);
                   tbody.appendChild(tr);
@@ -69,16 +69,18 @@ function loadTables(date) {
                       const [year, month, day] = item.Expiry_Date.split('-');
                       const displayDate = `${day}/${month}/${year}`;
                       const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
-                      const opening = currentIndex !== null ? currentIndex : parseFloat(item.OpeningPrice);
+                      const origOpening = parseFloat(item.OpeningPrice);
+                      const opening = currentIndex !== null ? currentIndex : origOpening;
                       const upside = (strike - opening) / opening * 100;
 
-                      // --- Dynamic ITM/OTM + Forgone Gains ---
                       let status = '', statusClass = '', forgoneGains = '';
-                      if (opening > strike) {
+
+                      // ITM / OTM logic
+                      if(strike < opening) { 
                           status = 'ITM';
                           statusClass = 'itm';
-                          // dynamically calculate forgone gains %
-                          forgoneGains = ((opening - strike) / opening * 100).toFixed(2) + '%';
+                          // Dynamic scaling of ForgoneGainPct
+                          forgoneGains = (parseFloat(item.ForgoneGainPct) * (opening / origOpening) * 100).toFixed(2) + '%';
                       } else {
                           status = 'OTM';
                           statusClass = 'otm';
@@ -88,19 +90,19 @@ function loadTables(date) {
                       // Trading Days to Expiration
                       const expiryDate = new Date(item.Expiry_Date);
                       const currentDate = new Date();
-                      const diffDays = (expiryDate - currentDate) / (1000 * 60 * 60 * 24); // calendar days
+                      const diffDays = (expiryDate - currentDate) / (1000 * 60 * 60 * 24);
                       const tradingDays = Math.max(0, Math.round(diffDays * 5 / 7));
 
                       tr.innerHTML = `
                           <td>${item.Ticker}</td>
                           <td>${item.Weight}%</td>
                           <td data-value="${item.Expiry_Date}">${displayDate}</td>
-                          <td>${tradingDays}</td>
                           <td>${item.Strike_Price}</td>
                           <td>${opening}</td>
                           <td>${upside.toFixed(2)}%</td>
                           <td class="${statusClass}">${status}</td>
                           <td>${forgoneGains}</td>
+                          <td>${tradingDays}</td>
                       `;
                   } else {
                       tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
@@ -110,6 +112,7 @@ function loadTables(date) {
                   tbody.appendChild(tr);
               });
 
+              // Update total weights
               document.getElementById(`${bucket.id}-total`).textContent = totalWeight.toFixed(2) + '%';
 
               // Sum of Forgone Gains for options table
