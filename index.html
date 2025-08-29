@@ -1,118 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>ETF Dashboard</title>
-        <link rel="stylesheet" href="style.css"><style>
+<head>
+<meta charset="UTF-8">
+<title>ETF Dashboard</title>
+<link rel="stylesheet" href="style.css">
+
+<!-- FontAwesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
 body {
     margin: 0;
     font-family: "Segoe UI", sans-serif;
-    background: linear-gradient(135deg, #f9f9f9, #eef1f6);
-    color: #333;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    color: #2c3e50;
 }
 
 /* Sidebar */
 .sidebar {
     height: 100vh;
-    width: 230px;
+    width: 240px;
     position: fixed;
     top: 0;
     left: 0;
     background: linear-gradient(180deg, #2c3e50, #1a252f);
-    padding-top: 25px;
+    padding-top: 30px;
     display: flex;
     flex-direction: column;
+    box-shadow: 2px 0 6px rgba(0,0,0,0.2);
 }
 
 .sidebar a {
-    padding: 14px 22px;
+    padding: 15px 25px;
     text-decoration: none;
-    font-size: 15px;
+    font-size: 16px;
     color: #ecf0f1;
     display: flex;
     align-items: center;
-    gap: 10px;
-    transition: 0.3s;
-    border-left: 3px solid transparent;
+    gap: 12px;
+    transition: background 0.3s, padding-left 0.3s;
 }
 
 .sidebar a:hover {
-    background-color: #34495e;
-    border-left: 3px solid #3498db;
-    color: #fff;
-}
-
-.sidebar hr {
-    border: 0;
-    border-top: 1px solid #7f8c8d;
-    margin: 20px 0;
+    background: #34495e;
+    padding-left: 35px;
 }
 
 /* Main content */
 .main {
-    margin-left: 230px;
+    margin-left: 240px;
     padding: 40px;
 }
 
 .main h1 {
     color: #2c3e50;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
-/* Cards */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
+}
+
 .card {
     background-color: #fff;
     border-radius: 12px;
     padding: 25px;
-    margin-bottom: 25px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
-    border-left: 5px solid #3498db;
+    border-top: 5px solid #2980b9;
 }
 
 .card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }
 
 .card h2 {
     margin-top: 0;
-    color: #2c3e50;
+    color: #2980b9;
 }
 
 .card p {
     color: #555;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 .card a {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     margin-top: 10px;
     text-decoration: none;
-    color: #3498db;
-    font-weight: 600;
-    transition: color 0.2s;
+    color: #fff;
+    background: #2980b9;
+    padding: 10px 16px;
+    border-radius: 6px;
+    transition: background 0.3s;
 }
 
 .card a:hover {
-    color: #1d6fa5;
+    background: #1c5d85;
 }
 </style>
 </head>
 <body>
-    <div class="sidebar">
-        <a href="pages/About.html">About</a>
-        <a href="pages/Contact.html">Contact</a>
-        <hr style="border: 0; border-top: 1px solid #7f8c8d; margin: 15px 0;">
-        <a href="pages/Disclaimer.html">Disclaimer</a>
-        <a href="pages/Terms.html">Terms of Use</a>
-        <a href="pages/Privacy.html">Privacy Policy</a>
-    </div>
 
-    <div class="main">
-        <p>Select a page from the sidebar or explore the sections below:</p>
+<div class="sidebar">
+    <a href="pages/About.html"><i class="fa-solid fa-circle-info"></i> About</a>
+    <a href="pages/Contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+    <hr style="border: 0; border-top: 1px solid #7f8c8d; margin: 15px 0;">
+    <a href="pages/Disclaimer.html"><i class="fa-solid fa-scale-balanced"></i> Disclaimer</a>
+    <a href="pages/Terms.html"><i class="fa-solid fa-file-contract"></i> Terms of Use</a>
+    <a href="pages/Privacy.html"><i class="fa-solid fa-user-shield"></i> Privacy Policy</a>
+</div>
 
+<div class="main">
+    <h1>ETF Dashboard</h1>
+    <p>Select a page from the sidebar or explore the sections below:</p>
+
+    <div class="cards">
         <div class="card">
             <h2>JPMorgan - JEPQ (UCITS) Holdings</h2>
             <p>
@@ -121,28 +129,28 @@ body {
                 however, given the high historical performance correlation, the holdings seem to act 
                 as a sufficiently good proxy.
             </p>
-            <a href="pages/JEPQ-Holdings.html">Click Here to view JEPQ (UCITS) Holdings.</a>
+            <a href="pages/JEPQ-Holdings.html"><i class="fa-solid fa-chart-line"></i> View Holdings</a>
         </div>
 
         <div class="card">
             <h2>JPMorgan - JEPI (UCITS) Holdings</h2>
             <p>Check out tables and data for another ETF of interest.</p>
-            <a href="pages/AnotherETF.html">Explore</a>
+            <a href="pages/AnotherETF.html"><i class="fa-solid fa-database"></i> Explore</a>
         </div>
 
         <div class="card">
             <h2>NEOS - QQQI Holdings</h2>
             <p>Track dividend history and upcoming payouts.</p>
-            <a href="pages/Dividends.html">See Dividends</a>
+            <a href="pages/Dividends.html"><i class="fa-solid fa-coins"></i> See Dividends</a>
         </div>
 
         <div class="card">
             <h2>Weekly Analysis</h2>
             <p>Check weekly performance insights and analysis.</p>
-            <a href="pages/WeeklyAnalysis.html">View Analysis</a>
+            <a href="pages/WeeklyAnalysis.html"><i class="fa-solid fa-magnifying-glass-chart"></i> View Analysis</a>
         </div>
     </div>
+</div>
+
 </body>
 </html>
-
-
