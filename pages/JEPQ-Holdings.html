@@ -24,7 +24,7 @@
 <div class="container">
     <h1>JEPQ (UCITS) Holdings</h1>
 
-<div style="text-align:center; margin: 20px;" class="index-update-container">
+    <div style="text-align:center; margin: 20px;" class="index-update-container">
         <label for="dateSelect"><strong>Select Date:</strong></label>
         <select id="dateSelect"></select>
     </div>
@@ -95,7 +95,7 @@
     </table>
 </div>
 
-<!-- ----- Styles for Dark Buttons and Input ----- -->
+<!-- ----- Styles for Dark Buttons, Input, and Select ----- -->
 <style>
 .back-button-container {
     padding: 25px;
@@ -153,6 +153,37 @@
 .index-update-container button:hover {
     background: #3498db;
     transform: translateY(-2px);
+}
+
+/* ----- Dark Themed Date Select ----- */
+#indexSelect, #dateSelect {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: #2c3e50;
+    color: #ecf0f1;
+    border: 1px solid #2c3e50;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 220px;
+    margin-left: 10px;
+    transition: background 0.3s, transform 0.2s;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23ecf0f1" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px 16px;
+}
+
+#indexSelect:hover, #dateSelect:hover {
+    background: #3498db;
+    transform: translateY(-2px);
+}
+
+#indexSelect option, #dateSelect option {
+    background: #2c3e50;
+    color: #ecf0f1;
 }
 </style>
 
