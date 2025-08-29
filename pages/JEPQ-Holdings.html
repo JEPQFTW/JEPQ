@@ -15,10 +15,10 @@
 
 <!-- ----- Index Input + Update + Live Button ----- -->
 <div style="text-align:center; margin: 20px;" class="index-update-container">
-    <label for="userIndex"><strong>Current Index Value:</strong></label>
+    <button id="liveIndexBtn">Get Live Index Price</button>
+    <label for="userIndex" style="margin-left:10px;"><strong>Current Index Value:</strong></label>
     <input type="number" id="userIndex" placeholder="Enter current index value">
     <button id="updateIndex">Update</button>
-    <button id="liveIndexBtn">Get Live Index Price</button>
 </div>
 
 <div class="container">
@@ -128,7 +128,7 @@
     border-radius: 6px;
     border: 1px solid #2c3e50;
     width: 180px;
-    margin-right: 10px;
+    margin-left: 10px;
     font-size: 16px;
     background: #2c3e50;
     color: #ecf0f1;
@@ -138,7 +138,7 @@
     color: #bdc3c7;
 }
 
-#index-update-container button {
+.index-update-container button {
     background: #2c3e50;
     color: #ecf0f1;
     border: none;
@@ -150,7 +150,7 @@
     margin-left: 5px;
 }
 
-#index-update-container button:hover {
+.index-update-container button:hover {
     background: #3498db;
     transform: translateY(-2px);
 }
