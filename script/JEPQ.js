@@ -95,12 +95,12 @@ function loadTables(date) {
                           <td>${item.Ticker}</td>
                           <td>${item.Weight}%</td>
                           <td data-value="${item.Expiry_Date}">${displayDate}</td>
+                          <td>${tradingDays}</td>
                           <td>${item.Strike_Price}</td>
                           <td>${opening}</td>
                           <td>${upside.toFixed(2)}%</td>
                           <td class="${statusClass}">${status}</td>
                           <td>${forgoneGains}</td>
-                          <td>${tradingDays}</td>
                       `;
                   } else {
                       tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
