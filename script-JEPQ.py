@@ -78,7 +78,7 @@ def main():
 
     df['Bucket'] = df.apply(assign_bucket, axis=1)
 
-    # Total portfolio Base Market Value (for % calculation)
+    # Total portfolio Base Market Value
     total_base_mv = df['BaseMV'].sum()
 
     # Process each bucket
@@ -101,8 +101,11 @@ def main():
                 opening_price > subset['Strike_Price'], 0
             )
 
+            # Include total_base_mv in every row
+            subset['TotalBaseMV'] = total_base_mv
+
             # Calculate ForgoneGainPct
-            subset['ForgoneGainPct'] = subset['ForgoneGain'] / total_base_mv
+            subset['ForgoneGainPct'] = subset['ForgoneGain'] / subset['TotalBaseMV']
 
             # Format for JSON
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
@@ -113,27 +116,17 @@ def main():
             subset['ForgoneGainPct'] = subset['ForgoneGainPct'].map(lambda x: f"{x:.6f}")
 
             subset = subset[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price',
-                             'OpeningPrice', 'Contracts', 'ForgoneGain', 'ForgoneGainPct']]
+                             'OpeningPrice', 'Contracts', 'ForgoneGain', 'ForgoneGainPct', 'TotalBaseMV']]
 
         else:
             subset['Ticker'] = subset['Ticker_A']
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
             subset = subset[['Ticker', 'Weight']]
 
-        # Save JSON with metadata
+        # Save JSON (no metadata)
         if not subset.empty:
             filename = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
-
-            output = {
-                "metadata": {
-                    "total_base_mv": float(total_base_mv)
-                },
-                "data": subset.to_dict(orient="records")
-            }
-
-            with open(filename, "w") as f:
-                json.dump(output, f, indent=2)
-
+            subset.to_json(filename, orient="records", indent=2)
             print(f"Saved {len(subset)} records to {filename}")
         else:
             print(f"No records found for bucket '{bucket_name}'.")
