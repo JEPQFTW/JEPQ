@@ -5,6 +5,7 @@ const buckets = [
 ];
 
 const dateSelect = document.getElementById("dateSelect");
+let currentIndex = null; // User-entered index value
 
 // Load available dates and populate dropdown
 fetch("/JEPQ/data/JEPQ-Files/available_dates.json")
@@ -17,8 +18,7 @@ fetch("/JEPQ/data/JEPQ-Files/available_dates.json")
           dateSelect.appendChild(opt);
       });
 
-      // Default: last date (latest available)
-      dateSelect.value = data.dates[data.dates.length - 1];
+      dateSelect.value = data.dates[data.dates.length - 1]; // default last date
       loadTables(dateSelect.value);
   })
   .catch(err => console.error("Failed to load available_dates.json:", err));
@@ -28,16 +28,27 @@ dateSelect.addEventListener("change", () => {
     loadTables(dateSelect.value);
 });
 
+// When user updates index
+document.getElementById('updateIndex').addEventListener('click', () => {
+    const val = parseFloat(document.getElementById('userIndex').value);
+    if (!isNaN(val) && val > 0) {
+        currentIndex = val;
+        loadTables(dateSelect.value);
+    } else {
+        alert("Please enter a valid number for the index.");
+    }
+});
+
 function loadTables(date) {
-    const timestamp = new Date().getTime(); // unique per call
-    
+    const timestamp = new Date().getTime(); // cache-busting
+
     buckets.forEach(bucket => {
-        const file = `${bucket.prefix}${date}.json?ts=${timestamp}`; // cache-busting
+        const file = `${bucket.prefix}${date}.json?ts=${timestamp}`;
         fetch(file)
           .then(res => res.json())
           .then(data => {
               const tbody = document.querySelector(`#${bucket.id}-table tbody`);
-              tbody.innerHTML = ""; // clear old data
+              tbody.innerHTML = "";
               let totalWeight = 0;
 
               if (data.length === 0) {
@@ -52,12 +63,14 @@ function loadTables(date) {
 
               data.forEach(item => {
                   const tr = document.createElement('tr');
+
                   if(bucket.id === 'options') {
                       const [year, month, day] = item.Expiry_Date.split('-');
                       const displayDate = `${day}/${month}/${year}`;
                       const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
-                      const opening = parseFloat(item.OpeningPrice);
+                      const opening = currentIndex !== null ? currentIndex : parseFloat(item.OpeningPrice);
                       const upside = (strike - opening) / opening * 100;
+
                       let status = '', statusClass = '', forgoneGains = '';
 
                       if (upside < 0) {
@@ -67,7 +80,7 @@ function loadTables(date) {
                       } else {
                           status = 'OTM';
                           statusClass = 'otm';
-                          forgoneGains = 0.00 + '%';
+                          forgoneGains = "0.00%";
                       }
 
                       tr.innerHTML = `
@@ -75,7 +88,7 @@ function loadTables(date) {
                           <td>${item.Weight}%</td>
                           <td data-value="${item.Expiry_Date}">${displayDate}</td>
                           <td>${item.Strike_Price}</td>
-                          <td>${item.OpeningPrice}</td>
+                          <td>${opening}</td>
                           <td>${upside.toFixed(2)}%</td>
                           <td class="${statusClass}">${status}</td>
                           <td>${forgoneGains}</td>
