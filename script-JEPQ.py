@@ -120,10 +120,20 @@ def main():
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
             subset = subset[['Ticker', 'Weight']]
 
-        # Save JSON
+        # Save JSON with metadata
         if not subset.empty:
             filename = os.path.join(DATA_FOLDER, f'JEPQ_{bucket_name.replace(" ", "_")}_{date_str}.json')
-            subset.to_json(filename, orient="records")
+
+            output = {
+                "metadata": {
+                    "total_base_mv": float(total_base_mv)
+                },
+                "data": subset.to_dict(orient="records")
+            }
+
+            with open(filename, "w") as f:
+                json.dump(output, f, indent=2)
+
             print(f"Saved {len(subset)} records to {filename}")
         else:
             print(f"No records found for bucket '{bucket_name}'.")
