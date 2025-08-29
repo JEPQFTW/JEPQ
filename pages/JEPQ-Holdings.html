@@ -8,43 +8,20 @@
 <body>
 <canvas id="bgCanvas"></canvas>
 
-    <style>
-/* ----- Dark-Themed Back Button ----- */
-.back-button-container {
-    padding: 25px;
-    background: #1a252f;
-    border-bottom: 1px solid #2c3e50;
-}
-
-.back-button {
-    text-decoration: none;
-    background: #2c3e50;
-    color: #ecf0f1;
-    padding: 16px 24px;
-    border-radius: 6px;
-    font-weight: 500;
-    transition: background 0.3s, transform 0.2s;
-    display: inline-block;
-}
-
-.back-button:hover {
-    background: #3498db;
-    transform: translateY(-2px);
-}
-</style>
-
-    <div class="back-button-container">
+<!-- ----- Dark-Themed Back Button ----- -->
+<div class="back-button-container">
     <a href="../index.html" class="back-button">⬅ Back to Dashboard</a>
 </div>
 
-<div class="container">
-    <h1>JEPQ (UCITS) Holdings</h1>
-
-    <div style="text-align:center; margin: 20px;">
+<!-- ----- Index Input + Update Button ----- -->
+<div style="text-align:center; margin: 20px;" class="index-update-container">
     <label for="userIndex"><strong>Current Index Value:</strong></label>
     <input type="number" id="userIndex" placeholder="Enter current index value">
     <button id="updateIndex">Update</button>
 </div>
+
+<div class="container">
+    <h1>JEPQ (UCITS) Holdings</h1>
 
     <div style="text-align:center; margin:20px;">
         <label for="dateSelect"><strong>Select Date:</strong></label>
@@ -64,7 +41,6 @@
                 <th data-type="string">Status</th>
                 <th data-type="number">Forgone Gains</th>
                 <th data-type="number">Trading Days To Expiration</th>
-         
             </tr>
         </thead>
         <tbody></tbody>
@@ -72,6 +48,7 @@
             <tr>
                 <td>Total</td>
                 <td id="options-total">0%</td>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -116,6 +93,66 @@
         </tfoot>
     </table>
 </div>
+
+<!-- ----- Styles for Dark Buttons and Input ----- -->
+<style>
+.back-button-container {
+    padding: 25px;
+    background: #1a252f;
+    border-bottom: 1px solid #2c3e50;
+}
+
+.back-button {
+    text-decoration: none;
+    background: #2c3e50;
+    color: #ecf0f1;
+    padding: 16px 24px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background 0.3s, transform 0.2s;
+    display: inline-block;
+}
+
+.back-button:hover {
+    background: #3498db;
+    transform: translateY(-2px);
+}
+
+.index-update-container {
+    margin-top: 10px;
+}
+
+#index-update-container input#userIndex {
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid #2c3e50;
+    width: 180px;
+    margin-right: 10px;
+    font-size: 16px;
+    background: #2c3e50;
+    color: #ecf0f1;
+}
+
+#index-update-container input#userIndex::placeholder {
+    color: #bdc3c7;
+}
+
+#updateIndex {
+    background: #2c3e50;
+    color: #ecf0f1;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+#updateIndex:hover {
+    background: #3498db;
+    transform: translateY(-2px);
+}
+</style>
 
 <script src="../script/JEPQ.js"></script>
 </body>
