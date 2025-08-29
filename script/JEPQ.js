@@ -18,17 +18,18 @@ fetch("/JEPQ/data/JEPQ-Files/available_dates.json")
           dateSelect.appendChild(opt);
       });
 
-      dateSelect.value = data.dates[data.dates.length - 1]; // default last date
+      // Default: last available date
+      dateSelect.value = data.dates[data.dates.length - 1];
       loadTables(dateSelect.value);
   })
   .catch(err => console.error("Failed to load available_dates.json:", err));
 
-// When user selects a date
+// Handle date selection change
 dateSelect.addEventListener("change", () => {
     loadTables(dateSelect.value);
 });
 
-// When user updates index
+// Handle manual index update
 document.getElementById('updateIndex').addEventListener('click', () => {
     const val = parseFloat(document.getElementById('userIndex').value);
     if (!isNaN(val) && val > 0) {
@@ -54,7 +55,7 @@ function loadTables(date) {
               if (data.length === 0) {
                   const tr = document.createElement('tr');
                   const td = document.createElement('td');
-                  td.colSpan = bucket.id === 'options' ? 9 : 2; // updated for new column
+                  td.colSpan = bucket.id === 'options' ? 9 : 2; // include new column
                   td.textContent = "No records available";
                   tr.appendChild(td);
                   tbody.appendChild(tr);
@@ -83,7 +84,7 @@ function loadTables(date) {
                           forgoneGains = "0.00%";
                       }
 
-                      // --- Trading Days to Expiration ---
+                      // Trading Days to Expiration calculation
                       const expiryDate = new Date(item.Expiry_Date);
                       const currentDate = new Date();
                       const diffDays = (expiryDate - currentDate) / (1000 * 60 * 60 * 24); // calendar days
@@ -110,7 +111,7 @@ function loadTables(date) {
 
               document.getElementById(`${bucket.id}-total`).textContent = totalWeight.toFixed(2) + '%';
 
-              // Sum of all Forgone Gains for options table
+              // Sum of Forgone Gains for options table
               if(bucket.id === 'options') {
                   const tfootCell = document.querySelector('#options-table tfoot td:nth-child(8)');
                   const forgoneCells = document.querySelectorAll('#options-table tbody td:nth-child(8)');
@@ -126,7 +127,7 @@ function loadTables(date) {
     });
 }
 
-// ----- Sorting -----
+// ----- Table Sorting -----
 document.querySelectorAll('th').forEach(th => {
     th.addEventListener('click', () => {
         const table = th.closest('table');
