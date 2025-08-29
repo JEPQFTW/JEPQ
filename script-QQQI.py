@@ -7,7 +7,11 @@ import shutil
 # Constants
 DATA_FOLDER = "data/QQQI-Files"
 CSV_URL = "https://tinyurl.com/QQQI-Link"   # Auto-download link
-OPENING_PRICE = 23433   # Example hardcoded
+
+with open("config.json") as f:
+    CONFIG = json.load(f)
+    
+OPENING_PRICE = CONFIG["NDX"]   # Example hardcoded
 
 def get_current_date():
     return datetime.datetime.now().strftime("%Y-%m-%d")
