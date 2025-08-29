@@ -8,6 +8,35 @@
 <body>
 <canvas id="bgCanvas"></canvas>
 
+    <style>
+/* ----- Dark-Themed Back Button ----- */
+.back-button-container {
+    padding: 25px;
+    background: #1a252f;
+    border-bottom: 1px solid #2c3e50;
+}
+
+.back-button {
+    text-decoration: none;
+    background: #2c3e50;
+    color: #ecf0f1;
+    padding: 16px 24px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background 0.3s, transform 0.2s;
+    display: inline-block;
+}
+
+.back-button:hover {
+    background: #3498db;
+    transform: translateY(-2px);
+}
+</style>
+
+    <div class="back-button-container">
+    <a href="../index.html" class="back-button">⬅ Back to Dashboard</a>
+</div>
+
 <div class="container">
     <h1>JEPQ (UCITS) Holdings</h1>
 
