@@ -5,6 +5,7 @@ const buckets = [
 ];
 
 const dateSelect = document.getElementById("dateSelect");
+let currentIndex = null; // User-entered index value
 
 // Load available dates and populate dropdown
 fetch("/JEPQ/data/JEPQ-Files/available_dates.json")
@@ -17,15 +18,26 @@ fetch("/JEPQ/data/JEPQ-Files/available_dates.json")
           dateSelect.appendChild(opt);
       });
 
-      // Default: latest date
+      // Default: last available date
       dateSelect.value = data.dates[data.dates.length - 1];
       loadTables(dateSelect.value);
   })
   .catch(err => console.error("Failed to load available_dates.json:", err));
 
-// When user selects a date
+// Handle date selection change
 dateSelect.addEventListener("change", () => {
     loadTables(dateSelect.value);
+});
+
+// Handle manual index update
+document.getElementById('updateIndex').addEventListener('click', () => {
+    const val = parseFloat(document.getElementById('userIndex').value);
+    if (!isNaN(val) && val > 0) {
+        currentIndex = val;
+        loadTables(dateSelect.value);
+    } else {
+        alert("Please enter a valid number for the index.");
+    }
 });
 
 function loadTables(date) {
@@ -35,15 +47,16 @@ function loadTables(date) {
         const file = `${bucket.prefix}${date}.json?ts=${timestamp}`;
         fetch(file)
           .then(res => res.json())
-          .then(json => {
+          .then(jsonData => {
+              const data = jsonData.data || jsonData; // fallback if no wrapper
+              const metadata = jsonData.metadata || {}; // total_base_mv, etc.
+              const totalBaseMV = parseFloat(metadata.total_base_mv) || 1; // avoid division by zero
+
               const tbody = document.querySelector(`#${bucket.id}-table tbody`);
-              tbody.innerHTML = ""; // clear old data
+              tbody.innerHTML = "";
+              let totalWeight = 0;
 
-              // Handle new JSON structure
-              const metadata = json.metadata || {};
-              const data = json.data || [];
-
-              if (data.length === 0) {
+              if (!data || data.length === 0) {
                   const tr = document.createElement('tr');
                   const td = document.createElement('td');
                   td.colSpan = bucket.id === 'options' ? 9 : 2;
@@ -53,53 +66,44 @@ function loadTables(date) {
                   return;
               }
 
-              let totalWeight = 0;
-
               data.forEach(item => {
                   const tr = document.createElement('tr');
 
                   if(bucket.id === 'options') {
                       const [year, month, day] = item.Expiry_Date.split('-');
                       const displayDate = `${day}/${month}/${year}`;
-                      const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
-                      const opening = parseFloat(item.OpeningPrice);
-                      const upside = ((strike - opening) / opening) * 100;
 
+                      const strike = parseFloat(item.Strike_Price.replace(/,/g,''));
+                      const opening = currentIndex !== null ? currentIndex : parseFloat(item.OpeningPrice);
+                      const contracts = parseFloat(item.Contracts.replace(/,/g,''));
+                      const upside = (strike - opening) / opening * 100;
+
+                      // Dynamic ForgoneGain calculation
+                      let forgoneGain = 0;
                       let status = '', statusClass = '';
-                      if (upside < 0) {
+                      if(opening > strike) {
+                          forgoneGain = (opening - strike) * contracts;
                           status = 'ITM';
                           statusClass = 'itm';
                       } else {
                           status = 'OTM';
                           statusClass = 'otm';
                       }
-
-                      // Forgone Gains % calculation using dynamic metadata
-                      const count = parseInt(item.Count || "1");
-                      const totalBaseMV = parseFloat(metadata.total_base_mv || 0);
-                      let forgonePct = 0;
-
-                      if (totalBaseMV > 0 && strike < opening) {
-                          const forgone = (opening - strike) * count;
-                          forgonePct = (forgone / totalBaseMV) * 100;
-                      }
+                      const forgonePct = (forgoneGain / totalBaseMV) * 100;
 
                       tr.innerHTML = `
                           <td>${item.Ticker}</td>
                           <td>${item.Weight}%</td>
                           <td data-value="${item.Expiry_Date}">${displayDate}</td>
                           <td>${item.Strike_Price}</td>
-                          <td>${item.OpeningPrice}</td>
+                          <td>${opening.toFixed(2)}</td>
                           <td>${upside.toFixed(2)}%</td>
                           <td class="${statusClass}">${status}</td>
                           <td>${forgonePct.toFixed(2)}%</td>
-                          <td>${item.Trading_Days_To_Expiration || '-'}</td>
+                          <td>${calculateTradingDays(item.Expiry_Date)}</td>
                       `;
                   } else {
-                      tr.innerHTML = `
-                          <td>${item.Ticker}</td>
-                          <td>${item.Weight}%</td>
-                      `;
+                      tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
                   }
 
                   totalWeight += parseFloat(item.Weight) || 0;
@@ -108,9 +112,9 @@ function loadTables(date) {
 
               document.getElementById(`${bucket.id}-total`).textContent = totalWeight.toFixed(2) + '%';
 
-              // Sum of all Forgone Gains for options table
+              // Sum of Forgone Gains for options table
               if(bucket.id === 'options') {
-                  const tfootCell = document.querySelector('#options-table tfoot td:last-child');
+                  const tfootCell = document.querySelector('#options-table tfoot td:nth-child(8)');
                   const forgoneCells = document.querySelectorAll('#options-table tbody td:nth-child(8)');
                   let forgoneSum = 0;
                   forgoneCells.forEach(td => {
@@ -124,7 +128,15 @@ function loadTables(date) {
     });
 }
 
-// ----- Sorting -----
+// Helper: calculate trading days to expiry
+function calculateTradingDays(expiryStr) {
+    const expiryDate = new Date(expiryStr);
+    const currentDate = new Date();
+    const diffDays = (expiryDate - currentDate) / (1000*60*60*24);
+    return Math.max(0, Math.round(diffDays * 5 / 7));
+}
+
+// ----- Table Sorting -----
 document.querySelectorAll('th').forEach(th => {
     th.addEventListener('click', () => {
         const table = th.closest('table');
