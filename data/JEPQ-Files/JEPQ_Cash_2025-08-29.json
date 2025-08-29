@@ -1,1 +1,11 @@
-[{"Ticker":"Cash and Cash Equivalent","Weight":"2.65"}]
+{
+  "metadata": {
+    "total_base_mv": 2059289079.4100003
+  },
+  "data": [
+    {
+      "Ticker": "Cash and Cash Equivalent",
+      "Weight": "2.65"
+    }
+  ]
+}
