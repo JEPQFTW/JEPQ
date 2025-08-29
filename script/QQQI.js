@@ -1,13 +1,13 @@
 const buckets = [
-    { id: 'options', prefix: '/JEPQ/data/JEPQ-Files/JEPQ_Options_-_Index_' },
-    { id: 'cash',    prefix: '/JEPQ/data/JEPQ-Files/JEPQ_Cash_' },
-    { id: 'stocks',  prefix: '/JEPQ/data/JEPQ-Files/JEPQ_Stocks_' }
+    { id: 'options', prefix: '../data/QQQI-Files/QQQI_Options_-_Index_' },
+    { id: 'cash',    prefix: '../data/QQQI-Files/QQQI_Cash_' },
+    { id: 'stocks',  prefix: '../data/QQQI-Files/QQQI_Stocks_' }
 ];
 
 const dateSelect = document.getElementById("dateSelect");
 
 // Load available dates and populate dropdown
-fetch("/JEPQ/data/JEPQ-Files/available_dates.json")
+fetch("../data/QQQI-Files/available_dates.json")
   .then(res => res.json())
   .then(data => {
       data.dates.forEach(date => {
@@ -28,27 +28,22 @@ dateSelect.addEventListener("change", () => {
     loadTables(dateSelect.value);
 });
 
-// ----- Update Button -----
-document.getElementById("updateIndex").addEventListener("click", () => {
-    loadTables(dateSelect.value);
-});
-
 function loadTables(date) {
     const timestamp = new Date().getTime(); // cache-busting
     
     buckets.forEach(bucket => {
-        const file = `${bucket.prefix}${date}.json?ts=${timestamp}`;
+        const file = `${bucket.prefix}${date}.json?ts=${timestamp}`; // cache-busting
         fetch(file)
           .then(res => res.json())
           .then(data => {
               const tbody = document.querySelector(`#${bucket.id}-table tbody`);
-              tbody.innerHTML = "";
+              tbody.innerHTML = ""; // clear old data
               let totalWeight = 0;
 
               if (data.length === 0) {
                   const tr = document.createElement('tr');
                   const td = document.createElement('td');
-                  td.colSpan = bucket.id === 'options' ? 9 : 2;
+                  td.colSpan = bucket.id === 'options' ? 8 : 2;
                   td.textContent = "No records available";
                   tr.appendChild(td);
                   tbody.appendChild(tr);
@@ -57,56 +52,47 @@ function loadTables(date) {
 
               data.forEach(item => {
                   const tr = document.createElement('tr');
-
                   if(bucket.id === 'options') {
                       const [year, month, day] = item.Expiry_Date.split('-');
                       const displayDate = `${day}/${month}/${year}`;
                       const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
                       const opening = parseFloat(item.OpeningPrice);
                       const upside = (strike - opening) / opening * 100;
-
                       let status = '', statusClass = '', forgoneGains = '';
 
                       if (upside < 0) {
                           status = 'ITM';
                           statusClass = 'itm';
-                          // Forgone gains % is based on Contracts * (Opening - Strike) / total_base_mv
                           forgoneGains = (parseFloat(item.ForgoneGainPct) * 100).toFixed(2) + '%';
                       } else {
                           status = 'OTM';
                           statusClass = 'otm';
-                          forgoneGains = "0.00%";
+                          forgoneGains = 0.00 + '%';
                       }
 
-                      const expiryDate = new Date(item.Expiry_Date);
-                      const currentDate = new Date();
-                      const diffDays = (expiryDate - currentDate) / (1000 * 60 * 60 * 24);
-                      const tradingDays = Math.max(0, Math.round(diffDays * 5 / 7));
-
                       tr.innerHTML = `
-                          <td>${item.Ticker}</td>
-                          <td>${item.Weight}%</td>
+                          <td>${item.StockTicker}</td>
+                          <td>${item.Weightings}%</td>
                           <td data-value="${item.Expiry_Date}">${displayDate}</td>
                           <td>${item.Strike_Price}</td>
-                          <td>${opening}</td>
+                          <td>${item.OpeningPrice}</td>
                           <td>${upside.toFixed(2)}%</td>
                           <td class="${statusClass}">${status}</td>
                           <td>${forgoneGains}</td>
-                          <td>${tradingDays}</td>
                       `;
                   } else {
-                      tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
+                      tr.innerHTML = `<td>${item.StockTicker}</td><td>${item.SecurityName}</td><td>${item.Weightings}%</td>`;
                   }
 
-                  totalWeight += parseFloat(item.Weight) || 0;
+                  totalWeight += parseFloat(item.Weightings) || 0;
                   tbody.appendChild(tr);
               });
 
               document.getElementById(`${bucket.id}-total`).textContent = totalWeight.toFixed(2) + '%';
 
-              // Sum of Forgone Gains for options table
+              // Sum of all Forgone Gains for options table
               if(bucket.id === 'options') {
-                  const tfootCell = document.querySelector('#options-table tfoot td:nth-child(8)');
+                  const tfootCell = document.querySelector('#options-table tfoot td:last-child');
                   const forgoneCells = document.querySelectorAll('#options-table tbody td:nth-child(8)');
                   let forgoneSum = 0;
                   forgoneCells.forEach(td => {
@@ -120,7 +106,7 @@ function loadTables(date) {
     });
 }
 
-// ----- Table Sorting -----
+// ----- Sorting -----
 document.querySelectorAll('th').forEach(th => {
     th.addEventListener('click', () => {
         const table = th.closest('table');
