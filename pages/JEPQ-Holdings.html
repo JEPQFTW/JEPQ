@@ -14,12 +14,6 @@
 </div>
 
 <!-- ----- Index Input + Update + Live Button ----- -->
-<div style="text-align:center; margin: 20px;" class="index-update-container">
-    <button id="liveIndexBtn">Get Live Index Price</button>
-    <label for="userIndex" style="margin-left:10px;"><strong>Current Index Value:</strong></label>
-    <input type="number" id="userIndex" placeholder="Enter current index value">
-    <button id="updateIndex">Update</button>
-</div>
 
 <div class="container">
     <h1>JEPQ (UCITS) Holdings</h1>
@@ -28,6 +22,13 @@
         <label for="dateSelect"><strong>Select Date:</strong></label>
         <select id="dateSelect"></select>
     </div>
+
+    <div style="text-align:center; margin: 20px;" class="index-update-container">
+    <button id="liveIndexBtn">Get Live Index Price</button>
+    <label for="userIndex" style="margin-left:10px;"><strong>Current Index Value:</strong></label>
+    <input type="number" id="userIndex" placeholder="Enter current index value">
+    <button id="updateIndex">Update</button>
+</div>
     
     <h2>Options - Index</h2>
     <table id="options-table">
