@@ -5,10 +5,10 @@
     "Expiry_Date":"2025-09-25",
     "Option_Type":"C",
     "Strike_Price":"6,500.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":6507.98,
     "Contracts":"1,700.00",
-    "ForgoneGain":"29,305,739.00",
-    "ForgoneGainPct":"0.144186",
+    "ForgoneGain":"13,566.00",
+    "ForgoneGainPct":"0.000067",
     "TotalBaseMV":203249088.7599999905
   },
   {
@@ -17,10 +17,10 @@
     "Expiry_Date":"2025-09-11",
     "Option_Type":"C",
     "Strike_Price":"6,450.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":6507.98,
     "Contracts":"1,700.00",
-    "ForgoneGain":"29,390,739.00",
-    "ForgoneGainPct":"0.144605",
+    "ForgoneGain":"98,566.00",
+    "ForgoneGainPct":"0.000485",
     "TotalBaseMV":203249088.7599999905
   },
   {
@@ -29,10 +29,10 @@
     "Expiry_Date":"2025-09-09",
     "Option_Type":"C",
     "Strike_Price":"6,450.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":6507.98,
     "Contracts":"1,700.00",
-    "ForgoneGain":"29,390,739.00",
-    "ForgoneGainPct":"0.144605",
+    "ForgoneGain":"98,566.00",
+    "ForgoneGainPct":"0.000485",
     "TotalBaseMV":203249088.7599999905
   },
   {
@@ -41,10 +41,10 @@
     "Expiry_Date":"2025-09-24",
     "Option_Type":"C",
     "Strike_Price":"6,525.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":6507.98,
     "Contracts":"1,700.00",
-    "ForgoneGain":"29,263,239.00",
-    "ForgoneGainPct":"0.143977",
+    "ForgoneGain":"0.00",
+    "ForgoneGainPct":"0.000000",
     "TotalBaseMV":203249088.7599999905
   },
   {
@@ -53,10 +53,10 @@
     "Expiry_Date":"2025-09-23",
     "Option_Type":"C",
     "Strike_Price":"6,525.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":6507.98,
     "Contracts":"1,700.00",
-    "ForgoneGain":"29,263,239.00",
-    "ForgoneGainPct":"0.143977",
+    "ForgoneGain":"0.00",
+    "ForgoneGainPct":"0.000000",
     "TotalBaseMV":203249088.7599999905
   },
   {
@@ -65,10 +65,10 @@
     "Expiry_Date":"2025-09-10",
     "Option_Type":"C",
     "Strike_Price":"6,475.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":6507.98,
     "Contracts":"1,700.00",
-    "ForgoneGain":"29,348,239.00",
-    "ForgoneGainPct":"0.144395",
+    "ForgoneGain":"56,066.00",
+    "ForgoneGainPct":"0.000276",
     "TotalBaseMV":203249088.7599999905
   },
   {
@@ -77,10 +77,10 @@
     "Expiry_Date":"2025-09-30",
     "Option_Type":"C",
     "Strike_Price":"6,585.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":6507.98,
     "Contracts":"1,800.00",
-    "ForgoneGain":"30,876,606.00",
-    "ForgoneGainPct":"0.151915",
+    "ForgoneGain":"0.00",
+    "ForgoneGainPct":"0.000000",
     "TotalBaseMV":203249088.7599999905
   },
   {
@@ -89,10 +89,10 @@
     "Expiry_Date":"2025-10-01",
     "Option_Type":"C",
     "Strike_Price":"6,600.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":6507.98,
     "Contracts":"1,700.00",
-    "ForgoneGain":"29,135,739.00",
-    "ForgoneGainPct":"0.143350",
+    "ForgoneGain":"0.00",
+    "ForgoneGainPct":"0.000000",
     "TotalBaseMV":203249088.7599999905
   },
   {
@@ -101,10 +101,10 @@
     "Expiry_Date":"2025-10-02",
     "Option_Type":"C",
     "Strike_Price":"6,625.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":6507.98,
     "Contracts":"1,700.00",
-    "ForgoneGain":"29,093,239.00",
-    "ForgoneGainPct":"0.143141",
+    "ForgoneGain":"0.00",
+    "ForgoneGainPct":"0.000000",
     "TotalBaseMV":203249088.7599999905
   },
   {
@@ -113,10 +113,10 @@
     "Expiry_Date":"2025-09-16",
     "Option_Type":"C",
     "Strike_Price":"6,550.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":6507.98,
     "Contracts":"1,700.00",
-    "ForgoneGain":"29,220,739.00",
-    "ForgoneGainPct":"0.143768",
+    "ForgoneGain":"0.00",
+    "ForgoneGainPct":"0.000000",
     "TotalBaseMV":203249088.7599999905
   },
   {
@@ -125,10 +125,10 @@
     "Expiry_Date":"2025-09-04",
     "Option_Type":"C",
     "Strike_Price":"6,475.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":6507.98,
     "Contracts":"1,800.00",
-    "ForgoneGain":"31,074,606.00",
-    "ForgoneGainPct":"0.152889",
+    "ForgoneGain":"59,364.00",
+    "ForgoneGainPct":"0.000292",
     "TotalBaseMV":203249088.7599999905
   },
   {
@@ -137,10 +137,10 @@
     "Expiry_Date":"2025-09-17",
     "Option_Type":"C",
     "Strike_Price":"6,575.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":6507.98,
     "Contracts":"1,700.00",
-    "ForgoneGain":"29,178,239.00",
-    "ForgoneGainPct":"0.143559",
+    "ForgoneGain":"0.00",
+    "ForgoneGainPct":"0.000000",
     "TotalBaseMV":203249088.7599999905
   },
   {
@@ -149,10 +149,10 @@
     "Expiry_Date":"2025-09-03",
     "Option_Type":"C",
     "Strike_Price":"6,475.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":6507.98,
     "Contracts":"1,800.00",
-    "ForgoneGain":"31,074,606.00",
-    "ForgoneGainPct":"0.152889",
+    "ForgoneGain":"59,364.00",
+    "ForgoneGainPct":"0.000292",
     "TotalBaseMV":203249088.7599999905
   },
   {
@@ -161,10 +161,10 @@
     "Expiry_Date":"2025-09-18",
     "Option_Type":"C",
     "Strike_Price":"6,600.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":6507.98,
     "Contracts":"1,700.00",
-    "ForgoneGain":"29,135,739.00",
-    "ForgoneGainPct":"0.143350",
+    "ForgoneGain":"0.00",
+    "ForgoneGainPct":"0.000000",
     "TotalBaseMV":203249088.7599999905
   },
   {
@@ -173,10 +173,10 @@
     "Expiry_Date":"2025-09-02",
     "Option_Type":"C",
     "Strike_Price":"6,500.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":6507.98,
     "Contracts":"1,800.00",
-    "ForgoneGain":"31,029,606.00",
-    "ForgoneGainPct":"0.152668",
+    "ForgoneGain":"14,364.00",
+    "ForgoneGainPct":"0.000071",
     "TotalBaseMV":203249088.7599999905
   }
 ]
