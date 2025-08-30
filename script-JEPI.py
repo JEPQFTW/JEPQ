@@ -11,8 +11,7 @@ EXCEL_URL = 'https://tinyurl.com/JepiFTWx'
 
 with open("config.json") as f:
     CONFIG = json.load(f)
-
-OPENING_PRICE = CONFIG["SPX"]
+    
 
 def get_current_date():
     return datetime.datetime.now().strftime("%Y-%m-%d")
@@ -79,7 +78,7 @@ def main():
 
     df['Bucket'] = df.apply(assign_bucket, axis=1)
 
-    # Total portfolio Base Market Value (for % calculation)
+    # Total portfolio Base Market Value
     total_base_mv = df['BaseMV'].sum()
 
     # Process each bucket
@@ -92,37 +91,42 @@ def main():
                 lambda val: pd.Series(parse_option_info(val))
             )
 
+            opening_price = CONFIG["NDX"]  # hardcoded underlying price
+
             # Calculate Contracts
             subset['Contracts'] = -subset['BaseMV'] / subset['Price']
 
             # Calculate ForgoneGain only if OpeningPrice > Strike_Price
-            subset['ForgoneGain'] = ((OPENING_PRICE - subset['Strike_Price']) * subset['Contracts']).where(
-                OPENING_PRICE > subset['Strike_Price'], 0
+            subset['ForgoneGain'] = ((opening_price - subset['Strike_Price']) * subset['Contracts']).where(
+                opening_price > subset['Strike_Price'], 0
             )
 
+            # Include total_base_mv in every row
+            subset['TotalBaseMV'] = total_base_mv
+
             # Calculate ForgoneGainPct
-            subset['ForgoneGainPct'] = subset['ForgoneGain'] / total_base_mv
+            subset['ForgoneGainPct'] = subset['ForgoneGain'] / subset['TotalBaseMV']
 
             # Format for JSON
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
             subset['Strike_Price'] = subset['Strike_Price'].map(lambda x: f"{x:,.2f}")
-            subset['OpeningPrice'] = OPENING_PRICE
+            subset['OpeningPrice'] = opening_price
             subset['Contracts'] = subset['Contracts'].map(lambda x: f"{x:,.2f}")
             subset['ForgoneGain'] = subset['ForgoneGain'].map(lambda x: f"{x:,.2f}")
             subset['ForgoneGainPct'] = subset['ForgoneGainPct'].map(lambda x: f"{x:.6f}")
 
             subset = subset[['Ticker', 'Weight', 'Expiry_Date', 'Option_Type', 'Strike_Price',
-                             'OpeningPrice', 'Contracts', 'ForgoneGain', 'ForgoneGainPct']]
+                             'OpeningPrice', 'Contracts', 'ForgoneGain', 'ForgoneGainPct', 'TotalBaseMV']]
 
         else:
             subset['Ticker'] = subset['Ticker_A']
             subset['Weight'] = (subset['Weight'] * 100).map(lambda x: f"{x:.2f}")
             subset = subset[['Ticker', 'Weight']]
 
-        # Save JSON
+        # Save JSON (no metadata)
         if not subset.empty:
             filename = os.path.join(DATA_FOLDER, f'JEPI_{bucket_name.replace(" ", "_")}_{date_str}.json')
-            subset.to_json(filename, orient="records")
+            subset.to_json(filename, orient="records", indent=2)
             print(f"Saved {len(subset)} records to {filename}")
         else:
             print(f"No records found for bucket '{bucket_name}'.")
