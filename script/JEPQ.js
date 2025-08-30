@@ -152,6 +152,8 @@ updateButton.addEventListener("click", () => {
         const totalBaseMV = parseFloat(row.cells[10].textContent);
 
         const upside = (strike - userIndex) / userIndex * 100;
+
+        row.cells[5].textContent = userIndex.toFixed(2);
         row.cells[6].textContent = upside.toFixed(2) + "%";
 
         let status = '', statusClass = '', forgone = 0;
