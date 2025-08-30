@@ -7,7 +7,7 @@ import re
 import json
 
 DATA_FOLDER = "data/JEPI-Files"
-EXCEL_URL = 'https://tinyurl.com/JepiFTWx'
+EXCEL_URL = 'https://tinyurl.com/JEPIFTWx'
 
 with open("config.json") as f:
     CONFIG = json.load(f)
