@@ -1,0 +1,366 @@
+[
+  {
+    "Ticker":"NVIDIA CORP",
+    "Weight":"9.36"
+  },
+  {
+    "Ticker":"MICROSOFT CORP",
+    "Weight":"8.62"
+  },
+  {
+    "Ticker":"APPLE INC",
+    "Weight":"7.82"
+  },
+  {
+    "Ticker":"AMAZON.COM INC",
+    "Weight":"5.74"
+  },
+  {
+    "Ticker":"ALPHABET INC-CL C",
+    "Weight":"5.11"
+  },
+  {
+    "Ticker":"BROADCOM INC",
+    "Weight":"5.09"
+  },
+  {
+    "Ticker":"META PLATFORMS INC-CLASS A",
+    "Weight":"4.13"
+  },
+  {
+    "Ticker":"NETFLIX INC",
+    "Weight":"3.25"
+  },
+  {
+    "Ticker":"TESLA INC",
+    "Weight":"2.66"
+  },
+  {
+    "Ticker":"COSTCO WHOLESALE CORP",
+    "Weight":"1.77"
+  },
+  {
+    "Ticker":"ADVANCED MICRO DEVICES",
+    "Weight":"1.75"
+  },
+  {
+    "Ticker":"PALANTIR TECHNOLOGIES INC-A",
+    "Weight":"1.42"
+  },
+  {
+    "Ticker":"INTUIT INC",
+    "Weight":"1.39"
+  },
+  {
+    "Ticker":"BOOKING HOLDINGS INC",
+    "Weight":"1.38"
+  },
+  {
+    "Ticker":"T-MOBILE US INC",
+    "Weight":"1.30"
+  },
+  {
+    "Ticker":"CISCO SYSTEMS INC",
+    "Weight":"1.24"
+  },
+  {
+    "Ticker":"INTUITIVE SURGICAL INC",
+    "Weight":"1.18"
+  },
+  {
+    "Ticker":"ANALOG DEVICES INC",
+    "Weight":"1.11"
+  },
+  {
+    "Ticker":"LINDE PLC",
+    "Weight":"1.05"
+  },
+  {
+    "Ticker":"LAM RESEARCH CORP",
+    "Weight":"1.05"
+  },
+  {
+    "Ticker":"SYNOPSYS INC",
+    "Weight":"1.04"
+  },
+  {
+    "Ticker":"PALO ALTO NETWORKS INC",
+    "Weight":"1.00"
+  },
+  {
+    "Ticker":"HONEYWELL INTERNATIONAL INC",
+    "Weight":"0.99"
+  },
+  {
+    "Ticker":"MICRON TECHNOLOGY INC",
+    "Weight":"0.95"
+  },
+  {
+    "Ticker":"TEXAS INSTRUMENTS INC",
+    "Weight":"0.91"
+  },
+  {
+    "Ticker":"COMCAST CORP-CLASS A",
+    "Weight":"0.87"
+  },
+  {
+    "Ticker":"QUALCOMM INC",
+    "Weight":"0.82"
+  },
+  {
+    "Ticker":"MERCADOLIBRE INC",
+    "Weight":"0.82"
+  },
+  {
+    "Ticker":"O'REILLY AUTOMOTIVE INC",
+    "Weight":"0.80"
+  },
+  {
+    "Ticker":"PEPSICO INC",
+    "Weight":"0.76"
+  },
+  {
+    "Ticker":"APPLOVIN CORP-CLASS A",
+    "Weight":"0.76"
+  },
+  {
+    "Ticker":"VERTEX PHARMACEUTICALS INC",
+    "Weight":"0.75"
+  },
+  {
+    "Ticker":"ADOBE INC",
+    "Weight":"0.72"
+  },
+  {
+    "Ticker":"NXP SEMICONDUCTORS NV",
+    "Weight":"0.71"
+  },
+  {
+    "Ticker":"MONDELEZ INTERNATIONAL INC-A",
+    "Weight":"0.70"
+  },
+  {
+    "Ticker":"SHOPIFY INC - CLASS A",
+    "Weight":"0.67"
+  },
+  {
+    "Ticker":"ASML HOLDING NV-NY REG SHS",
+    "Weight":"0.66"
+  },
+  {
+    "Ticker":"CROWDSTRIKE HOLDINGS INC - A",
+    "Weight":"0.65"
+  },
+  {
+    "Ticker":"CSX CORP",
+    "Weight":"0.65"
+  },
+  {
+    "Ticker":"ABBVIE INC",
+    "Weight":"0.58"
+  },
+  {
+    "Ticker":"REGENERON PHARMACEUTICALS",
+    "Weight":"0.55"
+  },
+  {
+    "Ticker":"SEAGATE TECHNOLOGY HOLDINGS",
+    "Weight":"0.54"
+  },
+  {
+    "Ticker":"COPART INC",
+    "Weight":"0.53"
+  },
+  {
+    "Ticker":"ORACLE CORP",
+    "Weight":"0.53"
+  },
+  {
+    "Ticker":"MARRIOTT INTERNATIONAL -CL A",
+    "Weight":"0.52"
+  },
+  {
+    "Ticker":"MONSTER BEVERAGE CORP",
+    "Weight":"0.52"
+  },
+  {
+    "Ticker":"COCA-COLA CO\/THE",
+    "Weight":"0.50"
+  },
+  {
+    "Ticker":"MARVELL TECHNOLOGY INC",
+    "Weight":"0.46"
+  },
+  {
+    "Ticker":"EATON CORP PLC",
+    "Weight":"0.44"
+  },
+  {
+    "Ticker":"AMGEN INC",
+    "Weight":"0.43"
+  },
+  {
+    "Ticker":"DOORDASH INC - A",
+    "Weight":"0.43"
+  },
+  {
+    "Ticker":"LOWE'S COS INC",
+    "Weight":"0.42"
+  },
+  {
+    "Ticker":"APPLIED MATERIALS INC",
+    "Weight":"0.42"
+  },
+  {
+    "Ticker":"VERISK ANALYTICS INC",
+    "Weight":"0.41"
+  },
+  {
+    "Ticker":"XCEL ENERGY INC",
+    "Weight":"0.40"
+  },
+  {
+    "Ticker":"SOUTHERN CO\/THE",
+    "Weight":"0.40"
+  },
+  {
+    "Ticker":"SERVICENOW INC",
+    "Weight":"0.39"
+  },
+  {
+    "Ticker":"MASTERCARD INC - A",
+    "Weight":"0.38"
+  },
+  {
+    "Ticker":"STARBUCKS CORP",
+    "Weight":"0.37"
+  },
+  {
+    "Ticker":"TAKE-TWO INTERACTIVE SOFTWRE",
+    "Weight":"0.35"
+  },
+  {
+    "Ticker":"INTEL CORP",
+    "Weight":"0.35"
+  },
+  {
+    "Ticker":"NEXTERA ENERGY INC",
+    "Weight":"0.34"
+  },
+  {
+    "Ticker":"DEERE AND CO",
+    "Weight":"0.33"
+  },
+  {
+    "Ticker":"UBER TECHNOLOGIES INC",
+    "Weight":"0.31"
+  },
+  {
+    "Ticker":"DIAMONDBACK ENERGY INC",
+    "Weight":"0.31"
+  },
+  {
+    "Ticker":"CHIPOTLE MEXICAN GRILL INC",
+    "Weight":"0.29"
+  },
+  {
+    "Ticker":"DEXCOM INC",
+    "Weight":"0.25"
+  },
+  {
+    "Ticker":"BRISTOL-MYERS SQUIBB CO",
+    "Weight":"0.25"
+  },
+  {
+    "Ticker":"HUBSPOT INC",
+    "Weight":"0.25"
+  },
+  {
+    "Ticker":"COGNIZANT TECH SOLUTIONS-A",
+    "Weight":"0.24"
+  },
+  {
+    "Ticker":"THERMO FISHER SCIENTIFIC INC",
+    "Weight":"0.23"
+  },
+  {
+    "Ticker":"ROSS STORES INC",
+    "Weight":"0.23"
+  },
+  {
+    "Ticker":"CORPAY INC",
+    "Weight":"0.23"
+  },
+  {
+    "Ticker":"PAYPAL HOLDINGS INC",
+    "Weight":"0.22"
+  },
+  {
+    "Ticker":"PROLOGIS INC",
+    "Weight":"0.21"
+  },
+  {
+    "Ticker":"TERADYNE INC",
+    "Weight":"0.20"
+  },
+  {
+    "Ticker":"CHARTER COMMUNICATIONS INC - A",
+    "Weight":"0.19"
+  },
+  {
+    "Ticker":"WORKDAY INC-CLASS A",
+    "Weight":"0.19"
+  },
+  {
+    "Ticker":"BIOGEN INC",
+    "Weight":"0.18"
+  },
+  {
+    "Ticker":"STRATEGY INC",
+    "Weight":"0.18"
+  },
+  {
+    "Ticker":"UNITEDHEALTH GROUP INC",
+    "Weight":"0.18"
+  },
+  {
+    "Ticker":"KRAFT HEINZ CO\/THE",
+    "Weight":"0.17"
+  },
+  {
+    "Ticker":"PDD HOLDINGS INC",
+    "Weight":"0.14"
+  },
+  {
+    "Ticker":"AIRBNB INC-CLASS A",
+    "Weight":"0.12"
+  },
+  {
+    "Ticker":"CONSTELLATION ENERGY",
+    "Weight":"0.11"
+  },
+  {
+    "Ticker":"TRADE DESK INC\/THE -CLASS A",
+    "Weight":"0.11"
+  },
+  {
+    "Ticker":"DATADOG INC - CLASS A",
+    "Weight":"0.11"
+  },
+  {
+    "Ticker":"CONSTELLATION BRANDS INC-A",
+    "Weight":"0.09"
+  },
+  {
+    "Ticker":"ATLASSIAN CORP-CL A",
+    "Weight":"0.08"
+  },
+  {
+    "Ticker":"UNITED PARCEL SERVICE-CL B",
+    "Weight":"0.08"
+  },
+  {
+    "Ticker":"LULULEMON ATHLETICA INC",
+    "Weight":"0.04"
+  }
+]
