@@ -11,7 +11,7 @@ CSV_URL = "https://tinyurl.com/QQQI-Link"   # Auto-download link
 with open("config.json") as f:
     CONFIG = json.load(f)
 
-OPENING_PRICE = CONFIG["NDX"]   # Example hardcoded
+OPENING_PRICE = CONFIG["NDX"]   # Current underlying index level
 
 
 def get_current_date():
@@ -19,7 +19,7 @@ def get_current_date():
 
 
 def parse_option_info(option_str):
-    """Extract expiry, type, and strike from option tickers."""
+    """Extract expiry, type, and strike from option tickers (e.g., NDX 251017C23925000)."""
     try:
         parts = option_str.strip().split()
         if len(parts) < 2:
@@ -61,14 +61,17 @@ def main():
     date_str = get_current_date()
 
     print(f"Downloading CSV for {date_str} ...")
-    df = pd.read_csv(CSV_URL, usecols=['StockTicker','Price','MarketValue','Weightings','SecurityName'])
-    df = df.dropna(subset=['StockTicker','Weightings'])
+    df = pd.read_csv(
+        CSV_URL,
+        usecols=['StockTicker', 'Price', 'MarketValue', 'Weightings', 'SecurityName']
+    )
+    df = df.dropna(subset=['StockTicker', 'Weightings'])
 
     # Clean numeric fields
-    df['Price'] = pd.to_numeric(df['Price'].astype(str).str.replace('$','').str.replace(',',''), errors='coerce')
-    df['MarketValue'] = pd.to_numeric(df['MarketValue'].astype(str).str.replace('$','').str.replace(',',''), errors='coerce')
-    df['Weightings'] = pd.to_numeric(df['Weightings'].astype(str).str.replace('%','').str.replace(',',''), errors='coerce')
-    df = df.dropna(subset=['Price','MarketValue'])
+    df['Price'] = pd.to_numeric(df['Price'].astype(str).str.replace('$', '').str.replace(',', ''), errors='coerce')
+    df['MarketValue'] = pd.to_numeric(df['MarketValue'].astype(str).str.replace('$', '').str.replace(',', ''), errors='coerce')
+    df['Weightings'] = pd.to_numeric(df['Weightings'].astype(str).str.replace('%', '').str.replace(',', ''), errors='coerce')
+    df = df.dropna(subset=['Price', 'MarketValue'])
 
     # Assign buckets
     df['Bucket'] = df['StockTicker'].apply(assign_bucket_from_ticker)
@@ -85,21 +88,21 @@ def main():
             subset[['Expiry_Date', 'Option_Type', 'Strike_Price']] = subset['StockTicker'].apply(
                 lambda val: pd.Series(parse_option_info(val))
             )
-            subset['Contracts'] = -subset['MarketValue'] / subset['Price']
-            subset['ForgoneGain'] = ((OPENING_PRICE - subset['Strike_Price']) * subset['Contracts']).where(
+
+            # Number of contracts (adjust for index option multiplier = 100)
+            subset['Contracts'] = -subset['MarketValue'] / (subset['Price'] * 100)
+
+            # Forgone gain if underlying > strike
+            subset['ForgoneGain'] = ((OPENING_PRICE - subset['Strike_Price']) * 100 * subset['Contracts']).where(
                 OPENING_PRICE > subset['Strike_Price'], 0
             )
-            subset['ForgoneGainPct'] = subset['ForgoneGain'] / total_base_mv
-            subset['TotalBaseMV'] = total_base_mv  # repeat same value for all rows
 
-            # Format fields as strings
-            subset['Weightings'] = subset['Weightings'].map(lambda x: f"{x:.2f}")
-            subset['Strike_Price'] = subset['Strike_Price'].map(lambda x: f"{x:,.2f}")
-            subset['OpeningPrice'] = f"{OPENING_PRICE:,.2f}"
-            subset['Contracts'] = subset['Contracts'].map(lambda x: f"{x:,.2f}")
-            subset['ForgoneGain'] = subset['ForgoneGain'].map(lambda x: f"{x:,.2f}")
-            subset['ForgoneGainPct'] = subset['ForgoneGainPct'].map(lambda x: f"{x:.6f}")
-            subset['TotalBaseMV'] = subset['TotalBaseMV'].map(lambda x: f"{x:,.2f}")
+            # Forgone gain as % of total base market value
+            subset['ForgoneGainPct'] = subset['ForgoneGain'] / total_base_mv
+
+            # Add Opening Price & Total Base MV for reference
+            subset['OpeningPrice'] = OPENING_PRICE
+            subset['TotalBaseMV'] = total_base_mv
 
             # Reorder columns
             subset = subset[['StockTicker', 'Weightings', 'Expiry_Date', 'Option_Type',
@@ -107,16 +110,15 @@ def main():
                              'ForgoneGain', 'ForgoneGainPct', 'TotalBaseMV']]
 
         else:
-            subset['Weightings'] = subset['Weightings'].map(lambda x: f"{x:.2f}")
-            subset = subset[['StockTicker','SecurityName','Weightings']]
+            subset = subset[['StockTicker', 'SecurityName', 'Weightings']]
 
-        # Save dated JSON
-        filename = os.path.join(DATA_FOLDER, f'QQQI_{bucket_name.replace(" ","_")}_{date_str}.json')
+        # Save dated JSON (keep values numeric — formatting done in frontend)
+        filename = os.path.join(DATA_FOLDER, f'QQQI_{bucket_name.replace(" ", "_")}_{date_str}.json')
         subset.to_json(filename, orient="records", indent=2)
         print(f"Saved {len(subset)} records to {filename}")
 
         # Save "latest" JSON
-        latest_file = os.path.join(DATA_FOLDER, f'QQQI_{bucket_name.replace(" ","_")}_latest.json')
+        latest_file = os.path.join(DATA_FOLDER, f'QQQI_{bucket_name.replace(" ", "_")}_latest.json')
         shutil.copyfile(filename, latest_file)
 
     generate_available_dates_json()
