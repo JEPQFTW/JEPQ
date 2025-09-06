@@ -4,39 +4,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Disclaimer</title>
+<link rel="stylesheet" href="../style.css">
 <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; background: #f9f9f9; color: #333; }
-    h1, h2 { color: #222; }
-    .container { max-width: 800px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-</style>
-    <link rel="stylesheet" href="../style.css">
-</head>
-<body>
-    <div class="back-button-container">
-    <a href="../index.html" class="back-button">⬅ Back to Dashboard</a>
-</div>
-<div class="container">
-    <h1>Disclaimer</h1>
+/* ----- Container ----- */
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background: rgba(30,30,30,0.95);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.7);
+}
 
-    <h2>Use of Data</h2>
-    <p>All content, data, and tools on this website are provided for informational purposes only. We do not guarantee the accuracy, completeness, or timeliness of the information provided. Any reliance on the information is at your own risk.</p>
+/* ----- Headings ----- */
+h1, h2 {
+    text-align: center;
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
 
-    <h2>Limitation of Liability</h2>
-    <p>By using this website, you agree that we are not responsible for any loss, damage, or consequence resulting from the use of the website or the data it contains. The website content is not financial or professional advice.</p>
-</div>
-        <style>
+p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    color: #e0e0e0;
+}
+
+/* ----- Back Button ----- */
 .back-button-container {
-    padding: 25px;
-    background: #1a252f;
-    border-bottom: 1px solid #2c3e50;
+    padding: 20px;
+    background: #1a1a2e;
+    border-bottom: 1px solid #2c5364;
+    text-align: left;
 }
 
 .back-button {
     text-decoration: none;
-    background: #2c3e50;
-    color: #ecf0f1;
-    padding: 16px 24px;
-    border-radius: 6px;
+    background: #2c5364;
+    color: #e0e0e0;
+    padding: 12px 20px;
+    border-radius: 8px;
     font-weight: 500;
     transition: background 0.3s, transform 0.2s;
     display: inline-block;
@@ -46,73 +55,21 @@
     background: #3498db;
     transform: translateY(-2px);
 }
-
-.index-update-container {
-    margin-top: 10px;
-}
-
-.index-update-container input#userIndex {
-    padding: 10px 14px;
-    border-radius: 6px;
-    border: 1px solid #2c3e50;
-    width: 180px;
-    margin-left: 10px;
-    font-size: 16px;
-    background: #2c3e50;
-    color: #ecf0f1;
-}
-
-.index-update-container input#userIndex::placeholder {
-    color: #bdc3c7;
-}
-
-.index-update-container button {
-    background: #2c3e50;
-    color: #ecf0f1;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
-    margin-left: 5px;
-}
-
-.index-update-container button:hover {
-    background: #3498db;
-    transform: translateY(-2px);
-}
-
-/* ----- Dark Themed Date Select ----- */
-#indexSelect, #dateSelect {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background: #2c3e50;
-    color: #ecf0f1;
-    border: 1px solid #2c3e50;
-    padding: 10px 14px;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    width: 220px;
-    margin-left: 10px;
-    transition: background 0.3s, transform 0.2s;
-    background-image: url('data:image/svg+xml;utf8,<svg fill="%23ecf0f1" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 16px 16px;
-}
-
-#indexSelect:hover, #dateSelect:hover {
-    background: #3498db;
-    transform: translateY(-2px);
-}
-
-#indexSelect option, #dateSelect option {
-    background: #2c3e50;
-    color: #ecf0f1;
-}
 </style>
+</head>
+<body>
+    <div class="back-button-container">
+        <a href="../index.html" class="back-button">⬅ Back to Dashboard</a>
+    </div>
+
+    <div class="container">
+        <h1>Disclaimer</h1>
+
+        <h2>Use of Data</h2>
+        <p>All content, data, and tools on this website are provided for informational purposes only. We do not guarantee the accuracy, completeness, or timeliness of the information provided. Any reliance on the information is at your own risk.</p>
+
+        <h2>Limitation of Liability</h2>
+        <p>By using this website, you agree that we are not responsible for any loss, damage, or consequence resulting from the use of the website or the data it contains. The website content is not financial or professional advice.</p>
+    </div>
 </body>
 </html>
