@@ -1,26 +1,26 @@
 [
   {
     "StockTicker":"NDX   251017C23925000",
-    "Weightings":"-0.57",
+    "Weightings":-0.57,
     "Expiry_Date":"2025-10-17",
     "Option_Type":"C",
-    "Strike_Price":"23,925.00",
-    "OpeningPrice":"23,738.67",
-    "Contracts":"60,500.00",
-    "ForgoneGain":"0.00",
-    "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":"4,426,142,359.27"
+    "Strike_Price":23925.0,
+    "OpeningPrice":23738.67,
+    "Contracts":605.0,
+    "ForgoneGain":0.0,
+    "ForgoneGainPct":0.0,
+    "TotalBaseMV":4426142359.2699995041
   },
   {
     "StockTicker":"NDX   251017C24250000",
-    "Weightings":"-0.36",
+    "Weightings":-0.36,
     "Expiry_Date":"2025-10-17",
     "Option_Type":"C",
-    "Strike_Price":"24,250.00",
-    "OpeningPrice":"23,738.67",
-    "Contracts":"60,500.00",
-    "ForgoneGain":"0.00",
-    "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":"4,426,142,359.27"
+    "Strike_Price":24250.0,
+    "OpeningPrice":23738.67,
+    "Contracts":605.0,
+    "ForgoneGain":0.0,
+    "ForgoneGainPct":0.0,
+    "TotalBaseMV":4426142359.2699995041
   }
 ]
