@@ -10,20 +10,20 @@ const userIndexInput = document.getElementById("userIndex");
 
 // Load available dates and populate dropdown
 fetch("../data/QQQI-Files/available_dates.json")
-  .then(res => res.json())
-  .then(data => {
-      data.dates.forEach(date => {
-          const opt = document.createElement("option");
-          opt.value = date;
-          opt.textContent = date;
-          dateSelect.appendChild(opt);
-      });
+    .then(res => res.json())
+    .then(data => {
+        data.dates.forEach(date => {
+            const opt = document.createElement("option");
+            opt.value = date;
+            opt.textContent = date;
+            dateSelect.appendChild(opt);
+        });
 
-      // Default: last date (latest available)
-      dateSelect.value = data.dates[data.dates.length - 1];
-      loadTables(dateSelect.value);
-  })
-  .catch(err => console.error("Failed to load available_dates.json:", err));
+        // Default: last date (latest available)
+        dateSelect.value = data.dates[data.dates.length - 1];
+        loadTables(dateSelect.value);
+    })
+    .catch(err => console.error("Failed to load available_dates.json:", err));
 
 // When user selects a date
 dateSelect.addEventListener("change", () => {
@@ -32,13 +32,13 @@ dateSelect.addEventListener("change", () => {
 
 function loadTables(date) {
     const timestamp = new Date().getTime(); // cache-busting
-    
+
     buckets.forEach(bucket => {
         const file = `${bucket.prefix}${date}.json?ts=${timestamp}`;
         fetch(file)
-          .then(res => res.json())
-          .then(data => renderTable(bucket.id, data))
-          .catch(err => console.error(`Failed to load ${file}:`, err));
+            .then(res => res.json())
+            .then(data => renderTable(bucket.id, data))
+            .catch(err => console.error(`Failed to load ${file}:`, err));
     });
 }
 
@@ -51,7 +51,7 @@ function renderTable(bucketId, data) {
     if (!data || data.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = bucketId === 'options' ? 9 : 2; // includes TDTE column for options
+        td.colSpan = bucketId === 'options' ? 9 : 2;
         td.textContent = "No records available";
         tr.appendChild(td);
         tbody.appendChild(tr);
@@ -62,6 +62,7 @@ function renderTable(bucketId, data) {
         const tr = document.createElement('tr');
 
         if(bucketId === 'options') {
+            // Parse expiry date
             const [year, month, day] = item.Expiry_Date.split('-');
             const expiryDate = new Date(`${year}-${month}-${day}`);
             const displayDate = `${day}/${month}/${year}`;
@@ -69,36 +70,38 @@ function renderTable(bucketId, data) {
             // Trading Days to Expiration
             const tdte = Math.max(0, Math.round((expiryDate - today) / (1000*60*60*24) * 5/7));
 
-            const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
+            // Use numbers directly
+            const strike = parseFloat(item.Strike_Price);
             const opening = parseFloat(item.OpeningPrice);
             const upside = (strike - opening) / opening * 100;
-            let status = '', statusClass = '', forgoneGains = '';
+
+            let status = '', statusClass = '', forgoneGains = 0;
 
             if (upside < 0) {
                 status = 'ITM';
                 statusClass = 'itm';
-                forgoneGains = (parseFloat(item.ForgoneGainPct) * 100).toFixed(2) + '%';
+                forgoneGains = (opening - strike) * parseFloat(item.Contracts) / parseFloat(item.TotalBaseMV) * 100;
             } else {
                 status = 'OTM';
                 statusClass = 'otm';
-                forgoneGains = '0.00%';
+                forgoneGains = 0;
             }
 
             tr.innerHTML = `
                 <td>${item.StockTicker}</td>
-                <td>${item.Weightings}%</td>
+                <td>${parseFloat(item.Weightings).toFixed(2)}%</td>
                 <td data-value="${item.Expiry_Date}">${displayDate}</td>
                 <td>${tdte}</td>
-                <td>${item.Strike_Price}</td>
-                <td>${item.OpeningPrice}</td>
+                <td>${strike.toLocaleString()}</td>
+                <td>${opening.toFixed(2)}</td>
                 <td>${upside.toFixed(2)}%</td>
                 <td class="${statusClass}">${status}</td>
-                <td>${forgoneGains}</td>
-                <td style="display:none;">${item.Contracts || 0}</td>
-                <td style="display:none;">${item.TotalBaseMV || 0}</td>
+                <td>${forgoneGains.toFixed(2)}%</td>
+                <td style="display:none;">${parseFloat(item.Contracts)}</td>
+                <td style="display:none;">${parseFloat(item.TotalBaseMV)}</td>
             `;
         } else {
-            tr.innerHTML = `<td>${item.StockTicker}</td><td>${item.SecurityName}</td><td>${item.Weightings}%</td>`;
+            tr.innerHTML = `<td>${item.StockTicker}</td><td>${item.SecurityName}</td><td>${parseFloat(item.Weightings).toFixed(2)}%</td>`;
         }
 
         totalWeight += parseFloat(item.Weightings) || 0;
@@ -111,11 +114,15 @@ function renderTable(bucketId, data) {
     // Sum of forgone gains in footer (initial load)
     if(bucketId === 'options') {
         const tfootCell = document.querySelector('#options-table tfoot td:last-child');
-        const forgoneCells = document.querySelectorAll('#options-table tbody td:nth-child(9)');
         let forgoneSum = 0;
-        forgoneCells.forEach(td => {
-            const val = parseFloat(td.textContent.replace('%',''));
-            if(!isNaN(val)) forgoneSum += val;
+        data.forEach(item => {
+            const strike = parseFloat(item.Strike_Price);
+            const opening = parseFloat(item.OpeningPrice);
+            let fg = 0;
+            if(strike < opening){
+                fg = (opening - strike) * parseFloat(item.Contracts) / parseFloat(item.TotalBaseMV) * 100;
+            }
+            forgoneSum += fg;
         });
         if(tfootCell) tfootCell.textContent = forgoneSum.toFixed(2) + '%';
     }
@@ -135,10 +142,10 @@ document.querySelectorAll('th').forEach(th => {
             let aText = a.cells[index].dataset.value || a.cells[index].textContent.trim().replace('%','');
             let bText = b.cells[index].dataset.value || b.cells[index].textContent.trim().replace('%','');
 
-            if(type === 'number') {
+            if(type === 'number'){
                 aText = parseFloat(aText.replace(/,/g,'')) || 0;
                 bText = parseFloat(bText.replace(/,/g,'')) || 0;
-            } else if(type === 'date') {
+            } else if(type === 'date'){
                 aText = new Date(aText);
                 bText = new Date(bText);
             }
@@ -162,7 +169,7 @@ updateButton.addEventListener("click", () => {
 
     rows.forEach(row => {
         const strike = parseFloat(row.cells[4].textContent.replace(/,/g,'')) || 0;
-        const contracts = parseFloat(row.cells[9].textContent.replace(/,/g,'')) || 0;
+        const contracts = parseFloat(row.cells[9].textContent) || 0;
         const totalBaseMV = parseFloat(row.cells[10].textContent) || 1;
 
         const upside = (strike - userIndex) / userIndex * 100;
