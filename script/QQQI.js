@@ -97,7 +97,7 @@ function renderTable(bucketId, data) {
                 <td>${opening.toFixed(2)}</td>
                 <td>${upside.toFixed(2)}%</td>
                 <td class="${statusClass}">${status}</td>
-                <td>${forgoneGains.toFixed(3)}%</td>
+                <td>${forgoneGains.toFixed(2)}%</td>
                 <td style="display:none;">${contracts}</td>
                 <td style="display:none;">${totalBaseMV.toLocaleString()}</td>
             `;
@@ -125,7 +125,7 @@ function renderTable(bucketId, data) {
                 forgoneSum += ((opening - strike) * 100 * contracts) / totalBaseMV * 100;
             }
         });
-        if(tfootCell) tfootCell.textContent = forgoneSum.toFixed(3) + '%';
+        if(tfootCell) tfootCell.textContent = forgoneSum.toFixed(2) + '%';
     }
 }
 
@@ -180,7 +180,7 @@ updateButton.addEventListener("click", () => {
             status = 'ITM';
             statusClass = 'itm';
             forgone = ((userIndex - strike) * 100 * contracts) / totalBaseMV * 100;
-            row.cells[8].textContent = forgone.toFixed(3) + "%";
+            row.cells[8].textContent = forgone.toFixed(2) + "%";
         } else {
             status = 'OTM';
             statusClass = 'otm';
@@ -193,5 +193,5 @@ updateButton.addEventListener("click", () => {
     });
 
     const tfootCell = document.querySelector('#options-table tfoot td:last-child');
-    if(tfootCell) tfootCell.textContent = forgoneSum.toFixed(3) + '%';
+    if(tfootCell) tfootCell.textContent = forgoneSum.toFixed(2) + '%';
 });
