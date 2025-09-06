@@ -80,7 +80,7 @@ function renderTable(bucketId, data) {
             if (upside < 0) {
                 status = 'ITM';
                 statusClass = 'itm';
-                forgoneGains = (((opening - strike) * parseFloat(item.Contracts)  * 100)/ parseFloat(item.TotalBaseMV)) * 1000;
+                forgoneGains = (((opening - strike) * parseFloat(item.Contracts)  * 100)/ parseFloat(item.TotalBaseMV)) * 10000;
             } else {
                 status = 'OTM';
                 statusClass = 'otm';
