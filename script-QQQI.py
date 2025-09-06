@@ -94,7 +94,7 @@ def main():
             subset['ForgoneGainPct'] = subset['ForgoneGainPct'].map(lambda x: f"{x:.6f}")
 
             subset = subset[['StockTicker', 'Weightings', 'Expiry_Date', 'Option_Type',
-                             'Strike_Price', 'OpeningPrice', 'Contracts', 'ForgoneGain', 'ForgoneGainPct']]
+                             'Strike_Price', 'OpeningPrice', 'Contracts', 'ForgoneGain', 'ForgoneGainPct', 'total_base_mv']]
 
         else:
             subset['Weightings'] = subset['Weightings'].map(lambda x: f"{x:.2f}")
