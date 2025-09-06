@@ -8,7 +8,7 @@ const dateSelect = document.getElementById("dateSelect");
 const updateButton = document.getElementById("updateIndex");
 const userIndexInput = document.getElementById("userIndex");
 
-// Load available dates and populate dropdown
+// --- Load available dates ---
 fetch("../data/QQQI-Files/available_dates.json")
     .then(res => res.json())
     .then(data => {
@@ -19,20 +19,18 @@ fetch("../data/QQQI-Files/available_dates.json")
             dateSelect.appendChild(opt);
         });
 
-        // Default: last date (latest available)
         dateSelect.value = data.dates[data.dates.length - 1];
         loadTables(dateSelect.value);
     })
     .catch(err => console.error("Failed to load available_dates.json:", err));
 
-// When user selects a date
 dateSelect.addEventListener("change", () => {
     loadTables(dateSelect.value);
 });
 
+// --- Load table JSON ---
 function loadTables(date) {
-    const timestamp = new Date().getTime(); // cache-busting
-
+    const timestamp = new Date().getTime();
     buckets.forEach(bucket => {
         const file = `${bucket.prefix}${date}.json?ts=${timestamp}`;
         fetch(file)
@@ -42,6 +40,7 @@ function loadTables(date) {
     });
 }
 
+// --- Render table ---
 function renderTable(bucketId, data) {
     const tbody = document.querySelector(`#${bucketId}-table tbody`);
     tbody.innerHTML = "";
@@ -62,7 +61,6 @@ function renderTable(bucketId, data) {
         const tr = document.createElement('tr');
 
         if(bucketId === 'options') {
-            // Parse expiry date
             const [year, month, day] = item.Expiry_Date.split('-');
             const expiryDate = new Date(`${year}-${month}-${day}`);
             const displayDate = `${day}/${month}/${year}`;
@@ -70,17 +68,20 @@ function renderTable(bucketId, data) {
             // Trading Days to Expiration
             const tdte = Math.max(0, Math.round((expiryDate - today) / (1000*60*60*24) * 5/7));
 
-            // Use numbers directly
-            const strike = parseFloat(item.Strike_Price);
-            const opening = parseFloat(item.OpeningPrice);
+            const strike = Number(item.Strike_Price);
+            const opening = Number(item.OpeningPrice);
+            const contracts = Number(item.Contracts);
+            const totalBaseMV = Number(item.TotalBaseMV);
+
+            // Upside %
             const upside = (strike - opening) / opening * 100;
 
             let status = '', statusClass = '', forgoneGains = 0;
-
-            if (upside < 0) {
+            if(upside < 0){
                 status = 'ITM';
                 statusClass = 'itm';
-                forgoneGains = ((opening - strike) * 100 * parseFloat(item.Contracts))/ parseFloat(item.TotalBaseMV) * 100;
+                // 100 shares per contract, % of total base MV
+                forgoneGains = ((opening - strike) * 100 * contracts) / totalBaseMV * 100;
             } else {
                 status = 'OTM';
                 statusClass = 'otm';
@@ -96,9 +97,9 @@ function renderTable(bucketId, data) {
                 <td>${opening.toFixed(2)}</td>
                 <td>${upside.toFixed(2)}%</td>
                 <td class="${statusClass}">${status}</td>
-                <td>${forgoneGains.toFixed(2)}%</td>
-                <td style="display:none;">${parseFloat(item.Contracts)}</td>
-                <td style="display:none;">${parseFloat(item.TotalBaseMV)}</td>
+                <td>${forgoneGains.toFixed(3)}%</td>
+                <td style="display:none;">${contracts}</td>
+                <td style="display:none;">${totalBaseMV.toLocaleString()}</td>
             `;
         } else {
             tr.innerHTML = `<td>${item.StockTicker}</td><td>${item.SecurityName}</td><td>${parseFloat(item.Weightings).toFixed(2)}%</td>`;
@@ -111,24 +112,24 @@ function renderTable(bucketId, data) {
     const totalElem = document.getElementById(`${bucketId}-total`);
     if(totalElem) totalElem.textContent = totalWeight.toFixed(2) + '%';
 
-    // Sum of forgone gains in footer (initial load)
-    if(bucketId === 'options') {
+    // Sum of Forgone Gains
+    if(bucketId === 'options'){
         const tfootCell = document.querySelector('#options-table tfoot td:last-child');
         let forgoneSum = 0;
         data.forEach(item => {
-            const strike = parseFloat(item.Strike_Price);
-            const opening = parseFloat(item.OpeningPrice);
-            let fg = 0;
+            const strike = Number(item.Strike_Price);
+            const opening = Number(item.OpeningPrice);
+            const contracts = Number(item.Contracts);
+            const totalBaseMV = Number(item.TotalBaseMV);
             if(strike < opening){
-                fg = (opening - strike) * parseFloat(item.Contracts) / parseFloat(item.TotalBaseMV) * 100;
+                forgoneSum += ((opening - strike) * 100 * contracts) / totalBaseMV * 100;
             }
-            forgoneSum += fg;
         });
-        if(tfootCell) tfootCell.textContent = forgoneSum.toFixed(2) + '%';
+        if(tfootCell) tfootCell.textContent = forgoneSum.toFixed(3) + '%';
     }
 }
 
-// ----- Sorting -----
+// --- Sorting ---
 document.querySelectorAll('th').forEach(th => {
     th.addEventListener('click', () => {
         const table = th.closest('table');
@@ -138,19 +139,17 @@ document.querySelectorAll('th').forEach(th => {
         const rows = Array.from(tbody.querySelectorAll('tr'));
         const asc = th.classList.toggle('asc');
 
-        rows.sort((a, b) => {
-            let aText = a.cells[index].dataset.value || a.cells[index].textContent.trim().replace('%','');
-            let bText = b.cells[index].dataset.value || b.cells[index].textContent.trim().replace('%','');
-
+        rows.sort((a,b) => {
+            let aText = a.cells[index].dataset.value || a.cells[index].textContent.replace(/,/g,'').replace('%','').trim();
+            let bText = b.cells[index].dataset.value || b.cells[index].textContent.replace(/,/g,'').replace('%','').trim();
             if(type === 'number'){
-                aText = parseFloat(aText.replace(/,/g,'')) || 0;
-                bText = parseFloat(bText.replace(/,/g,'')) || 0;
+                aText = parseFloat(aText) || 0;
+                bText = parseFloat(bText) || 0;
             } else if(type === 'date'){
                 aText = new Date(aText);
                 bText = new Date(bText);
             }
-
-            return aText < bText ? (asc ? -1 : 1) : aText > bText ? (asc ? 1 : -1) : 0;
+            return aText < bText ? (asc?-1:1) : aText > bText ? (asc?1:-1) : 0;
         });
 
         tbody.innerHTML = '';
@@ -158,10 +157,10 @@ document.querySelectorAll('th').forEach(th => {
     });
 });
 
-// ----- Update Upside % and Forgone Gains -----
+// --- Update button ---
 updateButton.addEventListener("click", () => {
     const userIndex = parseFloat(userIndexInput.value);
-    if (isNaN(userIndex)) return alert("Enter a valid index value");
+    if(isNaN(userIndex)) return alert("Enter a valid index value");
 
     const tbody = document.querySelector("#options-table tbody");
     const rows = tbody.querySelectorAll("tr");
@@ -169,11 +168,10 @@ updateButton.addEventListener("click", () => {
 
     rows.forEach(row => {
         const strike = parseFloat(row.cells[4].textContent.replace(/,/g,'')) || 0;
-        const contracts = parseFloat(row.cells[9].textContent) || 0;
-        const totalBaseMV = parseFloat(row.cells[10].textContent) || 1;
+        const contracts = parseFloat(row.cells[9].textContent.replace(/,/g,'')) || 0;
+        const totalBaseMV = parseFloat(row.cells[10].textContent.replace(/,/g,'')) || 1;
 
         const upside = (strike - userIndex) / userIndex * 100;
-
         row.cells[5].textContent = userIndex.toFixed(2);
         row.cells[6].textContent = upside.toFixed(2) + "%";
 
@@ -181,20 +179,19 @@ updateButton.addEventListener("click", () => {
         if(upside < 0){
             status = 'ITM';
             statusClass = 'itm';
-            forgone = ((userIndex - strike) * contracts) / totalBaseMV * 100;
-            row.cells[8].textContent = forgone.toFixed(2) + "%";
+            forgone = ((userIndex - strike) * 100 * contracts) / totalBaseMV * 100;
+            row.cells[8].textContent = forgone.toFixed(3) + "%";
         } else {
             status = 'OTM';
             statusClass = 'otm';
-            row.cells[8].textContent = '0.00%';
+            row.cells[8].textContent = '0.000%';
         }
 
         row.cells[7].textContent = status;
         row.cells[7].className = statusClass;
-
         forgoneSum += forgone;
     });
 
     const tfootCell = document.querySelector('#options-table tfoot td:last-child');
-    if(tfootCell) tfootCell.textContent = forgoneSum.toFixed(2) + '%';
+    if(tfootCell) tfootCell.textContent = forgoneSum.toFixed(3) + '%';
 });
