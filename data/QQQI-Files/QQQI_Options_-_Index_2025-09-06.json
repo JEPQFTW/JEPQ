@@ -5,10 +5,11 @@
     "Expiry_Date":"2025-10-17",
     "Option_Type":"C",
     "Strike_Price":"23,925.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":"23,738.67",
     "Contracts":"60,500.00",
     "ForgoneGain":"0.00",
-    "ForgoneGainPct":"0.000000"
+    "ForgoneGainPct":"0.000000",
+    "TotalBaseMV":"4,426,142,359.27"
   },
   {
     "StockTicker":"NDX   251017C24250000",
@@ -16,9 +17,10 @@
     "Expiry_Date":"2025-10-17",
     "Option_Type":"C",
     "Strike_Price":"24,250.00",
-    "OpeningPrice":23738.67,
+    "OpeningPrice":"23,738.67",
     "Contracts":"60,500.00",
     "ForgoneGain":"0.00",
-    "ForgoneGainPct":"0.000000"
+    "ForgoneGainPct":"0.000000",
+    "TotalBaseMV":"4,426,142,359.27"
   }
 ]
