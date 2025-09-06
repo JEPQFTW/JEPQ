@@ -10,11 +10,13 @@ CSV_URL = "https://tinyurl.com/QQQI-Link"   # Auto-download link
 
 with open("config.json") as f:
     CONFIG = json.load(f)
-    
+
 OPENING_PRICE = CONFIG["NDX"]   # Example hardcoded
+
 
 def get_current_date():
     return datetime.datetime.now().strftime("%Y-%m-%d")
+
 
 def parse_option_info(option_str):
     """Extract expiry, type, and strike from option tickers."""
@@ -30,6 +32,7 @@ def parse_option_info(option_str):
     except Exception:
         return None, None, None
 
+
 def assign_bucket_from_ticker(ticker):
     """Classify ticker into Options, Cash, or Stocks."""
     if isinstance(ticker, str):
@@ -38,6 +41,7 @@ def assign_bucket_from_ticker(ticker):
         elif ticker.startswith("Cash"):
             return "Cash"
     return "Stocks"
+
 
 def generate_available_dates_json():
     """Collect all saved dates and write available_dates.json."""
@@ -50,6 +54,7 @@ def generate_available_dates_json():
     with open(os.path.join(DATA_FOLDER, "available_dates.json"), "w") as f:
         json.dump({"dates": dates}, f, indent=2)
     print(f"Generated available_dates.json with dates: {dates}")
+
 
 def main():
     os.makedirs(DATA_FOLDER, exist_ok=True)
@@ -76,6 +81,7 @@ def main():
             continue
 
         if bucket_name == "Options - Index":
+            # Parse option info
             subset[['Expiry_Date', 'Option_Type', 'Strike_Price']] = subset['StockTicker'].apply(
                 lambda val: pd.Series(parse_option_info(val))
             )
@@ -84,17 +90,21 @@ def main():
                 OPENING_PRICE > subset['Strike_Price'], 0
             )
             subset['ForgoneGainPct'] = subset['ForgoneGain'] / total_base_mv
+            subset['TotalBaseMV'] = total_base_mv  # repeat same value for all rows
 
-            # Format fields
+            # Format fields as strings
             subset['Weightings'] = subset['Weightings'].map(lambda x: f"{x:.2f}")
             subset['Strike_Price'] = subset['Strike_Price'].map(lambda x: f"{x:,.2f}")
-            subset['OpeningPrice'] = OPENING_PRICE
+            subset['OpeningPrice'] = f"{OPENING_PRICE:,.2f}"
             subset['Contracts'] = subset['Contracts'].map(lambda x: f"{x:,.2f}")
             subset['ForgoneGain'] = subset['ForgoneGain'].map(lambda x: f"{x:,.2f}")
             subset['ForgoneGainPct'] = subset['ForgoneGainPct'].map(lambda x: f"{x:.6f}")
+            subset['TotalBaseMV'] = subset['TotalBaseMV'].map(lambda x: f"{x:,.2f}")
 
+            # Reorder columns
             subset = subset[['StockTicker', 'Weightings', 'Expiry_Date', 'Option_Type',
-                             'Strike_Price', 'OpeningPrice', 'Contracts', 'ForgoneGain', 'ForgoneGainPct', 'total_base_mv']]
+                             'Strike_Price', 'OpeningPrice', 'Contracts',
+                             'ForgoneGain', 'ForgoneGainPct', 'TotalBaseMV']]
 
         else:
             subset['Weightings'] = subset['Weightings'].map(lambda x: f"{x:.2f}")
@@ -110,6 +120,7 @@ def main():
         shutil.copyfile(filename, latest_file)
 
     generate_available_dates_json()
+
 
 if __name__ == '__main__':
     main()
