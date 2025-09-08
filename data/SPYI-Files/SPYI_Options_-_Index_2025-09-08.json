@@ -1,0 +1,24 @@
+[
+  {
+    "StockTicker":"SPX   251017C06555000",
+    "Weightings":"-0.46",
+    "Expiry_Date":"2025-10-17",
+    "Option_Type":"C",
+    "Strike_Price":"6,555.00",
+    "OpeningPrice":6507.98,
+    "Contracts":"292,300.00",
+    "ForgoneGain":"0.00",
+    "ForgoneGainPct":"0.000000"
+  },
+  {
+    "StockTicker":"SPX   251017C06630000",
+    "Weightings":"-0.26",
+    "Expiry_Date":"2025-10-17",
+    "Option_Type":"C",
+    "Strike_Price":"6,630.00",
+    "OpeningPrice":6507.98,
+    "Contracts":"292,300.00",
+    "ForgoneGain":"0.00",
+    "ForgoneGainPct":"0.000000"
+  }
+]
