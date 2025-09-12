@@ -11,7 +11,7 @@ CSV_URL = "https://tinyurl.com/SPYI-Link"   # Auto-download link
 with open("config.json") as f:
     CONFIG = json.load(f)
 
-OPENING_PRICE = CONFIG["NDX"]   # Current underlying index level
+OPENING_PRICE = CONFIG["SPX"]   # Current underlying index level
 
 
 def get_current_date():
