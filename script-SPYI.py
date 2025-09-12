@@ -36,7 +36,7 @@ def parse_option_info(option_str):
 def assign_bucket_from_ticker(ticker):
     """Classify ticker into Options, Cash, or Stocks."""
     if isinstance(ticker, str):
-        if ticker.startswith("NDX"):
+        if ticker.startswith("SPX"):
             return "Options - Index"
         elif ticker.startswith("Cash"):
             return "Cash"
