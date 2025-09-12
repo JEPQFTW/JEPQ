@@ -2090,16 +2090,6 @@
     "Weightings":0.32
   },
   {
-    "StockTicker":"SPX   251017C06555000",
-    "SecurityName":"SPX US 10\/17\/25 C6555",
-    "Weightings":-0.74
-  },
-  {
-    "StockTicker":"SPX   251017C06630000",
-    "SecurityName":"SPX US 10\/17\/25 C6630",
-    "Weightings":-0.48
-  },
-  {
     "StockTicker":"SRE",
     "SecurityName":"Sempra",
     "Weightings":0.11
