@@ -1,0 +1,26 @@
+[
+  {
+    "StockTicker":"SPX   251121C06790000",
+    "Weightings":-0.6,
+    "Expiry_Date":"2025-11-21",
+    "Option_Type":"C",
+    "Strike_Price":6790.0,
+    "OpeningPrice":6507.98,
+    "Contracts":3137.0,
+    "ForgoneGain":0.0,
+    "ForgoneGainPct":0.0,
+    "TotalBaseMV":5583489440.6700000763
+  },
+  {
+    "StockTicker":"SPX   251121C06870000",
+    "Weightings":-0.39,
+    "Expiry_Date":"2025-11-21",
+    "Option_Type":"C",
+    "Strike_Price":6870.0,
+    "OpeningPrice":6507.98,
+    "Contracts":3137.0,
+    "ForgoneGain":0.0,
+    "ForgoneGainPct":0.0,
+    "TotalBaseMV":5583489440.6700000763
+  }
+]
