@@ -1,0 +1,26 @@
+[
+  {
+    "StockTicker":"NDX   251121C25200000",
+    "Weightings":-0.4,
+    "Expiry_Date":"2025-11-21",
+    "Option_Type":"C",
+    "Strike_Price":25200.0,
+    "OpeningPrice":23738.67,
+    "Contracts":718.0,
+    "ForgoneGain":0.0,
+    "ForgoneGainPct":0.0,
+    "TotalBaseMV":5343494345.779999733
+  },
+  {
+    "StockTicker":"NDX   251121C25600000",
+    "Weightings":-0.25,
+    "Expiry_Date":"2025-11-21",
+    "Option_Type":"C",
+    "Strike_Price":25600.0,
+    "OpeningPrice":23738.67,
+    "Contracts":718.0,
+    "ForgoneGain":0.0,
+    "ForgoneGainPct":0.0,
+    "TotalBaseMV":5343494345.779999733
+  }
+]
