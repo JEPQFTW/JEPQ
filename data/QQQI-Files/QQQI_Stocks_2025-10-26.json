@@ -1,0 +1,507 @@
+[
+  {
+    "StockTicker":"AAPL",
+    "SecurityName":"Apple Inc",
+    "Weightings":8.36
+  },
+  {
+    "StockTicker":"ABNB",
+    "SecurityName":"Airbnb Inc",
+    "Weightings":0.29
+  },
+  {
+    "StockTicker":"ADBE",
+    "SecurityName":"Adobe Inc",
+    "Weightings":0.8
+  },
+  {
+    "StockTicker":"ADI",
+    "SecurityName":"Analog Devices Inc",
+    "Weightings":0.62
+  },
+  {
+    "StockTicker":"ADP",
+    "SecurityName":"Automatic Data Processing Inc",
+    "Weightings":0.6
+  },
+  {
+    "StockTicker":"ADSK",
+    "SecurityName":"Autodesk Inc",
+    "Weightings":0.36
+  },
+  {
+    "StockTicker":"AEP",
+    "SecurityName":"American Electric Power Co Inc",
+    "Weightings":0.33
+  },
+  {
+    "StockTicker":"AMAT",
+    "SecurityName":"Applied Materials Inc",
+    "Weightings":0.97
+  },
+  {
+    "StockTicker":"AMD",
+    "SecurityName":"Advanced Micro Devices Inc",
+    "Weightings":2.18
+  },
+  {
+    "StockTicker":"AMGN",
+    "SecurityName":"Amgen Inc",
+    "Weightings":0.81
+  },
+  {
+    "StockTicker":"AMZN",
+    "SecurityName":"Amazon.com Inc",
+    "Weightings":5.04
+  },
+  {
+    "StockTicker":"APP",
+    "SecurityName":"AppLovin Corp",
+    "Weightings":0.99
+  },
+  {
+    "StockTicker":"ARM",
+    "SecurityName":"ARM Holdings PLC",
+    "Weightings":0.13
+  },
+  {
+    "StockTicker":"ASML",
+    "SecurityName":"ASML Holding NV",
+    "Weightings":0.46
+  },
+  {
+    "StockTicker":"AVGO",
+    "SecurityName":"Broadcom Inc",
+    "Weightings":5.84
+  },
+  {
+    "StockTicker":"AXON",
+    "SecurityName":"Axon Enterprise Inc",
+    "Weightings":0.3
+  },
+  {
+    "StockTicker":"AZN",
+    "SecurityName":"AstraZeneca PLC",
+    "Weightings":0.26
+  },
+  {
+    "StockTicker":"BIIB",
+    "SecurityName":"Biogen Inc",
+    "Weightings":0.11
+  },
+  {
+    "StockTicker":"BKNG",
+    "SecurityName":"Booking Holdings Inc",
+    "Weightings":0.67
+  },
+  {
+    "StockTicker":"BKR",
+    "SecurityName":"Baker Hughes Co",
+    "Weightings":0.25
+  },
+  {
+    "StockTicker":"CCEP",
+    "SecurityName":"Coca-Cola Europacific Partners PLC",
+    "Weightings":0.22
+  },
+  {
+    "StockTicker":"CDNS",
+    "SecurityName":"Cadence Design Systems Inc",
+    "Weightings":0.5
+  },
+  {
+    "StockTicker":"CDW",
+    "SecurityName":"CDW Corp\/DE",
+    "Weightings":0.11
+  },
+  {
+    "StockTicker":"CEG",
+    "SecurityName":"Constellation Energy Corp",
+    "Weightings":0.64
+  },
+  {
+    "StockTicker":"CHTR",
+    "SecurityName":"Charter Communications Inc",
+    "Weightings":0.18
+  },
+  {
+    "StockTicker":"CMCSA",
+    "SecurityName":"Comcast Corp",
+    "Weightings":0.57
+  },
+  {
+    "StockTicker":"COST",
+    "SecurityName":"Costco Wholesale Corp",
+    "Weightings":2.18
+  },
+  {
+    "StockTicker":"CPRT",
+    "SecurityName":"Copart Inc",
+    "Weightings":0.23
+  },
+  {
+    "StockTicker":"CRWD",
+    "SecurityName":"Crowdstrike Holdings Inc",
+    "Weightings":0.7
+  },
+  {
+    "StockTicker":"CSCO",
+    "SecurityName":"Cisco Systems Inc",
+    "Weightings":1.48
+  },
+  {
+    "StockTicker":"CSGP",
+    "SecurityName":"CoStar Group Inc",
+    "Weightings":0.17
+  },
+  {
+    "StockTicker":"CSX",
+    "SecurityName":"CSX Corp",
+    "Weightings":0.36
+  },
+  {
+    "StockTicker":"CTAS",
+    "SecurityName":"Cintas Corp",
+    "Weightings":0.4
+  },
+  {
+    "StockTicker":"CTSH",
+    "SecurityName":"Cognizant Technology Solutions Corp",
+    "Weightings":0.18
+  },
+  {
+    "StockTicker":"DASH",
+    "SecurityName":"DoorDash Inc",
+    "Weightings":0.55
+  },
+  {
+    "StockTicker":"DDOG",
+    "SecurityName":"Datadog Inc",
+    "Weightings":0.27
+  },
+  {
+    "StockTicker":"DXCM",
+    "SecurityName":"Dexcom Inc",
+    "Weightings":0.15
+  },
+  {
+    "StockTicker":"EA",
+    "SecurityName":"Electronic Arts Inc",
+    "Weightings":0.27
+  },
+  {
+    "StockTicker":"EXC",
+    "SecurityName":"Exelon Corp",
+    "Weightings":0.26
+  },
+  {
+    "StockTicker":"FANG",
+    "SecurityName":"Diamondback Energy Inc",
+    "Weightings":0.23
+  },
+  {
+    "StockTicker":"FAST",
+    "SecurityName":"Fastenal Co",
+    "Weightings":0.27
+  },
+  {
+    "StockTicker":"FTNT",
+    "SecurityName":"Fortinet Inc",
+    "Weightings":0.35
+  },
+  {
+    "StockTicker":"GEHC",
+    "SecurityName":"GE HealthCare Technologies Inc",
+    "Weightings":0.2
+  },
+  {
+    "StockTicker":"GFS",
+    "SecurityName":"GLOBALFOUNDRIES Inc",
+    "Weightings":0.12
+  },
+  {
+    "StockTicker":"GILD",
+    "SecurityName":"Gilead Sciences Inc",
+    "Weightings":0.8
+  },
+  {
+    "StockTicker":"GOOG",
+    "SecurityName":"Alphabet Inc",
+    "Weightings":3.05
+  },
+  {
+    "StockTicker":"GOOGL",
+    "SecurityName":"Alphabet Inc",
+    "Weightings":3.26
+  },
+  {
+    "StockTicker":"HON",
+    "SecurityName":"Honeywell International Inc",
+    "Weightings":0.73
+  },
+  {
+    "StockTicker":"IDXX",
+    "SecurityName":"IDEXX Laboratories Inc",
+    "Weightings":0.27
+  },
+  {
+    "StockTicker":"INTC",
+    "SecurityName":"Intel Corp",
+    "Weightings":0.89
+  },
+  {
+    "StockTicker":"INTU",
+    "SecurityName":"Intuit Inc",
+    "Weightings":1.01
+  },
+  {
+    "StockTicker":"ISRG",
+    "SecurityName":"Intuitive Surgical Inc",
+    "Weightings":1.04
+  },
+  {
+    "StockTicker":"KDP",
+    "SecurityName":"Keurig Dr Pepper Inc",
+    "Weightings":0.2
+  },
+  {
+    "StockTicker":"KHC",
+    "SecurityName":"Kraft Heinz Co\/The",
+    "Weightings":0.16
+  },
+  {
+    "StockTicker":"KLAC",
+    "SecurityName":"KLA CORP",
+    "Weightings":0.79
+  },
+  {
+    "StockTicker":"LIN",
+    "SecurityName":"Linde PLC",
+    "Weightings":1.1
+  },
+  {
+    "StockTicker":"LRCX",
+    "SecurityName":"Lam Research Corp",
+    "Weightings":1.02
+  },
+  {
+    "StockTicker":"LULU",
+    "SecurityName":"Lululemon Athletica Inc",
+    "Weightings":0.11
+  },
+  {
+    "StockTicker":"MAR",
+    "SecurityName":"Marriott International Inc\/MD",
+    "Weightings":0.4
+  },
+  {
+    "StockTicker":"MCHP",
+    "SecurityName":"Microchip Technology Inc",
+    "Weightings":0.18
+  },
+  {
+    "StockTicker":"MDLZ",
+    "SecurityName":"Mondelez International Inc",
+    "Weightings":0.42
+  },
+  {
+    "StockTicker":"MELI",
+    "SecurityName":"MercadoLibre Inc",
+    "Weightings":0.54
+  },
+  {
+    "StockTicker":"META",
+    "SecurityName":"Meta Platforms Inc",
+    "Weightings":3.44
+  },
+  {
+    "StockTicker":"MNST",
+    "SecurityName":"Monster Beverage Corp",
+    "Weightings":0.37
+  },
+  {
+    "StockTicker":"MRVL",
+    "SecurityName":"MARVELL TECHNOLOGY INC",
+    "Weightings":0.39
+  },
+  {
+    "StockTicker":"MSFT",
+    "SecurityName":"Microsoft Corp",
+    "Weightings":8.26
+  },
+  {
+    "StockTicker":"MSTR",
+    "SecurityName":"Strategy Inc",
+    "Weightings":0.39
+  },
+  {
+    "StockTicker":"MU",
+    "SecurityName":"Micron Technology Inc",
+    "Weightings":1.3
+  },
+  {
+    "StockTicker":"NFLX",
+    "SecurityName":"Netflix Inc",
+    "Weightings":2.46
+  },
+  {
+    "StockTicker":"NVDA",
+    "SecurityName":"NVIDIA Corp",
+    "Weightings":9.72
+  },
+  {
+    "StockTicker":"NXPI",
+    "SecurityName":"NXP Semiconductors NV",
+    "Weightings":0.3
+  },
+  {
+    "StockTicker":"ODFL",
+    "SecurityName":"Old Dominion Freight Line Inc",
+    "Weightings":0.15
+  },
+  {
+    "StockTicker":"ON",
+    "SecurityName":"ON Semiconductor Corp",
+    "Weightings":0.12
+  },
+  {
+    "StockTicker":"ORLY",
+    "SecurityName":"O'Reilly Automotive Inc",
+    "Weightings":0.45
+  },
+  {
+    "StockTicker":"PANW",
+    "SecurityName":"Palo Alto Networks Inc",
+    "Weightings":0.78
+  },
+  {
+    "StockTicker":"PAYX",
+    "SecurityName":"Paychex Inc",
+    "Weightings":0.24
+  },
+  {
+    "StockTicker":"PCAR",
+    "SecurityName":"PACCAR Inc",
+    "Weightings":0.28
+  },
+  {
+    "StockTicker":"PDD",
+    "SecurityName":"PDD Holdings Inc",
+    "Weightings":0.48
+  },
+  {
+    "StockTicker":"PEP",
+    "SecurityName":"PepsiCo Inc",
+    "Weightings":1.1
+  },
+  {
+    "StockTicker":"PLTR",
+    "SecurityName":"Palantir Technologies Inc",
+    "Weightings":2.21
+  },
+  {
+    "StockTicker":"PYPL",
+    "SecurityName":"PayPal Holdings Inc",
+    "Weightings":0.35
+  },
+  {
+    "StockTicker":"QCOM",
+    "SecurityName":"QUALCOMM Inc",
+    "Weightings":0.97
+  },
+  {
+    "StockTicker":"REGN",
+    "SecurityName":"Regeneron Pharmaceuticals Inc",
+    "Weightings":0.33
+  },
+  {
+    "StockTicker":"ROP",
+    "SecurityName":"Roper Technologies Inc",
+    "Weightings":0.28
+  },
+  {
+    "StockTicker":"ROST",
+    "SecurityName":"Ross Stores Inc",
+    "Weightings":0.27
+  },
+  {
+    "StockTicker":"SBUX",
+    "SecurityName":"Starbucks Corp",
+    "Weightings":0.52
+  },
+  {
+    "StockTicker":"SHOP",
+    "SecurityName":"Shopify Inc",
+    "Weightings":1.11
+  },
+  {
+    "StockTicker":"SNPS",
+    "SecurityName":"Synopsys Inc",
+    "Weightings":0.45
+  },
+  {
+    "StockTicker":"TEAM",
+    "SecurityName":"Atlassian Corp",
+    "Weightings":0.15
+  },
+  {
+    "StockTicker":"TMUS",
+    "SecurityName":"T-Mobile US Inc",
+    "Weightings":1.3
+  },
+  {
+    "StockTicker":"TRI",
+    "SecurityName":"Thomson Reuters Corp",
+    "Weightings":0.39
+  },
+  {
+    "StockTicker":"TSLA",
+    "SecurityName":"Tesla Inc",
+    "Weightings":3.38
+  },
+  {
+    "StockTicker":"TTD",
+    "SecurityName":"Trade Desk Inc\/The",
+    "Weightings":0.13
+  },
+  {
+    "StockTicker":"TTWO",
+    "SecurityName":"Take-Two Interactive Software Inc",
+    "Weightings":0.25
+  },
+  {
+    "StockTicker":"TXN",
+    "SecurityName":"Texas Instruments Inc",
+    "Weightings":0.81
+  },
+  {
+    "StockTicker":"VRSK",
+    "SecurityName":"Verisk Analytics Inc",
+    "Weightings":0.18
+  },
+  {
+    "StockTicker":"VRTX",
+    "SecurityName":"Vertex Pharmaceuticals Inc",
+    "Weightings":0.57
+  },
+  {
+    "StockTicker":"WBD",
+    "SecurityName":"Warner Bros Discovery Inc",
+    "Weightings":0.28
+  },
+  {
+    "StockTicker":"WDAY",
+    "SecurityName":"Workday Inc",
+    "Weightings":0.28
+  },
+  {
+    "StockTicker":"XEL",
+    "SecurityName":"Xcel Energy Inc",
+    "Weightings":0.25
+  },
+  {
+    "StockTicker":"ZS",
+    "SecurityName":"Zscaler Inc",
+    "Weightings":0.26
+  }
+]
