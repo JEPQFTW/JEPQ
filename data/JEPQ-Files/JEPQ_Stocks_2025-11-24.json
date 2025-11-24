@@ -1,0 +1,362 @@
+[
+  {
+    "Ticker":"NVIDIA CORP",
+    "Weight":"8.97"
+  },
+  {
+    "Ticker":"APPLE INC",
+    "Weight":"8.57"
+  },
+  {
+    "Ticker":"MICROSOFT CORP",
+    "Weight":"7.53"
+  },
+  {
+    "Ticker":"ALPHABET INC-CL C",
+    "Weight":"6.00"
+  },
+  {
+    "Ticker":"BROADCOM INC",
+    "Weight":"5.46"
+  },
+  {
+    "Ticker":"AMAZON.COM INC",
+    "Weight":"4.63"
+  },
+  {
+    "Ticker":"META PLATFORMS INC-CLASS A",
+    "Weight":"3.50"
+  },
+  {
+    "Ticker":"TESLA INC",
+    "Weight":"3.12"
+  },
+  {
+    "Ticker":"NETFLIX INC",
+    "Weight":"2.87"
+  },
+  {
+    "Ticker":"ADVANCED MICRO DEVICES",
+    "Weight":"2.18"
+  },
+  {
+    "Ticker":"COSTCO WHOLESALE CORP",
+    "Weight":"1.68"
+  },
+  {
+    "Ticker":"MICRON TECHNOLOGY INC",
+    "Weight":"1.64"
+  },
+  {
+    "Ticker":"LAM RESEARCH CORP",
+    "Weight":"1.48"
+  },
+  {
+    "Ticker":"PALANTIR TECHNOLOGIES INC-A",
+    "Weight":"1.39"
+  },
+  {
+    "Ticker":"INTUITIVE SURGICAL INC",
+    "Weight":"1.38"
+  },
+  {
+    "Ticker":"INTUIT INC",
+    "Weight":"1.37"
+  },
+  {
+    "Ticker":"CISCO SYSTEMS INC",
+    "Weight":"1.36"
+  },
+  {
+    "Ticker":"BOOKING HOLDINGS INC",
+    "Weight":"1.16"
+  },
+  {
+    "Ticker":"T-MOBILE US INC",
+    "Weight":"1.07"
+  },
+  {
+    "Ticker":"ANALOG DEVICES INC",
+    "Weight":"1.02"
+  },
+  {
+    "Ticker":"SHOPIFY INC - CLASS A",
+    "Weight":"1.01"
+  },
+  {
+    "Ticker":"PALO ALTO NETWORKS INC",
+    "Weight":"0.96"
+  },
+  {
+    "Ticker":"PEPSICO INC",
+    "Weight":"0.93"
+  },
+  {
+    "Ticker":"LINDE PLC",
+    "Weight":"0.90"
+  },
+  {
+    "Ticker":"HONEYWELL INTERNATIONAL INC",
+    "Weight":"0.85"
+  },
+  {
+    "Ticker":"ASML HOLDING NV-NY REG SHS",
+    "Weight":"0.85"
+  },
+  {
+    "Ticker":"QUALCOMM INC",
+    "Weight":"0.83"
+  },
+  {
+    "Ticker":"APPLOVIN CORP-CLASS A",
+    "Weight":"0.82"
+  },
+  {
+    "Ticker":"VERTEX PHARMACEUTICALS INC",
+    "Weight":"0.81"
+  },
+  {
+    "Ticker":"O'REILLY AUTOMOTIVE INC",
+    "Weight":"0.77"
+  },
+  {
+    "Ticker":"SEAGATE TECHNOLOGY HOLDINGS",
+    "Weight":"0.76"
+  },
+  {
+    "Ticker":"CROWDSTRIKE HOLDINGS INC - A",
+    "Weight":"0.74"
+  },
+  {
+    "Ticker":"REGENERON PHARMACEUTICALS",
+    "Weight":"0.72"
+  },
+  {
+    "Ticker":"TEXAS INSTRUMENTS INC",
+    "Weight":"0.71"
+  },
+  {
+    "Ticker":"MERCADOLIBRE INC",
+    "Weight":"0.70"
+  },
+  {
+    "Ticker":"COMCAST CORP-CLASS A",
+    "Weight":"0.69"
+  },
+  {
+    "Ticker":"CSX CORP",
+    "Weight":"0.68"
+  },
+  {
+    "Ticker":"SYNOPSYS INC",
+    "Weight":"0.67"
+  },
+  {
+    "Ticker":"ADOBE INC",
+    "Weight":"0.65"
+  },
+  {
+    "Ticker":"MONDELEZ INTERNATIONAL INC-A",
+    "Weight":"0.65"
+  },
+  {
+    "Ticker":"ABBVIE INC",
+    "Weight":"0.64"
+  },
+  {
+    "Ticker":"MONSTER BEVERAGE CORP",
+    "Weight":"0.60"
+  },
+  {
+    "Ticker":"APPLIED MATERIALS INC",
+    "Weight":"0.59"
+  },
+  {
+    "Ticker":"NXP SEMICONDUCTORS NV",
+    "Weight":"0.58"
+  },
+  {
+    "Ticker":"MARRIOTT INTERNATIONAL -CL A",
+    "Weight":"0.58"
+  },
+  {
+    "Ticker":"MARVELL TECHNOLOGY INC",
+    "Weight":"0.56"
+  },
+  {
+    "Ticker":"AMGEN INC",
+    "Weight":"0.51"
+  },
+  {
+    "Ticker":"INTEL CORP",
+    "Weight":"0.49"
+  },
+  {
+    "Ticker":"ORACLE CORP",
+    "Weight":"0.46"
+  },
+  {
+    "Ticker":"COPART INC",
+    "Weight":"0.44"
+  },
+  {
+    "Ticker":"XCEL ENERGY INC",
+    "Weight":"0.44"
+  },
+  {
+    "Ticker":"COCA-COLA CO\/THE",
+    "Weight":"0.42"
+  },
+  {
+    "Ticker":"EATON CORP PLC",
+    "Weight":"0.42"
+  },
+  {
+    "Ticker":"NEXTERA ENERGY INC",
+    "Weight":"0.39"
+  },
+  {
+    "Ticker":"LOWE'S COS INC",
+    "Weight":"0.38"
+  },
+  {
+    "Ticker":"SOUTHERN CO\/THE",
+    "Weight":"0.38"
+  },
+  {
+    "Ticker":"STARBUCKS CORP",
+    "Weight":"0.36"
+  },
+  {
+    "Ticker":"TAKE-TWO INTERACTIVE SOFTWRE",
+    "Weight":"0.35"
+  },
+  {
+    "Ticker":"MASTERCARD INC - A",
+    "Weight":"0.35"
+  },
+  {
+    "Ticker":"SERVICENOW INC",
+    "Weight":"0.34"
+  },
+  {
+    "Ticker":"VERISK ANALYTICS INC",
+    "Weight":"0.34"
+  },
+  {
+    "Ticker":"DEERE AND CO",
+    "Weight":"0.33"
+  },
+  {
+    "Ticker":"DOORDASH INC - A",
+    "Weight":"0.33"
+  },
+  {
+    "Ticker":"DIAMONDBACK ENERGY INC",
+    "Weight":"0.30"
+  },
+  {
+    "Ticker":"UBER TECHNOLOGIES INC",
+    "Weight":"0.28"
+  },
+  {
+    "Ticker":"THERMO FISHER SCIENTIFIC INC",
+    "Weight":"0.28"
+  },
+  {
+    "Ticker":"ROSS STORES INC",
+    "Weight":"0.27"
+  },
+  {
+    "Ticker":"TERADYNE INC",
+    "Weight":"0.26"
+  },
+  {
+    "Ticker":"COGNIZANT TECH SOLUTIONS-A",
+    "Weight":"0.25"
+  },
+  {
+    "Ticker":"BRISTOL-MYERS SQUIBB CO",
+    "Weight":"0.24"
+  },
+  {
+    "Ticker":"BIOGEN INC",
+    "Weight":"0.24"
+  },
+  {
+    "Ticker":"PROLOGIS INC",
+    "Weight":"0.23"
+  },
+  {
+    "Ticker":"CHIPOTLE MEXICAN GRILL INC",
+    "Weight":"0.22"
+  },
+  {
+    "Ticker":"DEXCOM INC",
+    "Weight":"0.20"
+  },
+  {
+    "Ticker":"CORPAY INC",
+    "Weight":"0.20"
+  },
+  {
+    "Ticker":"PAYPAL HOLDINGS INC",
+    "Weight":"0.19"
+  },
+  {
+    "Ticker":"UNITEDHEALTH GROUP INC",
+    "Weight":"0.18"
+  },
+  {
+    "Ticker":"WORKDAY INC-CLASS A",
+    "Weight":"0.18"
+  },
+  {
+    "Ticker":"HUBSPOT INC",
+    "Weight":"0.18"
+  },
+  {
+    "Ticker":"KRAFT HEINZ CO\/THE",
+    "Weight":"0.15"
+  },
+  {
+    "Ticker":"CHARTER COMMUNICATIONS INC - A",
+    "Weight":"0.15"
+  },
+  {
+    "Ticker":"PDD HOLDINGS INC",
+    "Weight":"0.13"
+  },
+  {
+    "Ticker":"DATADOG INC - CLASS A",
+    "Weight":"0.12"
+  },
+  {
+    "Ticker":"CONSTELLATION ENERGY",
+    "Weight":"0.12"
+  },
+  {
+    "Ticker":"AIRBNB INC-CLASS A",
+    "Weight":"0.11"
+  },
+  {
+    "Ticker":"STRATEGY INC",
+    "Weight":"0.09"
+  },
+  {
+    "Ticker":"UNITED PARCEL SERVICE-CL B",
+    "Weight":"0.08"
+  },
+  {
+    "Ticker":"TRADE DESK INC\/THE -CLASS A",
+    "Weight":"0.08"
+  },
+  {
+    "Ticker":"ATLASSIAN CORP-CL A",
+    "Weight":"0.07"
+  },
+  {
+    "Ticker":"LULULEMON ATHLETICA INC",
+    "Weight":"0.03"
+  }
+]
