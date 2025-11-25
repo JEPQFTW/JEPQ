@@ -1,11 +1,11 @@
 [
   {
     "Ticker":"NVIDIA CORP",
-    "Weight":"2.66"
+    "Weight":"2.70"
   },
   {
     "Ticker":"APPLE INC",
-    "Weight":"2.58"
+    "Weight":"2.61"
   },
   {
     "Ticker":"MICROSOFT CORP",
@@ -13,39 +13,39 @@
   },
   {
     "Ticker":"ALPHABET INC-CL A",
-    "Weight":"2.24"
+    "Weight":"2.37"
   },
   {
     "Ticker":"AMAZON.COM INC",
-    "Weight":"2.11"
-  },
-  {
-    "Ticker":"ABBVIE INC",
-    "Weight":"1.88"
+    "Weight":"2.15"
   },
   {
     "Ticker":"JOHNSON & JOHNSON",
+    "Weight":"1.83"
+  },
+  {
+    "Ticker":"ABBVIE INC",
     "Weight":"1.82"
   },
   {
+    "Ticker":"BROADCOM INC",
+    "Weight":"1.79"
+  },
+  {
     "Ticker":"HOWMET AEROSPACE INC",
-    "Weight":"1.68"
-  },
-  {
-    "Ticker":"MASTERCARD INC - A",
-    "Weight":"1.65"
-  },
-  {
-    "Ticker":"RTX CORP",
-    "Weight":"1.64"
+    "Weight":"1.70"
   },
   {
     "Ticker":"META PLATFORMS INC-CLASS A",
-    "Weight":"1.63"
+    "Weight":"1.67"
   },
   {
-    "Ticker":"BROADCOM INC",
-    "Weight":"1.62"
+    "Ticker":"RTX CORP",
+    "Weight":"1.66"
+  },
+  {
+    "Ticker":"MASTERCARD INC - A",
+    "Weight":"1.63"
   },
   {
     "Ticker":"VISA INC-CLASS A SHARES",
@@ -57,51 +57,51 @@
   },
   {
     "Ticker":"NEXTERA ENERGY INC",
-    "Weight":"1.58"
-  },
-  {
-    "Ticker":"WALMART INC",
-    "Weight":"1.51"
+    "Weight":"1.59"
   },
   {
     "Ticker":"MEDTRONIC PLC",
-    "Weight":"1.51"
+    "Weight":"1.53"
   },
   {
     "Ticker":"3M CO",
-    "Weight":"1.50"
+    "Weight":"1.51"
+  },
+  {
+    "Ticker":"WALMART INC",
+    "Weight":"1.49"
   },
   {
     "Ticker":"TRANE TECHNOLOGIES PLC",
-    "Weight":"1.48"
+    "Weight":"1.47"
   },
   {
-    "Ticker":"LOWE'S COS INC",
-    "Weight":"1.46"
-  },
-  {
-    "Ticker":"YUM! BRANDS INC",
+    "Ticker":"ANALOG DEVICES INC",
     "Weight":"1.45"
   },
   {
     "Ticker":"SOUTHERN CO\/THE",
-    "Weight":"1.44"
-  },
-  {
-    "Ticker":"PEPSICO INC",
     "Weight":"1.43"
   },
   {
-    "Ticker":"ANALOG DEVICES INC",
+    "Ticker":"YUM! BRANDS INC",
+    "Weight":"1.43"
+  },
+  {
+    "Ticker":"PEPSICO INC",
     "Weight":"1.41"
   },
   {
-    "Ticker":"MCDONALDS CORP",
-    "Weight":"1.40"
+    "Ticker":"LOWE'S COS INC",
+    "Weight":"1.41"
   },
   {
     "Ticker":"STRYKER CORP",
     "Weight":"1.38"
+  },
+  {
+    "Ticker":"MCDONALDS CORP",
+    "Weight":"1.37"
   },
   {
     "Ticker":"SERVICENOW INC",
@@ -109,54 +109,54 @@
   },
   {
     "Ticker":"INTUIT INC",
-    "Weight":"1.36"
+    "Weight":"1.33"
   },
   {
     "Ticker":"MONDELEZ INTERNATIONAL INC-A",
-    "Weight":"1.35"
-  },
-  {
-    "Ticker":"WALT DISNEY CO\/THE",
-    "Weight":"1.30"
+    "Weight":"1.32"
   },
   {
     "Ticker":"EMERSON ELECTRIC CO",
     "Weight":"1.26"
   },
   {
-    "Ticker":"EOG RESOURCES INC",
-    "Weight":"1.24"
+    "Ticker":"WALT DISNEY CO\/THE",
+    "Weight":"1.26"
   },
   {
-    "Ticker":"EATON CORP PLC",
+    "Ticker":"EOG RESOURCES INC",
     "Weight":"1.23"
   },
   {
+    "Ticker":"EATON CORP PLC",
+    "Weight":"1.22"
+  },
+  {
     "Ticker":"ELI LILLY & CO",
-    "Weight":"1.15"
+    "Weight":"1.16"
+  },
+  {
+    "Ticker":"NETFLIX INC",
+    "Weight":"1.09"
   },
   {
     "Ticker":"AMERICAN EXPRESS CO",
     "Weight":"1.09"
   },
   {
-    "Ticker":"NETFLIX INC",
-    "Weight":"1.07"
+    "Ticker":"BRISTOL-MYERS SQUIBB CO",
+    "Weight":"1.05"
   },
   {
     "Ticker":"PROGRESSIVE CORP",
-    "Weight":"1.04"
-  },
-  {
-    "Ticker":"BRISTOL-MYERS SQUIBB CO",
-    "Weight":"1.02"
-  },
-  {
-    "Ticker":"DANAHER CORP",
-    "Weight":"1.01"
+    "Weight":"1.03"
   },
   {
     "Ticker":"REGENERON PHARMACEUTICALS",
+    "Weight":"1.00"
+  },
+  {
+    "Ticker":"DANAHER CORP",
     "Weight":"1.00"
   },
   {
@@ -165,38 +165,34 @@
   },
   {
     "Ticker":"ARTHUR J GALLAGHER & CO",
-    "Weight":"0.99"
+    "Weight":"0.97"
   },
   {
     "Ticker":"TRAVELERS COS INC\/THE",
-    "Weight":"0.95"
+    "Weight":"0.94"
   },
   {
     "Ticker":"BERKSHIRE HATHAWAY INC-CL B",
     "Weight":"0.91"
   },
   {
-    "Ticker":"CADENCE DESIGN SYS INC",
-    "Weight":"0.88"
+    "Ticker":"MERCK & CO. INC.",
+    "Weight":"0.89"
   },
   {
-    "Ticker":"MERCK & CO. INC.",
-    "Weight":"0.87"
+    "Ticker":"CADENCE DESIGN SYS INC",
+    "Weight":"0.89"
   },
   {
     "Ticker":"COGNIZANT TECH SOLUTIONS-A",
-    "Weight":"0.87"
+    "Weight":"0.85"
   },
   {
     "Ticker":"NIKE INC -CL B",
-    "Weight":"0.83"
+    "Weight":"0.82"
   },
   {
     "Ticker":"CARRIER GLOBAL CORP",
-    "Weight":"0.80"
-  },
-  {
-    "Ticker":"CHIPOTLE MEXICAN GRILL INC",
     "Weight":"0.79"
   },
   {
@@ -208,12 +204,16 @@
     "Weight":"0.78"
   },
   {
-    "Ticker":"AMERIPRISE FINANCIAL INC",
+    "Ticker":"CHIPOTLE MEXICAN GRILL INC",
     "Weight":"0.77"
   },
   {
+    "Ticker":"AMERIPRISE FINANCIAL INC",
+    "Weight":"0.76"
+  },
+  {
     "Ticker":"CHUBB LTD",
-    "Weight":"0.75"
+    "Weight":"0.74"
   },
   {
     "Ticker":"WELLTOWER INC",
@@ -224,8 +224,8 @@
     "Weight":"0.70"
   },
   {
-    "Ticker":"KEURIG DR PEPPER INC",
-    "Weight":"0.68"
+    "Ticker":"TEXAS INSTRUMENTS INC",
+    "Weight":"0.67"
   },
   {
     "Ticker":"DEERE AND CO",
@@ -233,34 +233,30 @@
   },
   {
     "Ticker":"COCA-COLA CO\/THE",
-    "Weight":"0.67"
+    "Weight":"0.66"
   },
   {
-    "Ticker":"TEXAS INSTRUMENTS INC",
-    "Weight":"0.67"
+    "Ticker":"KEURIG DR PEPPER INC",
+    "Weight":"0.66"
   },
   {
     "Ticker":"EXXON MOBIL CORP",
-    "Weight":"0.66"
+    "Weight":"0.65"
   },
   {
     "Ticker":"BURLINGTON STORES INC",
-    "Weight":"0.66"
+    "Weight":"0.62"
   },
   {
     "Ticker":"HILTON WORLDWIDE HLDGS",
-    "Weight":"0.62"
-  },
-  {
-    "Ticker":"VERTEX PHARMACEUTICALS INC",
-    "Weight":"0.62"
-  },
-  {
-    "Ticker":"CORPAY INC",
     "Weight":"0.61"
   },
   {
-    "Ticker":"ACCENTURE PLC-CL A",
+    "Ticker":"VERTEX PHARMACEUTICALS INC",
+    "Weight":"0.61"
+  },
+  {
+    "Ticker":"CORPAY INC",
     "Weight":"0.61"
   },
   {
@@ -268,23 +264,27 @@
     "Weight":"0.60"
   },
   {
+    "Ticker":"ACCENTURE PLC-CL A",
+    "Weight":"0.58"
+  },
+  {
     "Ticker":"LINDE PLC",
-    "Weight":"0.57"
+    "Weight":"0.56"
   },
   {
     "Ticker":"VENTAS INC",
-    "Weight":"0.55"
-  },
-  {
-    "Ticker":"SBA COMMUNICATIONS CORP",
     "Weight":"0.54"
   },
   {
-    "Ticker":"COMCAST CORP-CLASS A",
+    "Ticker":"SBA COMMUNICATIONS CORP",
     "Weight":"0.53"
   },
   {
-    "Ticker":"PHILIP MORRIS INTERNA",
+    "Ticker":"COMCAST CORP-CLASS A",
+    "Weight":"0.51"
+  },
+  {
+    "Ticker":"ASML HOLDING NV-NY REG SHS",
     "Weight":"0.49"
   },
   {
@@ -292,7 +292,11 @@
     "Weight":"0.49"
   },
   {
-    "Ticker":"ASML HOLDING NV-NY REG SHS",
+    "Ticker":"AMPHENOL CORP-CL A",
+    "Weight":"0.49"
+  },
+  {
+    "Ticker":"PHILIP MORRIS INTERNA",
     "Weight":"0.48"
   },
   {
@@ -301,11 +305,7 @@
   },
   {
     "Ticker":"CHURCH & DWIGHT CO INC",
-    "Weight":"0.47"
-  },
-  {
-    "Ticker":"AMPHENOL CORP-CL A",
-    "Weight":"0.47"
+    "Weight":"0.46"
   },
   {
     "Ticker":"BOSTON SCIENTIFIC CORP",
@@ -321,7 +321,7 @@
   },
   {
     "Ticker":"PROCTER & GAMBLE CO\/THE",
-    "Weight":"0.43"
+    "Weight":"0.42"
   },
   {
     "Ticker":"UNITEDHEALTH GROUP INC",
@@ -329,22 +329,22 @@
   },
   {
     "Ticker":"AUTOMATIC DATA PROCESSING",
-    "Weight":"0.40"
-  },
-  {
-    "Ticker":"OTIS WORLDWIDE CORP",
     "Weight":"0.39"
   },
   {
-    "Ticker":"FEDEX CORP",
+    "Ticker":"OTIS WORLDWIDE CORP",
+    "Weight":"0.38"
+  },
+  {
+    "Ticker":"ALPHABET INC-CL C",
     "Weight":"0.36"
   },
   {
-    "Ticker":"LEIDOS HOLDINGS INC",
+    "Ticker":"FEDEX CORP",
     "Weight":"0.35"
   },
   {
-    "Ticker":"COSTCO WHOLESALE CORP",
+    "Ticker":"LEIDOS HOLDINGS INC",
     "Weight":"0.35"
   },
   {
@@ -356,7 +356,7 @@
     "Weight":"0.35"
   },
   {
-    "Ticker":"ALPHABET INC-CL C",
+    "Ticker":"COSTCO WHOLESALE CORP",
     "Weight":"0.34"
   },
   {
@@ -369,7 +369,7 @@
   },
   {
     "Ticker":"US BANCORP",
-    "Weight":"0.32"
+    "Weight":"0.31"
   },
   {
     "Ticker":"SEMPRA",
@@ -377,15 +377,11 @@
   },
   {
     "Ticker":"LAM RESEARCH CORP",
-    "Weight":"0.28"
-  },
-  {
-    "Ticker":"VERIZON COMMUNICATIONS INC",
-    "Weight":"0.27"
+    "Weight":"0.30"
   },
   {
     "Ticker":"TESLA INC",
-    "Weight":"0.27"
+    "Weight":"0.29"
   },
   {
     "Ticker":"PUBLIC SERVICE ENTERPRISE GP",
@@ -393,7 +389,11 @@
   },
   {
     "Ticker":"HUMANA INC",
-    "Weight":"0.26"
+    "Weight":"0.27"
+  },
+  {
+    "Ticker":"VERIZON COMMUNICATIONS INC",
+    "Weight":"0.27"
   },
   {
     "Ticker":"INTERCONTINENTAL EXCHANGE IN",
@@ -401,11 +401,11 @@
   },
   {
     "Ticker":"EDWARDS LIFESCIENCES CORP",
-    "Weight":"0.24"
+    "Weight":"0.23"
   },
   {
     "Ticker":"BAKER HUGHES CO",
-    "Weight":"0.22"
+    "Weight":"0.23"
   },
   {
     "Ticker":"ALTRIA GROUP INC",
@@ -413,7 +413,7 @@
   },
   {
     "Ticker":"INGERSOLL-RAND INC",
-    "Weight":"0.22"
+    "Weight":"0.21"
   },
   {
     "Ticker":"AUTOZONE INC",
@@ -421,7 +421,7 @@
   },
   {
     "Ticker":"VISTRA CORP",
-    "Weight":"0.18"
+    "Weight":"0.19"
   },
   {
     "Ticker":"AMEREN CORPORATION",
@@ -440,11 +440,11 @@
     "Weight":"0.10"
   },
   {
-    "Ticker":"TRUIST FINANCIAL CORP",
+    "Ticker":"MICRON TECHNOLOGY INC",
     "Weight":"0.10"
   },
   {
-    "Ticker":"MICRON TECHNOLOGY INC",
+    "Ticker":"TRUIST FINANCIAL CORP",
     "Weight":"0.10"
   },
   {
@@ -452,11 +452,11 @@
     "Weight":"0.08"
   },
   {
-    "Ticker":"CITIGROUP INC",
+    "Ticker":"PALANTIR TECHNOLOGIES INC-A",
     "Weight":"0.07"
   },
   {
-    "Ticker":"PALANTIR TECHNOLOGIES INC-A",
+    "Ticker":"CITIGROUP INC",
     "Weight":"0.07"
   },
   {
@@ -488,16 +488,16 @@
     "Weight":"0.05"
   },
   {
+    "Ticker":"GENERAL ELECTRIC",
+    "Weight":"0.05"
+  },
+  {
     "Ticker":"FIDELITY NATIONAL INFO SERV",
     "Weight":"0.05"
   },
   {
     "Ticker":"CIGNA CORP",
-    "Weight":"0.05"
-  },
-  {
-    "Ticker":"GENERAL ELECTRIC",
-    "Weight":"0.05"
+    "Weight":"0.04"
   },
   {
     "Ticker":"GE VERNOVA INC",
@@ -520,15 +520,15 @@
     "Weight":"0.04"
   },
   {
-    "Ticker":"CARNIVAL CORP",
-    "Weight":"0.03"
-  },
-  {
     "Ticker":"APPLOVIN CORP-CLASS A",
-    "Weight":"0.03"
+    "Weight":"0.04"
   },
   {
     "Ticker":"DIAMONDBACK ENERGY INC",
+    "Weight":"0.03"
+  },
+  {
+    "Ticker":"CARNIVAL CORP",
     "Weight":"0.03"
   },
   {
@@ -537,6 +537,10 @@
   },
   {
     "Ticker":"STATE STREET CORP",
+    "Weight":"0.03"
+  },
+  {
+    "Ticker":"WESTERN DIGITAL CORP",
     "Weight":"0.03"
   },
   {
@@ -552,15 +556,11 @@
     "Weight":"0.03"
   },
   {
-    "Ticker":"PROLOGIS INC",
-    "Weight":"0.03"
-  },
-  {
     "Ticker":"INTL BUSINESS MACHINES CORP",
     "Weight":"0.03"
   },
   {
-    "Ticker":"WESTERN DIGITAL CORP",
+    "Ticker":"PROLOGIS INC",
     "Weight":"0.03"
   },
   {
@@ -580,7 +580,7 @@
     "Weight":"0.02"
   },
   {
-    "Ticker":"THERMO FISHER SCIENTIFIC INC",
+    "Ticker":"P G & E CORP",
     "Weight":"0.02"
   },
   {
@@ -588,7 +588,7 @@
     "Weight":"0.02"
   },
   {
-    "Ticker":"P G & E CORP",
+    "Ticker":"THERMO FISHER SCIENTIFIC INC",
     "Weight":"0.02"
   },
   {
@@ -608,19 +608,19 @@
     "Weight":"0.02"
   },
   {
-    "Ticker":"MCKESSON CORP",
-    "Weight":"0.02"
-  },
-  {
     "Ticker":"FIFTH THIRD BANCORP",
     "Weight":"0.02"
   },
   {
-    "Ticker":"GILEAD SCIENCES INC",
+    "Ticker":"MCKESSON CORP",
     "Weight":"0.02"
   },
   {
     "Ticker":"CROWDSTRIKE HOLDINGS INC - A",
+    "Weight":"0.02"
+  },
+  {
+    "Ticker":"GILEAD SCIENCES INC",
     "Weight":"0.02"
   },
   {
@@ -629,6 +629,14 @@
   },
   {
     "Ticker":"ELEVANCE HEALTH INC",
+    "Weight":"0.02"
+  },
+  {
+    "Ticker":"NEWMONT CORP",
+    "Weight":"0.02"
+  },
+  {
+    "Ticker":"DELTA AIR LINES INC",
     "Weight":"0.02"
   },
   {
@@ -644,10 +652,6 @@
     "Weight":"0.02"
   },
   {
-    "Ticker":"NEWMONT CORP",
-    "Weight":"0.02"
-  },
-  {
     "Ticker":"AUTODESK INC",
     "Weight":"0.02"
   },
@@ -656,15 +660,7 @@
     "Weight":"0.02"
   },
   {
-    "Ticker":"DELTA AIR LINES INC",
-    "Weight":"0.02"
-  },
-  {
     "Ticker":"INTUITIVE SURGICAL INC",
-    "Weight":"0.02"
-  },
-  {
-    "Ticker":"CHARTER COMMUNICATIONS INC - A",
     "Weight":"0.02"
   },
   {
@@ -676,16 +672,20 @@
     "Weight":"0.02"
   },
   {
-    "Ticker":"MARTIN MARIETTA MATERIALS",
+    "Ticker":"CHARTER COMMUNICATIONS INC - A",
     "Weight":"0.02"
   },
   {
-    "Ticker":"UNITED PARCEL SERVICE-CL B",
+    "Ticker":"MARTIN MARIETTA MATERIALS",
     "Weight":"0.02"
   },
   {
     "Ticker":"QUANTA SERVICES INC",
     "Weight":"0.02"
+  },
+  {
+    "Ticker":"UNITED PARCEL SERVICE-CL B",
+    "Weight":"0.01"
   },
   {
     "Ticker":"EQT CORP",
@@ -716,7 +716,7 @@
     "Weight":"0.01"
   },
   {
-    "Ticker":"WARNER BROS DISCOVERY INC",
+    "Ticker":"NRG ENERGY INC",
     "Weight":"0.01"
   },
   {
@@ -724,15 +724,11 @@
     "Weight":"0.01"
   },
   {
+    "Ticker":"WARNER BROS DISCOVERY INC",
+    "Weight":"0.01"
+  },
+  {
     "Ticker":"NUCOR CORP",
-    "Weight":"0.01"
-  },
-  {
-    "Ticker":"NRG ENERGY INC",
-    "Weight":"0.01"
-  },
-  {
-    "Ticker":"ADOBE INC",
     "Weight":"0.01"
   },
   {
@@ -740,7 +736,7 @@
     "Weight":"0.01"
   },
   {
-    "Ticker":"OMNICOM GROUP",
+    "Ticker":"ADOBE INC",
     "Weight":"0.01"
   },
   {
@@ -748,7 +744,15 @@
     "Weight":"0.01"
   },
   {
+    "Ticker":"OMNICOM GROUP",
+    "Weight":"0.01"
+  },
+  {
     "Ticker":"ALLEGION PLC",
+    "Weight":"0.01"
+  },
+  {
+    "Ticker":"UNITED AIRLINES HOLDINGS INC",
     "Weight":"0.01"
   },
   {
@@ -760,15 +764,11 @@
     "Weight":"0.01"
   },
   {
-    "Ticker":"UNITED AIRLINES HOLDINGS INC",
+    "Ticker":"QUALCOMM INC",
     "Weight":"0.01"
   },
   {
     "Ticker":"TOAST INC-CLASS A",
-    "Weight":"0.01"
-  },
-  {
-    "Ticker":"QUALCOMM INC",
     "Weight":"0.01"
   },
   {
@@ -796,6 +796,14 @@
     "Weight":"0.01"
   },
   {
+    "Ticker":"INTERACTIVE BROKERS GRO-CL A",
+    "Weight":"0.01"
+  },
+  {
+    "Ticker":"ROBINHOOD MARKETS INC - A",
+    "Weight":"0.01"
+  },
+  {
     "Ticker":"ROYAL CARIBBEAN CRUISES LTD",
     "Weight":"0.01"
   },
@@ -804,7 +812,7 @@
     "Weight":"0.01"
   },
   {
-    "Ticker":"INTERACTIVE BROKERS GRO-CL A",
+    "Ticker":"LYONDELLBASELL INDU-CL A",
     "Weight":"0.01"
   },
   {
@@ -812,23 +820,15 @@
     "Weight":"0.01"
   },
   {
-    "Ticker":"LYONDELLBASELL INDU-CL A",
-    "Weight":"0.01"
-  },
-  {
-    "Ticker":"ROBINHOOD MARKETS INC - A",
-    "Weight":"0.01"
-  },
-  {
     "Ticker":"PRINCIPAL FINANCIAL GROUP",
     "Weight":"0.01"
   },
   {
-    "Ticker":"JABIL INC",
+    "Ticker":"HOLOGIC INC",
     "Weight":"0.01"
   },
   {
-    "Ticker":"HOLOGIC INC",
+    "Ticker":"JABIL INC",
     "Weight":"0.01"
   },
   {
@@ -840,19 +840,19 @@
     "Weight":"0.01"
   },
   {
-    "Ticker":"TJX COMPANIES INC",
-    "Weight":"0.01"
-  },
-  {
     "Ticker":"CORTEVA INC",
     "Weight":"0.01"
   },
   {
-    "Ticker":"AXON ENTERPRISE INC",
+    "Ticker":"SYNOPSYS INC",
     "Weight":"0.01"
   },
   {
-    "Ticker":"SYNOPSYS INC",
+    "Ticker":"AXON ENTERPRISE INC",
+    "Weight":"0.00"
+  },
+  {
+    "Ticker":"TJX COMPANIES INC",
     "Weight":"0.00"
   },
   {

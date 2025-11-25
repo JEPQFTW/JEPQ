@@ -1,7 +1,7 @@
 [
   {
     "Ticker":"SPXW  251224C06725000",
-    "Weight":"-0.08",
+    "Weight":"-0.10",
     "Expiry_Date":"2025-12-24",
     "Option_Type":"C",
     "Strike_Price":"6,725.00",
@@ -9,11 +9,11 @@
     "Contracts":"2,100.00",
     "ForgoneGain":"0.00",
     "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":257478498.9799999893
+    "TotalBaseMV":262605617.8100000024
   },
   {
     "Ticker":"SPXW  251223C06825000",
-    "Weight":"-0.04",
+    "Weight":"-0.05",
     "Expiry_Date":"2025-12-23",
     "Option_Type":"C",
     "Strike_Price":"6,825.00",
@@ -21,11 +21,11 @@
     "Contracts":"2,100.00",
     "ForgoneGain":"0.00",
     "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":257478498.9799999893
+    "TotalBaseMV":262605617.8100000024
   },
   {
     "Ticker":"SPXW  251222C06825000",
-    "Weight":"-0.04",
+    "Weight":"-0.05",
     "Expiry_Date":"2025-12-22",
     "Option_Type":"C",
     "Strike_Price":"6,825.00",
@@ -33,11 +33,11 @@
     "Contracts":"2,100.00",
     "ForgoneGain":"0.00",
     "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":257478498.9799999893
+    "TotalBaseMV":262605617.8100000024
   },
   {
     "Ticker":"SPXW  251218C06900000",
-    "Weight":"-0.02",
+    "Weight":"-0.03",
     "Expiry_Date":"2025-12-18",
     "Option_Type":"C",
     "Strike_Price":"6,900.00",
@@ -45,7 +45,7 @@
     "Contracts":"2,100.00",
     "ForgoneGain":"0.00",
     "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":257478498.9799999893
+    "TotalBaseMV":262605617.8100000024
   },
   {
     "Ticker":"SPXW  251211C06900000",
@@ -57,7 +57,7 @@
     "Contracts":"2,100.00",
     "ForgoneGain":"0.00",
     "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":257478498.9799999893
+    "TotalBaseMV":262605617.8100000024
   },
   {
     "Ticker":"SPXW  251217C07000000",
@@ -69,11 +69,11 @@
     "Contracts":"2,100.00",
     "ForgoneGain":"0.00",
     "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":257478498.9799999893
+    "TotalBaseMV":262605617.8100000024
   },
   {
     "Ticker":"SPXW  251216C07000000",
-    "Weight":"-0.00",
+    "Weight":"-0.01",
     "Expiry_Date":"2025-12-16",
     "Option_Type":"C",
     "Strike_Price":"7,000.00",
@@ -81,11 +81,11 @@
     "Contracts":"2,100.00",
     "ForgoneGain":"0.00",
     "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":257478498.9799999893
+    "TotalBaseMV":262605617.8100000024
   },
   {
     "Ticker":"SPXW  251210C06950000",
-    "Weight":"-0.00",
+    "Weight":"-0.01",
     "Expiry_Date":"2025-12-10",
     "Option_Type":"C",
     "Strike_Price":"6,950.00",
@@ -93,7 +93,7 @@
     "Contracts":"2,100.00",
     "ForgoneGain":"0.00",
     "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":257478498.9799999893
+    "TotalBaseMV":262605617.8100000024
   },
   {
     "Ticker":"SPXW  251209C06950000",
@@ -105,7 +105,7 @@
     "Contracts":"2,100.00",
     "ForgoneGain":"0.00",
     "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":257478498.9799999893
+    "TotalBaseMV":262605617.8100000024
   },
   {
     "Ticker":"SPXW  251204C06975000",
@@ -117,19 +117,7 @@
     "Contracts":"2,100.00",
     "ForgoneGain":"0.00",
     "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":257478498.9799999893
-  },
-  {
-    "Ticker":"SPXW  251126C06875000",
-    "Weight":"-0.00",
-    "Expiry_Date":"2025-11-26",
-    "Option_Type":"C",
-    "Strike_Price":"6,875.00",
-    "OpeningPrice":6507.98,
-    "Contracts":"2,100.00",
-    "ForgoneGain":"0.00",
-    "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":257478498.9799999893
+    "TotalBaseMV":262605617.8100000024
   },
   {
     "Ticker":"SPXW  251203C07025000",
@@ -141,7 +129,19 @@
     "Contracts":"2,100.00",
     "ForgoneGain":"0.00",
     "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":257478498.9799999893
+    "TotalBaseMV":262605617.8100000024
+  },
+  {
+    "Ticker":"SPXW  251126C06875000",
+    "Weight":"-0.00",
+    "Expiry_Date":"2025-11-26",
+    "Option_Type":"C",
+    "Strike_Price":"6,875.00",
+    "OpeningPrice":6507.98,
+    "Contracts":"2,200.00",
+    "ForgoneGain":"0.00",
+    "ForgoneGainPct":"0.000000",
+    "TotalBaseMV":262605617.8100000024
   },
   {
     "Ticker":"SPXW  251202C07000000",
@@ -150,22 +150,10 @@
     "Option_Type":"C",
     "Strike_Price":"7,000.00",
     "OpeningPrice":6507.98,
-    "Contracts":"2,100.00",
+    "Contracts":"2,200.00",
     "ForgoneGain":"0.00",
     "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":257478498.9799999893
-  },
-  {
-    "Ticker":"SPXW  251125C06850000",
-    "Weight":"-0.00",
-    "Expiry_Date":"2025-11-25",
-    "Option_Type":"C",
-    "Strike_Price":"6,850.00",
-    "OpeningPrice":6507.98,
-    "Contracts":"2,100.00",
-    "ForgoneGain":"0.00",
-    "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":257478498.9799999893
+    "TotalBaseMV":262605617.8100000024
   },
   {
     "Ticker":"SPXW  251124C06875000",
@@ -174,9 +162,21 @@
     "Option_Type":"C",
     "Strike_Price":"6,875.00",
     "OpeningPrice":6507.98,
-    "Contracts":"2,100.00",
+    "Contracts":"2,200.00",
     "ForgoneGain":"0.00",
     "ForgoneGainPct":"0.000000",
-    "TotalBaseMV":257478498.9799999893
+    "TotalBaseMV":262605617.8100000024
+  },
+  {
+    "Ticker":"SPXW  251125C06850000",
+    "Weight":"-0.00",
+    "Expiry_Date":"2025-11-25",
+    "Option_Type":"C",
+    "Strike_Price":"6,850.00",
+    "OpeningPrice":6507.98,
+    "Contracts":"2,200.00",
+    "ForgoneGain":"0.00",
+    "ForgoneGainPct":"0.000000",
+    "TotalBaseMV":262605617.8100000024
   }
 ]
