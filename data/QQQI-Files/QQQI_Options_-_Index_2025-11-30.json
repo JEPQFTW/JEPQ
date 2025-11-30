@@ -1,0 +1,26 @@
+[
+  {
+    "StockTicker":"NDX   260116C26000000",
+    "Weightings":-0.56,
+    "Expiry_Date":"2026-01-16",
+    "Option_Type":"C",
+    "Strike_Price":26000.0,
+    "OpeningPrice":23738.67,
+    "Contracts":782.0,
+    "ForgoneGain":0.0,
+    "ForgoneGainPct":0.0,
+    "TotalBaseMV":6657581019.720000267
+  },
+  {
+    "StockTicker":"NDX   260116C26400000",
+    "Weightings":-0.37,
+    "Expiry_Date":"2026-01-16",
+    "Option_Type":"C",
+    "Strike_Price":26400.0,
+    "OpeningPrice":23738.67,
+    "Contracts":782.0,
+    "ForgoneGain":0.0,
+    "ForgoneGainPct":0.0,
+    "TotalBaseMV":6657581019.720000267
+  }
+]
