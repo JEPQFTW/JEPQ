@@ -25,8 +25,45 @@ body {
     font-family: Arial, sans-serif;
 }
 
+/* Sidebar */
+.sidebar {
+    height: 100vh;
+    width: 240px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: linear-gradient(180deg, #1a252f, #0d141a);
+    padding-top: 30px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 6px rgba(0,0,0,0.5);
+}
+
+.sidebar a {
+    padding: 15px 25px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #ecf0f1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: background 0.3s, padding-left 0.3s;
+}
+
+.sidebar a:hover {
+    background: #2c3e50;
+    padding-left: 35px;
+}
+
+.sidebar hr {
+    border: 0;
+    border-top: 1px solid #7f8c8d;
+    margin: 15px 20px;
+}
+
 /* Main content */
 .main {
+    margin-left: 240px;
     padding: 40px;
     color: #ecf0f1;
     min-height: calc(100vh - 60px);
@@ -36,14 +73,13 @@ body {
     margin-bottom: 20px;
 }
 
-/* Cards layout */
+/* Cards */
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 25px;
 }
 
-/* Card */
 .card {
     background-color: rgba(28, 40, 51, 0.9);
     border-radius: 12px;
@@ -85,8 +121,9 @@ body {
     background: #2176b5;
 }
 
-/* Footer navigation */
+/* Footer */
 .footer {
+    margin-left: 240px;
     padding: 15px 30px;
     background: #0d141a;
     display: flex;
@@ -120,9 +157,21 @@ body {
 
 <body>
 
+<div class="sidebar">
+    <a href="pages/About.html"><i class="fa-solid fa-circle-info"></i> About</a>
+    <a href="pages/Contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+
+    <hr>
+
+    <a href="pages/Forum.html"><i class="fa-solid fa-comments"></i> Forum</a>
+    <a href="https://discord.gg/YOUR_INVITE_LINK" target="_blank">
+        <i class="fa-brands fa-discord"></i> Discord
+    </a>
+</div>
+
 <div class="main">
     <h1>ETF Dashboard</h1>
-    <p>Select a page below to explore the sections:</p>
+    <p>Select a page from the sidebar or explore the sections below:</p>
 
     <div class="cards">
 
@@ -142,8 +191,6 @@ body {
             <h2>JPMorgan - JEPI (UCITS) Holdings</h2>
             <p>
                 Detailed analysis of options, cash, and stocks holdings for JEPI (UCITS), updated daily.
-                Please note, this is the European version of the fund, as the American one uses ELNs;
-                however, given the high historical performance correlation, the holdings can be seen as an accurate proxy.
             </p>
             <a href="pages/JEPI-Holdings.html">
                 <i class="fa-solid fa-chart-line"></i> View Holdings
@@ -170,8 +217,6 @@ body {
 </div>
 
 <footer class="footer">
-    <a href="pages/About.html"><i class="fa-solid fa-circle-info"></i> About</a>
-    <a href="pages/Contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
     <a href="pages/Disclaimer.html"><i class="fa-solid fa-scale-balanced"></i> Disclaimer</a>
     <a href="pages/terms.html"><i class="fa-solid fa-file-contract"></i> Terms of Use</a>
     <a href="pages/Privacy.html"><i class="fa-solid fa-user-shield"></i> Privacy Policy</a>
