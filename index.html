@@ -4,31 +4,30 @@
 <meta charset="UTF-8">
 <title>ETF Dashboard</title>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-V6ELYNG0VS"></script>
+<!-- Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-V6ELYNG0VS');
+  const supabaseUrl = 'https://YOUR_PROJECT_REF.supabase.co'; // replace with your project URL
+  const supabaseKey = 'sb_publishable_zcnarhr9ROgKtCaE2jMyJQ_AdjS-Lkf';
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 </script>
 
-<!-- FontAwesome CDN -->
+<!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-
 /* Base */
 body {
     margin: 0;
     background: linear-gradient(180deg, #0b1116, #0d141a);
     font-family: Arial, sans-serif;
+    color: #ecf0f1;
 }
 
 /* Sidebar */
 .sidebar {
     height: 100vh;
-    width: 240px;
+    width: 200px;
     position: fixed;
     top: 0;
     left: 0;
@@ -40,7 +39,7 @@ body {
 }
 
 .sidebar a {
-    padding: 15px 25px;
+    padding: 15px 20px;
     text-decoration: none;
     font-size: 16px;
     color: #ecf0f1;
@@ -52,25 +51,13 @@ body {
 
 .sidebar a:hover {
     background: #2c3e50;
-    padding-left: 35px;
-}
-
-.sidebar hr {
-    border: 0;
-    border-top: 1px solid #7f8c8d;
-    margin: 15px 20px;
+    padding-left: 30px;
 }
 
 /* Main content */
 .main {
-    margin-left: 240px;
+    margin-left: 200px;
     padding: 40px;
-    color: #ecf0f1;
-    min-height: calc(100vh - 60px);
-}
-
-.main h1 {
-    margin-bottom: 20px;
 }
 
 /* Cards */
@@ -80,6 +67,7 @@ body {
     gap: 25px;
 }
 
+/* Card styling */
 .card {
     background-color: rgba(28, 40, 51, 0.9);
     border-radius: 12px;
@@ -123,7 +111,7 @@ body {
 
 /* Footer */
 .footer {
-    margin-left: 240px;
+    margin-left: 200px;
     padding: 15px 30px;
     background: #0d141a;
     display: flex;
@@ -152,61 +140,94 @@ body {
     opacity: 0.85;
 }
 
+/* Login form */
+#login-container {
+    margin-bottom: 30px;
+    max-width: 400px;
+}
+
+#login-container input {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+}
+
+#login-container button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #3498db;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#login-container button:hover {
+    background: #2176b5;
+}
+
+/* Restricted content initially hidden */
+#restricted-content {
+    display: none;
+}
 </style>
 </head>
 
 <body>
 
 <div class="sidebar">
-  
-    <a href="pages/Forum.html"><i class="fa-solid fa-comments"></i> Forum</a>
-    <a href="https://discord.gg/YOUR_INVITE_LINK" target="_blank">
-        <i class="fa-brands fa-discord"></i> Discord
-    </a>
+    <a href="#"><i class="fa-solid fa-comments"></i> Forum</a>
+    <a href="#"><i class="fa-brands fa-discord"></i> Discord</a>
 </div>
 
 <div class="main">
-    <h1>ETF Dashboard</h1>
-    <p>Select a page from the sidebar or explore the sections below:</p>
 
-    <div class="cards">
+    <!-- Login form -->
+    <div id="login-container">
+        <h2>Login</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button id="login-btn">Login</button>
+        <p id="login-msg"></p>
+    </div>
 
-        <div class="card">
-            <h2>JPMorgan - JEPQ (UCITS) Holdings</h2>
-            <p>
-                Detailed analysis of options, cash, and stocks holdings for JEPQ (UCITS), updated daily.
-                Please note, this is the European version of the fund, as the American one uses ELNs;
-                however, given the high historical performance correlation, the holdings can be seen as an accurate proxy.
-            </p>
-            <a href="pages/JEPQ-Holdings.html">
-                <i class="fa-solid fa-chart-line"></i> View Holdings
-            </a>
-        </div>
+    <!-- Restricted dashboard content -->
+    <div id="restricted-content">
 
-        <div class="card">
-            <h2>JPMorgan - JEPI (UCITS) Holdings</h2>
-            <p>
-                Detailed analysis of options, cash, and stocks holdings for JEPI (UCITS), updated daily.
-            </p>
-            <a href="pages/JEPI-Holdings.html">
-                <i class="fa-solid fa-chart-line"></i> View Holdings
-            </a>
-        </div>
+        <h1>ETF Dashboard</h1>
+        <p>Select a page or explore the sections below:</p>
 
-        <div class="card">
-            <h2>NEOS - QQQI Holdings</h2>
-            <p>Detailed analysis of options, cash, and stocks holdings for QQQI, updated daily.</p>
-            <a href="pages/QQQI-Holdings.html">
-                <i class="fa-solid fa-chart-line"></i> View Holdings
-            </a>
-        </div>
+        <div class="cards">
+            <div class="card">
+                <h2>JPMorgan - JEPQ (UCITS) Holdings</h2>
+                <p>
+                    Detailed analysis of options, cash, and stocks holdings for JEPQ (UCITS), updated daily.
+                </p>
+                <a href="pages/JEPQ-Holdings.html"><i class="fa-solid fa-chart-line"></i> View Holdings</a>
+            </div>
 
-        <div class="card">
-            <h2>NEOS - SPYI Holdings</h2>
-            <p>Detailed analysis of options, cash, and stocks holdings for SPYI, updated daily.</p>
-            <a href="pages/SPYI-Holdings.html">
-                <i class="fa-solid fa-chart-line"></i> View Holdings
-            </a>
+            <div class="card">
+                <h2>JPMorgan - JEPI (UCITS) Holdings</h2>
+                <p>
+                    Detailed analysis of options, cash, and stocks holdings for JEPI (UCITS), updated daily.
+                </p>
+                <a href="pages/JEPI-Holdings.html"><i class="fa-solid fa-chart-line"></i> View Holdings</a>
+            </div>
+
+            <div class="card">
+                <h2>NEOS - QQQI Holdings</h2>
+                <p>Detailed analysis of options, cash, and stocks holdings for QQQI, updated daily.</p>
+                <a href="pages/QQQI-Holdings.html"><i class="fa-solid fa-chart-line"></i> View Holdings</a>
+            </div>
+
+            <div class="card">
+                <h2>NEOS - SPYI Holdings</h2>
+                <p>Detailed analysis of options, cash, and stocks holdings for SPYI, updated daily.</p>
+                <a href="pages/SPYI-Holdings.html"><i class="fa-solid fa-chart-line"></i> View Holdings</a>
+            </div>
         </div>
 
     </div>
@@ -217,6 +238,40 @@ body {
     <a href="pages/terms.html"><i class="fa-solid fa-file-contract"></i> Terms of Use</a>
     <a href="pages/Privacy.html"><i class="fa-solid fa-user-shield"></i> Privacy Policy</a>
 </footer>
+
+<!-- Supabase login JS -->
+<script>
+const loginBtn = document.getElementById('login-btn');
+const loginMsg = document.getElementById('login-msg');
+
+loginBtn.addEventListener('click', async () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+    });
+
+    if (error) {
+        loginMsg.textContent = 'Login failed: ' + error.message;
+        loginMsg.style.color = 'red';
+    } else {
+        loginMsg.textContent = 'Logged in successfully!';
+        loginMsg.style.color = 'green';
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('restricted-content').style.display = 'block';
+    }
+});
+
+// Check session on page load
+supabase.auth.getSession().then(({ data }) => {
+    if (data.session) {
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('restricted-content').style.display = 'block';
+    }
+});
+</script>
 
 </body>
 </html>
