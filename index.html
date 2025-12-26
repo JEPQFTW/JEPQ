@@ -1,8 +1,8 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>ETF Dashboard</title>
-<link rel="stylesheet" href="style.css">
-    
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6ELYNG0VS"></script>
@@ -10,15 +10,21 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-V6ELYNG0VS');
 </script>
-    
 
 <!-- FontAwesome CDN -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
+
+/* Base */
+body {
+    margin: 0;
+    background: linear-gradient(180deg, #0b1116, #0d141a);
+    font-family: Arial, sans-serif;
+}
+
 /* Sidebar */
 .sidebar {
     height: 100vh;
@@ -47,11 +53,12 @@
 .sidebar a:hover {
     background: #2c3e50;
     padding-left: 35px;
-/* Base */
-body {
-    margin: 0;
-    background: linear-gradient(180deg, #0b1116, #0d141a);
-    font-family: Arial, sans-serif;
+}
+
+.sidebar hr {
+    border: 0;
+    border-top: 1px solid #7f8c8d;
+    margin: 15px 20px;
 }
 
 /* Main content */
@@ -63,28 +70,60 @@ body {
 }
 
 .main h1 {
-    color: #ecf0f1;
     margin-bottom: 20px;
 }
 
-/* Cards layout */
+/* Cards */
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 25px;
 }
 
-/* Card */
 .card {
     background-color: rgba(28, 40, 51, 0.9);
     border-radius: 12px;
-@@ -107,56 +84,98 @@
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-top: 5px solid #3498db;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+}
+
+.card h2 {
+    margin-top: 0;
+    color: #3498db;
+}
+
+.card p {
+    color: #bdc3c7;
+    line-height: 1.6;
+}
+
+.card a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    text-decoration: none;
+    color: #fff;
+    background: #3498db;
+    padding: 10px 16px;
+    border-radius: 6px;
+    transition: background 0.3s;
+}
+
 .card a:hover {
     background: #2176b5;
 }
 
-/* Footer navigation */
+/* Footer */
 .footer {
+    margin-left: 240px;
     padding: 15px 30px;
     background: #0d141a;
     display: flex;
@@ -115,35 +154,34 @@ body {
 
 </style>
 </head>
+
 <body>
 
 <div class="sidebar">
     <a href="pages/About.html"><i class="fa-solid fa-circle-info"></i> About</a>
     <a href="pages/Contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
-    <hr style="border: 0; border-top: 1px solid #7f8c8d; margin: 15px 0;">
-    <a href="pages/Disclaimer.html"><i class="fa-solid fa-scale-balanced"></i> Disclaimer</a>
-    <a href="pages/terms.html"><i class="fa-solid fa-file-contract"></i> Terms of Use</a>
-    <a href="pages/Privacy.html"><i class="fa-solid fa-user-shield"></i> Privacy Policy</a>
+
+    <hr>
+
+    <a href="pages/Forum.html"><i class="fa-solid fa-comments"></i> Forum</a>
+    <a href="https://discord.gg/YOUR_INVITE_LINK" target="_blank">
+        <i class="fa-brands fa-discord"></i> Discord
+    </a>
 </div>
-<body>
 
 <div class="main">
     <h1>ETF Dashboard</h1>
     <p>Select a page from the sidebar or explore the sections below:</p>
-    <p>Select a page below to explore the sections:</p>
 
     <div class="cards">
 
         <div class="card">
             <h2>JPMorgan - JEPQ (UCITS) Holdings</h2>
             <p>
-                Detailed analysis of options, cash, and stocks holdings for JEPQ (UCITS), updated daily. 
-                Please note, this is the European version of the fund, as the American one uses ELNs; 
                 Detailed analysis of options, cash, and stocks holdings for JEPQ (UCITS), updated daily.
                 Please note, this is the European version of the fund, as the American one uses ELNs;
                 however, given the high historical performance correlation, the holdings can be seen as an accurate proxy.
             </p>
-            <a href="pages/JEPQ-Holdings.html"><i class="fa-solid fa-chart-line"></i> View Holdings</a>
             <a href="pages/JEPQ-Holdings.html">
                 <i class="fa-solid fa-chart-line"></i> View Holdings
             </a>
@@ -151,15 +189,8 @@ body {
 
         <div class="card">
             <h2>JPMorgan - JEPI (UCITS) Holdings</h2>
-            <p> 
-                Detailed analysis of options, cash, and stocks holdings for JEPI (UCITS), updated daily. 
-                Please note, this is the European version of the fund, as the American one uses ELNs; 
-                however, given the high historical performance correlation, the holdings can be seen as an accurate proxy.</p>
-            <a href="pages/JEPI-Holdings.html"><i class="fa-solid fa-chart-line"></i> View Holdings</a>
             <p>
                 Detailed analysis of options, cash, and stocks holdings for JEPI (UCITS), updated daily.
-                Please note, this is the European version of the fund, as the American one uses ELNs;
-                however, given the high historical performance correlation, the holdings can be seen as an accurate proxy.
             </p>
             <a href="pages/JEPI-Holdings.html">
                 <i class="fa-solid fa-chart-line"></i> View Holdings
@@ -169,7 +200,6 @@ body {
         <div class="card">
             <h2>NEOS - QQQI Holdings</h2>
             <p>Detailed analysis of options, cash, and stocks holdings for QQQI, updated daily.</p>
-            <a href="pages/QQQI-Holdings.html"><i class="fa-solid fa-chart-line"></i> View Holdings</a>
             <a href="pages/QQQI-Holdings.html">
                 <i class="fa-solid fa-chart-line"></i> View Holdings
             </a>
@@ -177,8 +207,6 @@ body {
 
         <div class="card">
             <h2>NEOS - SPYI Holdings</h2>
-            <p>DDetailed analysis of options, cash, and stocks holdings for SPYI, updated daily.</p>
-            <a href="pages/SPYI-Holdings.html"><i class="fa-solid fa-chart-line"></i> View Holdings</a>
             <p>Detailed analysis of options, cash, and stocks holdings for SPYI, updated daily.</p>
             <a href="pages/SPYI-Holdings.html">
                 <i class="fa-solid fa-chart-line"></i> View Holdings
@@ -189,8 +217,6 @@ body {
 </div>
 
 <footer class="footer">
-    <a href="pages/About.html"><i class="fa-solid fa-circle-info"></i> About</a>
-    <a href="pages/Contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
     <a href="pages/Disclaimer.html"><i class="fa-solid fa-scale-balanced"></i> Disclaimer</a>
     <a href="pages/terms.html"><i class="fa-solid fa-file-contract"></i> Terms of Use</a>
     <a href="pages/Privacy.html"><i class="fa-solid fa-user-shield"></i> Privacy Policy</a>
