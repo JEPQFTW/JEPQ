@@ -1,0 +1,26 @@
+[
+  {
+    "StockTicker":"SPX   260220C06985000",
+    "Weightings":-0.39,
+    "Expiry_Date":"2026-02-20",
+    "Option_Type":"C",
+    "Strike_Price":6985.0,
+    "OpeningPrice":6507.98,
+    "Contracts":3745.0,
+    "ForgoneGain":0.0,
+    "ForgoneGainPct":0.0,
+    "TotalBaseMV":6898853372.3599996567
+  },
+  {
+    "StockTicker":"SPX   260220C07055000",
+    "Weightings":-0.25,
+    "Expiry_Date":"2026-02-20",
+    "Option_Type":"C",
+    "Strike_Price":7055.0,
+    "OpeningPrice":6507.98,
+    "Contracts":3745.0,
+    "ForgoneGain":0.0,
+    "ForgoneGainPct":0.0,
+    "TotalBaseMV":6898853372.3599996567
+  }
+]
