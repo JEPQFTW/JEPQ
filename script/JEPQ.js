@@ -44,13 +44,12 @@ function renderTable(bucketId, data) {
     const tbody = document.querySelector(`#${bucketId}-table tbody`);
     tbody.innerHTML = "";
     let totalWeight = 0;
-    let cumulativeWeight = 0;
     const today = new Date();
 
     if (!data || data.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = bucketId === 'options' ? 10 : 3; // add cumulative column
+        td.colSpan = bucketId === 'options' ? 9 : 2; // TDTE adds one column
         td.textContent = "No records available";
         tr.appendChild(td);
         tbody.appendChild(tr);
@@ -59,14 +58,15 @@ function renderTable(bucketId, data) {
 
     data.forEach(item => {
         const tr = document.createElement('tr');
-        let weight = parseFloat(item.Weight) || 0;
 
         if(bucketId === 'options') {
             const [year, month, day] = item.Expiry_Date.split('-');
             const expiryDate = new Date(`${year}-${month}-${day}`);
             const displayDate = `${day}/${month}/${year}`;
 
+            // Trading Days to Expiration formula
             const tdte = Math.max(0, Math.round((expiryDate - today) / (1000*60*60*24) * 5/7));
+
             const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
             const opening = parseFloat(item.OpeningPrice);
             const upside = (strike - opening) / opening * 100;
@@ -82,12 +82,9 @@ function renderTable(bucketId, data) {
                 forgoneGains = '0.00%';
             }
 
-            cumulativeWeight += weight;
-
             tr.innerHTML = `
                 <td>${item.Ticker}</td>
-                <td>${weight}%</td>
-                <td>${cumulativeWeight.toFixed(2)}%</td>
+                <td>${item.Weight}%</td>
                 <td data-value="${item.Expiry_Date}">${displayDate}</td>
                 <td>${tdte}</td>
                 <td>${item.Strike_Price}</td>
@@ -99,15 +96,10 @@ function renderTable(bucketId, data) {
                 <td style="display:none;">${item.TotalBaseMV}</td>
             `;
         } else {
-            cumulativeWeight += weight;
-            tr.innerHTML = `
-                <td>${item.Ticker}</td>
-                <td>${weight}%</td>
-                <td>${cumulativeWeight.toFixed(2)}%</td>
-            `;
+            tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
         }
 
-        totalWeight += weight;
+        totalWeight += parseFloat(item.Weight) || 0;
         tbody.appendChild(tr);
     });
 
@@ -142,14 +134,6 @@ document.querySelectorAll('th').forEach(th => {
 
         tbody.innerHTML = '';
         rows.forEach(row => tbody.appendChild(row));
-
-        // Recalculate cumulative column after sorting
-        let cum = 0;
-        rows.forEach(row => {
-            let weight = parseFloat(row.cells[1].textContent.replace('%','')) || 0;
-            cum += weight;
-            row.cells[2].textContent = cum.toFixed(2) + '%';
-        });
     });
 });
 
@@ -161,18 +145,14 @@ updateButton.addEventListener("click", () => {
     const tbody = document.querySelector("#options-table tbody");
     const rows = tbody.querySelectorAll("tr");
     let forgoneSum = 0;
-    let cumulativeWeight = 0;
 
     rows.forEach(row => {
-        const strike = parseFloat(row.cells[4].textContent.replace(/,/g,'')) || 0;
-        const contracts = parseFloat(row.cells[9].textContent.replace(/,/g,'')) || 0;
-        const totalBaseMV = parseFloat(row.cells[10].textContent) || 1;
-
-        const weight = parseFloat(row.cells[1].textContent.replace('%','')) || 0;
-        cumulativeWeight += weight;
-        row.cells[2].textContent = cumulativeWeight.toFixed(2) + '%';
+        const strike = parseFloat(row.cells[4].textContent.replace(/,/g,''));
+        const contracts = parseFloat(row.cells[9].textContent.replace(/,/g,''));
+        const totalBaseMV = parseFloat(row.cells[10].textContent);
 
         const upside = (strike - userIndex) / userIndex * 100;
+
         row.cells[5].textContent = userIndex.toFixed(2);
         row.cells[6].textContent = upside.toFixed(2) + "%";
 
