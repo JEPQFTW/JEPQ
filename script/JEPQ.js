@@ -8,7 +8,7 @@ const dateSelect = document.getElementById("dateSelect");
 const updateButton = document.getElementById("updateIndex");
 const userIndexInput = document.getElementById("userIndex");
 
-// Load available dates
+// Load available dates and populate dropdown
 fetch("/JEPQ/data/JEPQ-Files/available_dates.json")
   .then(res => res.json())
   .then(data => {
@@ -30,7 +30,7 @@ dateSelect.addEventListener("change", () => {
 
 function loadTables(date) {
     const timestamp = new Date().getTime();
-
+    
     buckets.forEach(bucket => {
         const file = `${bucket.prefix}${date}.json?ts=${timestamp}`;
         fetch(file)
@@ -49,7 +49,7 @@ function renderTable(bucketId, data) {
     if (!data || data.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = bucketId === 'options' ? 11 : 2;
+        td.colSpan = bucketId === 'options' ? 9 : 2; // TDTE adds one column
         td.textContent = "No records available";
         tr.appendChild(td);
         tbody.appendChild(tr);
@@ -59,23 +59,18 @@ function renderTable(bucketId, data) {
     data.forEach(item => {
         const tr = document.createElement('tr');
 
-        if (bucketId === 'options') {
+        if(bucketId === 'options') {
             const [year, month, day] = item.Expiry_Date.split('-');
             const expiryDate = new Date(`${year}-${month}-${day}`);
             const displayDate = `${day}/${month}/${year}`;
 
-            const tdte = Math.max(
-                0,
-                Math.round((expiryDate - today) / (1000 * 60 * 60 * 24) * 5 / 7)
-            );
+            // Trading Days to Expiration formula
+            const tdte = Math.max(0, Math.round((expiryDate - today) / (1000*60*60*24) * 5/7));
 
             const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
             const opening = parseFloat(item.OpeningPrice);
             const upside = (strike - opening) / opening * 100;
-
-            let status = '';
-            let statusClass = '';
-            let forgoneGains = '0.00%';
+            let status = '', statusClass = '', forgoneGains = '';
 
             if (upside < 0) {
                 status = 'ITM';
@@ -84,6 +79,7 @@ function renderTable(bucketId, data) {
             } else {
                 status = 'OTM';
                 statusClass = 'otm';
+                forgoneGains = '0.00%';
             }
 
             tr.innerHTML = `
@@ -96,14 +92,11 @@ function renderTable(bucketId, data) {
                 <td>${upside.toFixed(2)}%</td>
                 <td class="${statusClass}">${status}</td>
                 <td>${forgoneGains}</td>
-                <td>${item.Contracts}</td>
-                <td>${item.TotalBaseMV}</td>
+                <td style="display:none;">${item.Contracts}</td>
+                <td style="display:none;">${item.TotalBaseMV}</td>
             `;
         } else {
-            tr.innerHTML = `
-                <td>${item.Ticker}</td>
-                <td>${item.Weight}%</td>
-            `;
+            tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
         }
 
         totalWeight += parseFloat(item.Weight) || 0;
@@ -111,7 +104,7 @@ function renderTable(bucketId, data) {
     });
 
     const totalElem = document.getElementById(`${bucketId}-total`);
-    if (totalElem) totalElem.textContent = totalWeight.toFixed(2) + '%';
+    if(totalElem) totalElem.textContent = totalWeight.toFixed(2) + '%';
 }
 
 // ----- Sorting -----
@@ -125,13 +118,13 @@ document.querySelectorAll('th').forEach(th => {
         const asc = th.classList.toggle('asc');
 
         rows.sort((a, b) => {
-            let aText = a.cells[index]?.dataset.value || a.cells[index]?.textContent.trim().replace('%','');
-            let bText = b.cells[index]?.dataset.value || b.cells[index]?.textContent.trim().replace('%','');
+            let aText = a.cells[index].dataset.value || a.cells[index].textContent.trim().replace('%','');
+            let bText = b.cells[index].dataset.value || b.cells[index].textContent.trim().replace('%','');
 
-            if (type === 'number') {
-                aText = parseFloat(aText.replace(/,/g, '')) || 0;
-                bText = parseFloat(bText.replace(/,/g, '')) || 0;
-            } else if (type === 'date') {
+            if(type === 'number') {
+                aText = parseFloat(aText.replace(/,/g,'')) || 0;
+                bText = parseFloat(bText.replace(/,/g,'')) || 0;
+            } else if(type === 'date') {
                 aText = new Date(aText);
                 bText = new Date(bText);
             }
@@ -154,25 +147,24 @@ updateButton.addEventListener("click", () => {
     let forgoneSum = 0;
 
     rows.forEach(row => {
-        const strike = parseFloat(row.cells[4].textContent.replace(/,/g, ''));
-        const contracts = parseFloat(row.cells[9].textContent.replace(/,/g, ''));
-        const totalBaseMV = parseFloat(row.cells[10].textContent.replace(/,/g, ''));
+        const strike = parseFloat(row.cells[4].textContent.replace(/,/g,''));
+        const contracts = parseFloat(row.cells[9].textContent.replace(/,/g,''));
+        const totalBaseMV = parseFloat(row.cells[10].textContent);
 
         const upside = (strike - userIndex) / userIndex * 100;
 
         row.cells[5].textContent = userIndex.toFixed(2);
         row.cells[6].textContent = upside.toFixed(2) + "%";
 
-        let status = 'OTM';
-        let statusClass = 'otm';
-        let forgone = 0;
-
-        if (upside < 0) {
+        let status = '', statusClass = '', forgone = 0;
+        if(upside < 0){
             status = 'ITM';
             statusClass = 'itm';
             forgone = ((userIndex - strike) * contracts) / totalBaseMV * 100;
             row.cells[8].textContent = forgone.toFixed(2) + "%";
         } else {
+            status = 'OTM';
+            statusClass = 'otm';
             row.cells[8].textContent = '0.00%';
         }
 
@@ -183,5 +175,5 @@ updateButton.addEventListener("click", () => {
     });
 
     const tfootCell = document.querySelector('#options-table tfoot td:last-child');
-    if (tfootCell) tfootCell.textContent = forgoneSum.toFixed(2) + '%';
+    if(tfootCell) tfootCell.textContent = forgoneSum.toFixed(2) + '%';
 });
