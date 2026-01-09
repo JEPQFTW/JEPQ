@@ -8,7 +8,7 @@ const dateSelect = document.getElementById("dateSelect");
 const updateButton = document.getElementById("updateIndex");
 const userIndexInput = document.getElementById("userIndex");
 
-// Load available dates and populate dropdown
+// Load available dates
 fetch("/JEPQ/data/JEPQ-Files/available_dates.json")
   .then(res => res.json())
   .then(data => {
@@ -24,11 +24,13 @@ fetch("/JEPQ/data/JEPQ-Files/available_dates.json")
   })
   .catch(err => console.error("Failed to load available_dates.json:", err));
 
-dateSelect.addEventListener("change", () => loadTables(dateSelect.value));
+dateSelect.addEventListener("change", () => {
+    loadTables(dateSelect.value);
+});
 
 function loadTables(date) {
     const timestamp = new Date().getTime();
-    
+
     buckets.forEach(bucket => {
         const file = `${bucket.prefix}${date}.json?ts=${timestamp}`;
         fetch(file)
@@ -41,54 +43,52 @@ function loadTables(date) {
 function renderTable(bucketId, data) {
     const tbody = document.querySelector(`#${bucketId}-table tbody`);
     tbody.innerHTML = "";
+    let totalWeight = 0;
     const today = new Date();
 
     if (!data || data.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = bucketId === 'options' ? 10 : 2;
+        td.colSpan = bucketId === 'options' ? 11 : 2;
         td.textContent = "No records available";
         tr.appendChild(td);
         tbody.appendChild(tr);
         return;
     }
 
-    if(bucketId === 'options') {
-        let cumulative = 0;
+    data.forEach(item => {
+        const tr = document.createElement('tr');
 
-        data.forEach(item => {
-            const tr = document.createElement('tr');
+        if (bucketId === 'options') {
             const [year, month, day] = item.Expiry_Date.split('-');
             const expiryDate = new Date(`${year}-${month}-${day}`);
             const displayDate = `${day}/${month}/${year}`;
-            const tdte = Math.max(0, Math.round((expiryDate - today) / (1000*60*60*24) * 5/7));
 
-            const strike = parseFloat(item.Strike_Price.replace(/,/g,''));
-            const contracts = parseFloat(item.Contracts);
-            const totalBaseMV = parseFloat(item.TotalBaseMV);
+            const tdte = Math.max(
+                0,
+                Math.round((expiryDate - today) / (1000 * 60 * 60 * 24) * 5 / 7)
+            );
 
-            // Portfolio % Covered
-            const pctCovered = (contracts * strike / totalBaseMV) * 100;
-            cumulative += pctCovered;
-
+            const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
             const opening = parseFloat(item.OpeningPrice);
             const upside = (strike - opening) / opening * 100;
-            let status = '', statusClass = '', forgoneGains = '';
 
-            if(upside < 0){
+            let status = '';
+            let statusClass = '';
+            let forgoneGains = '0.00%';
+
+            if (upside < 0) {
                 status = 'ITM';
                 statusClass = 'itm';
                 forgoneGains = (parseFloat(item.ForgoneGainPct) * 100).toFixed(2) + '%';
             } else {
                 status = 'OTM';
                 statusClass = 'otm';
-                forgoneGains = '0.00%';
             }
 
             tr.innerHTML = `
                 <td>${item.Ticker}</td>
-                <td>${pctCovered.toFixed(2)}%</td>
-                <td>${cumulative.toFixed(2)}%</td>
+                <td>${item.Weight}%</td>
                 <td data-value="${item.Expiry_Date}">${displayDate}</td>
                 <td>${tdte}</td>
                 <td>${item.Strike_Price}</td>
@@ -96,19 +96,22 @@ function renderTable(bucketId, data) {
                 <td>${upside.toFixed(2)}%</td>
                 <td class="${statusClass}">${status}</td>
                 <td>${forgoneGains}</td>
-                <td style="display:none;">${item.Contracts}</td>
-                <td style="display:none;">${item.TotalBaseMV}</td>
+                <td>${item.Contracts}</td>
+                <td>${item.TotalBaseMV}</td>
             `;
-            tbody.appendChild(tr);
-        });
+        } else {
+            tr.innerHTML = `
+                <td>${item.Ticker}</td>
+                <td>${item.Weight}%</td>
+            `;
+        }
 
-    } else {
-        data.forEach(item => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
-            tbody.appendChild(tr);
-        });
-    }
+        totalWeight += parseFloat(item.Weight) || 0;
+        tbody.appendChild(tr);
+    });
+
+    const totalElem = document.getElementById(`${bucketId}-total`);
+    if (totalElem) totalElem.textContent = totalWeight.toFixed(2) + '%';
 }
 
 // ----- Sorting -----
@@ -122,32 +125,19 @@ document.querySelectorAll('th').forEach(th => {
         const asc = th.classList.toggle('asc');
 
         rows.sort((a, b) => {
-            let aText = a.cells[index].dataset.value || a.cells[index].textContent.trim().replace('%','');
-            let bText = b.cells[index].dataset.value || b.cells[index].textContent.trim().replace('%','');
+            let aText = a.cells[index]?.dataset.value || a.cells[index]?.textContent.trim().replace('%','');
+            let bText = b.cells[index]?.dataset.value || b.cells[index]?.textContent.trim().replace('%','');
 
-            if(type === 'number'){
-                aText = parseFloat(aText.replace(/,/g,'')) || 0;
-                bText = parseFloat(bText.replace(/,/g,'')) || 0;
-            } else if(type === 'date'){
+            if (type === 'number') {
+                aText = parseFloat(aText.replace(/,/g, '')) || 0;
+                bText = parseFloat(bText.replace(/,/g, '')) || 0;
+            } else if (type === 'date') {
                 aText = new Date(aText);
                 bText = new Date(bText);
             }
 
             return aText < bText ? (asc ? -1 : 1) : aText > bText ? (asc ? 1 : -1) : 0;
         });
-
-        // Recalculate cumulative for options after sorting
-        if(table.id === 'options-table'){
-            let cum = 0;
-            rows.forEach(row => {
-                const contracts = parseFloat(row.cells[10].textContent);
-                const strike = parseFloat(row.cells[5].textContent);
-                const totalBaseMV = parseFloat(row.cells[11].textContent);
-                const pct = (contracts * strike / totalBaseMV) * 100;
-                cum += pct;
-                row.cells[2].textContent = cum.toFixed(2) + '%';
-            });
-        }
 
         tbody.innerHTML = '';
         rows.forEach(row => tbody.appendChild(row));
@@ -157,40 +147,41 @@ document.querySelectorAll('th').forEach(th => {
 // ----- Update Upside % and Forgone Gains -----
 updateButton.addEventListener("click", () => {
     const userIndex = parseFloat(userIndexInput.value);
-    if(isNaN(userIndex)) return alert("Enter a valid index value");
+    if (isNaN(userIndex)) return alert("Enter a valid index value");
 
     const tbody = document.querySelector("#options-table tbody");
     const rows = tbody.querySelectorAll("tr");
     let forgoneSum = 0;
 
     rows.forEach(row => {
-        const strike = parseFloat(row.cells[5].textContent);
-        const contracts = parseFloat(row.cells[10].textContent);
-        const totalBaseMV = parseFloat(row.cells[11].textContent);
+        const strike = parseFloat(row.cells[4].textContent.replace(/,/g, ''));
+        const contracts = parseFloat(row.cells[9].textContent.replace(/,/g, ''));
+        const totalBaseMV = parseFloat(row.cells[10].textContent.replace(/,/g, ''));
 
         const upside = (strike - userIndex) / userIndex * 100;
 
-        row.cells[6].textContent = userIndex.toFixed(2); // Underlying
-        row.cells[7].textContent = upside.toFixed(2) + "%"; // Upside %
+        row.cells[5].textContent = userIndex.toFixed(2);
+        row.cells[6].textContent = upside.toFixed(2) + "%";
 
-        let status = '', statusClass = '', forgone = 0;
-        if(upside < 0){
+        let status = 'OTM';
+        let statusClass = 'otm';
+        let forgone = 0;
+
+        if (upside < 0) {
             status = 'ITM';
             statusClass = 'itm';
             forgone = ((userIndex - strike) * contracts) / totalBaseMV * 100;
-            row.cells[9].textContent = forgone.toFixed(2) + "%";
+            row.cells[8].textContent = forgone.toFixed(2) + "%";
         } else {
-            row.cells[9].textContent = '0.00%';
-            status = 'OTM';
-            statusClass = 'otm';
+            row.cells[8].textContent = '0.00%';
         }
 
-        row.cells[8].textContent = status;
-        row.cells[8].className = statusClass;
+        row.cells[7].textContent = status;
+        row.cells[7].className = statusClass;
 
         forgoneSum += forgone;
     });
 
     const tfootCell = document.querySelector('#options-table tfoot td:last-child');
-    if(tfootCell) tfootCell.textContent = forgoneSum.toFixed(2) + '%';
+    if (tfootCell) tfootCell.textContent = forgoneSum.toFixed(2) + '%';
 });
