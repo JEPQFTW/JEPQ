@@ -5,37 +5,40 @@
 <title>JEPQ (UCITS) Holdings</title>
 <link rel="stylesheet" href="../style.css">
 </head>
+
 <body>
 <canvas id="bgCanvas"></canvas>
 
-<!-- ----- Dark-Themed Back Button ----- -->
+<!-- ----- Back Button ----- -->
 <div class="back-button-container">
     <a href="../index.html" class="back-button">⬅ Back to Dashboard</a>
 </div>
 
-<!-- ----- Index Input + Update + Live Button ----- -->
-
 <div class="container">
     <h1>JEPQ (UCITS) Holdings</h1>
 
-    <div style="text-align:center; margin: 20px;" class="index-update-container">
+    <!-- ----- Date Selector ----- -->
+    <div class="index-update-container" style="text-align:center; margin:20px;">
         <label for="dateSelect"><strong>Select Date:</strong></label>
         <select id="dateSelect"></select>
     </div>
 
-    <div style="text-align:center; margin: 20px;" class="index-update-container">
-    <button id="liveIndexBtn">Get Live Index Price</button>
-    <label for="userIndex" style="margin-left:10px;"><strong>Current Index Value:</strong></label>
-    <input type="number" id="userIndex" placeholder="Enter current index value">
-    <button id="updateIndex">Update</button>
-</div>
-    
-    <h2>Options - Index</h2>
+    <!-- ----- Index Input ----- -->
+    <div class="index-update-container" style="text-align:center; margin:20px;">
+        <button id="liveIndexBtn">Get Live Index Price</button>
+        <label for="userIndex" style="margin-left:10px;"><strong>Current Index Value:</strong></label>
+        <input type="number" id="userIndex" placeholder="Enter current index value">
+        <button id="updateIndex">Update</button>
+    </div>
+
+    <!-- ================= OPTIONS ================= -->
+    <h2>Options – Index</h2>
     <table id="options-table">
         <thead>
             <tr>
                 <th data-type="string">Ticker</th>
-                <th data-type="number">Weight</th>
+                <th data-type="number">Portfolio % Covered</th>
+                <th data-type="number">Cumulative %</th>
                 <th data-type="date">Expiry Date</th>
                 <th data-type="number">Trading Days To Expiration</th>
                 <th data-type="number">Strike Price</th>
@@ -45,10 +48,13 @@
                 <th data-type="number">Forgone Gains</th>
             </tr>
         </thead>
+
         <tbody></tbody>
+
         <tfoot>
             <tr>
                 <td>Total</td>
+                <td></td>
                 <td id="options-total">0%</td>
                 <td></td>
                 <td></td>
@@ -61,6 +67,7 @@
         </tfoot>
     </table>
 
+    <!-- ================= CASH ================= -->
     <h2>Cash</h2>
     <table id="cash-table">
         <thead>
@@ -69,7 +76,9 @@
                 <th data-type="number">Weight</th>
             </tr>
         </thead>
+
         <tbody></tbody>
+
         <tfoot>
             <tr>
                 <td>Total</td>
@@ -78,6 +87,7 @@
         </tfoot>
     </table>
 
+    <!-- ================= STOCKS ================= -->
     <h2>Stocks</h2>
     <table id="stocks-table">
         <thead>
@@ -86,7 +96,9 @@
                 <th data-type="number">Weight</th>
             </tr>
         </thead>
+
         <tbody></tbody>
+
         <tfoot>
             <tr>
                 <td>Total</td>
@@ -96,7 +108,7 @@
     </table>
 </div>
 
-<!-- ----- Styles for Dark Buttons, Input, and Select ----- -->
+<!-- ----- Styling (unchanged) ----- -->
 <style>
 .back-button-container {
     padding: 25px;
@@ -120,77 +132,28 @@
     transform: translateY(-2px);
 }
 
-.index-update-container {
-    margin-top: 10px;
-}
-
-.index-update-container input#userIndex {
-    padding: 10px 14px;
-    border-radius: 6px;
-    border: 1px solid #2c3e50;
-    width: 180px;
-    margin-left: 10px;
-    font-size: 16px;
-    background: #2c3e50;
-    color: #ecf0f1;
-}
-
-.index-update-container input#userIndex::placeholder {
-    color: #bdc3c7;
-}
-
+.index-update-container input,
+.index-update-container select,
 .index-update-container button {
     background: #2c3e50;
     color: #ecf0f1;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
-    margin-left: 5px;
-}
-
-.index-update-container button:hover {
-    background: #3498db;
-    transform: translateY(-2px);
-}
-
-/* ----- Dark Themed Date Select ----- */
-#indexSelect, #dateSelect {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background: #2c3e50;
-    color: #ecf0f1;
     border: 1px solid #2c3e50;
     padding: 10px 14px;
     border-radius: 6px;
     font-size: 16px;
-    cursor: pointer;
-    width: 220px;
-    margin-left: 10px;
-    transition: background 0.3s, transform 0.2s;
-    background-image: url('data:image/svg+xml;utf8,<svg fill="%23ecf0f1" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 16px 16px;
 }
 
-#indexSelect:hover, #dateSelect:hover {
+.index-update-container button:hover,
+#indexSelect:hover,
+#dateSelect:hover {
     background: #3498db;
     transform: translateY(-2px);
 }
-
-#indexSelect option, #dateSelect option {
-    background: #2c3e50;
-    color: #ecf0f1;
-}
 </style>
 
+<!-- ----- Scripts ----- -->
 <script src="../script/JEPQ.js"></script>
 
-<!-- ----- Add Live Index Button Functionality ----- -->
 <script>
 document.getElementById('liveIndexBtn').addEventListener('click', () => {
     window.open('https://www.google.com/finance/quote/NDX:INDEXNASDAQ', '_blank');
