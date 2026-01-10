@@ -8,7 +8,7 @@ const dateSelect = document.getElementById("dateSelect");
 const updateButton = document.getElementById("updateIndex");
 const userIndexInput = document.getElementById("userIndex");
 
-// Load available dates and populate dropdown
+// Load available dates
 fetch("/JEPQ/data/JEPQ-Files/available_dates.json")
   .then(res => res.json())
   .then(data => {
@@ -30,7 +30,7 @@ dateSelect.addEventListener("change", () => {
 
 function loadTables(date) {
     const timestamp = new Date().getTime();
-    
+
     buckets.forEach(bucket => {
         const file = `${bucket.prefix}${date}.json?ts=${timestamp}`;
         fetch(file)
@@ -43,6 +43,7 @@ function loadTables(date) {
 function renderTable(bucketId, data) {
     const tbody = document.querySelector(`#${bucketId}-table tbody`);
     tbody.innerHTML = "";
+
     let totalWeight = 0;
     const today = new Date();
 
@@ -71,7 +72,14 @@ function renderTable(bucketId, data) {
 
             const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
             const opening = parseFloat(item.OpeningPrice);
+            const contracts = parseFloat(item.Contracts);
+            const totalBaseMV = parseFloat(item.TotalBaseMV);
+
             const upside = (strike - opening) / opening * 100;
+
+            // ✅ Portfolio % Covered (NEW)
+            const portfolioCoveredPct =
+                (contracts * strike) / totalBaseMV * 100;
 
             let status = '';
             let statusClass = '';
@@ -89,7 +97,7 @@ function renderTable(bucketId, data) {
 
             tr.innerHTML = `
                 <td>${item.Ticker}</td>
-                <td></td>
+                <td>${portfolioCoveredPct.toFixed(2)}%</td>
                 <td data-value="${item.Expiry_Date}">${displayDate}</td>
                 <td>${tdte}</td>
                 <td>${item.Strike_Price}</td>
@@ -100,20 +108,26 @@ function renderTable(bucketId, data) {
                 <td style="display:none;">${item.Contracts}</td>
                 <td style="display:none;">${item.TotalBaseMV}</td>
             `;
+
+            totalWeight += portfolioCoveredPct;
+
         } else {
-            // ✅ cash & stocks: preserve Weight logic
+            // Cash & Stocks unchanged
             tr.innerHTML = `
                 <td>${item.Ticker}</td>
                 <td>${item.Weight}%</td>
             `;
+
+            totalWeight += parseFloat(item.Weight) || 0;
         }
 
-        totalWeight += parseFloat(item.Weight) || 0;
         tbody.appendChild(tr);
     });
 
     const totalElem = document.getElementById(`${bucketId}-total`);
-    if (totalElem) totalElem.textContent = totalWeight.toFixed(2) + '%';
+    if (totalElem) {
+        totalElem.textContent = totalWeight.toFixed(2) + '%';
+    }
 }
 
 // ----- Sorting -----
@@ -138,7 +152,9 @@ document.querySelectorAll('th').forEach(th => {
                 bText = new Date(bText);
             }
 
-            return aText < bText ? (asc ? -1 : 1) : aText > bText ? (asc ? 1 : -1) : 0;
+            return aText < bText ? (asc ? -1 : 1)
+                 : aText > bText ? (asc ? 1 : -1)
+                 : 0;
         });
 
         tbody.innerHTML = '';
@@ -187,5 +203,7 @@ updateButton.addEventListener("click", () => {
     });
 
     const tfootCell = document.querySelector('#options-table tfoot td:last-child');
-    if (tfootCell) tfootCell.textContent = forgoneSum.toFixed(2) + '%';
+    if (tfootCell) {
+        tfootCell.textContent = forgoneSum.toFixed(2) + '%';
+    }
 });
