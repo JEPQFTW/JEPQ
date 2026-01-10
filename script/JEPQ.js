@@ -8,7 +8,7 @@ const dateSelect = document.getElementById("dateSelect");
 const updateButton = document.getElementById("updateIndex");
 const userIndexInput = document.getElementById("userIndex");
 
-// Load available dates and populate dropdown
+// -------------------- LOAD DATES --------------------
 fetch("/JEPQ/data/JEPQ-Files/available_dates.json")
   .then(res => res.json())
   .then(data => {
@@ -28,6 +28,7 @@ dateSelect.addEventListener("change", () => {
     loadTables(dateSelect.value);
 });
 
+// -------------------- LOAD TABLES --------------------
 function loadTables(date) {
     const timestamp = new Date().getTime();
     
@@ -40,6 +41,7 @@ function loadTables(date) {
     });
 }
 
+// -------------------- RENDER TABLE --------------------
 function renderTable(bucketId, data) {
     const tbody = document.querySelector(`#${bucketId}-table tbody`);
     tbody.innerHTML = "";
@@ -49,7 +51,7 @@ function renderTable(bucketId, data) {
     if (!data || data.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = bucketId === 'options' ? 9 : 2; // TDTE adds one column
+        td.colSpan = bucketId === 'options' ? 9 : 2; 
         td.textContent = "No records available";
         tr.appendChild(td);
         tbody.appendChild(tr);
@@ -64,14 +66,27 @@ function renderTable(bucketId, data) {
             const expiryDate = new Date(`${year}-${month}-${day}`);
             const displayDate = `${day}/${month}/${year}`;
 
-            // Trading Days to Expiration formula
             const tdte = Math.max(0, Math.round((expiryDate - today) / (1000*60*60*24) * 5/7));
 
             const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
             const opening = parseFloat(item.OpeningPrice);
-            const upside = (strike - opening) / opening * 100;
-            let status = '', statusClass = '', forgoneGains = '';
+            const contracts = parseFloat(item.Contracts);
+            const totalBaseMV = parseFloat(item.TotalBaseMV);
 
+            const upside = (strike - opening) / opening * 100;
+
+            // -------------------- DEBUG --------------------
+            console.log({
+                ticker: item.Ticker,
+                strike,
+                opening,
+                contracts,
+                totalBaseMV,
+                upside
+            });
+            // ------------------ END DEBUG -----------------
+
+            let status = '', statusClass = '', forgoneGains = '';
             if (upside < 0) {
                 status = 'ITM';
                 statusClass = 'itm';
@@ -107,7 +122,7 @@ function renderTable(bucketId, data) {
     if(totalElem) totalElem.textContent = totalWeight.toFixed(2) + '%';
 }
 
-// ----- Sorting -----
+// -------------------- SORTING --------------------
 document.querySelectorAll('th').forEach(th => {
     th.addEventListener('click', () => {
         const table = th.closest('table');
@@ -137,7 +152,7 @@ document.querySelectorAll('th').forEach(th => {
     });
 });
 
-// ----- Update Upside % and Forgone Gains -----
+// -------------------- UPDATE UPSIDE % & FORGONE GAINS --------------------
 updateButton.addEventListener("click", () => {
     const userIndex = parseFloat(userIndexInput.value);
     if (isNaN(userIndex)) return alert("Enter a valid index value");
