@@ -79,7 +79,7 @@ function renderTable(bucketId, data) {
 
             // ✅ Portfolio % Covered (NEW)
             const portfolioCoveredPct =
-                (contracts * strike) / totalBaseMV * 100;
+                (contracts * strike) / totalBaseMV;
 
             let status = '';
             let statusClass = '';
