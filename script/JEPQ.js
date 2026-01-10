@@ -8,7 +8,7 @@ const dateSelect = document.getElementById("dateSelect");
 const updateButton = document.getElementById("updateIndex");
 const userIndexInput = document.getElementById("userIndex");
 
-// -------------------- LOAD DATES --------------------
+// Load available dates and populate dropdown
 fetch("/JEPQ/data/JEPQ-Files/available_dates.json")
   .then(res => res.json())
   .then(data => {
@@ -28,10 +28,9 @@ dateSelect.addEventListener("change", () => {
     loadTables(dateSelect.value);
 });
 
-// -------------------- LOAD TABLES --------------------
 function loadTables(date) {
     const timestamp = new Date().getTime();
-
+    
     buckets.forEach(bucket => {
         const file = `${bucket.prefix}${date}.json?ts=${timestamp}`;
         fetch(file)
@@ -41,18 +40,16 @@ function loadTables(date) {
     });
 }
 
-// -------------------- RENDER TABLE --------------------
 function renderTable(bucketId, data) {
     const tbody = document.querySelector(`#${bucketId}-table tbody`);
     tbody.innerHTML = "";
-
     let totalWeight = 0;
     const today = new Date();
 
     if (!data || data.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = bucketId === 'options' ? 9 : 2;
+        td.colSpan = bucketId === 'options' ? 9 : 2; // TDTE adds one column
         td.textContent = "No records available";
         tr.appendChild(td);
         tbody.appendChild(tr);
@@ -62,42 +59,18 @@ function renderTable(bucketId, data) {
     data.forEach(item => {
         const tr = document.createElement('tr');
 
-        // ================= OPTIONS =================
-        if (bucketId === 'options') {
-
+        if(bucketId === 'options') {
             const [year, month, day] = item.Expiry_Date.split('-');
             const expiryDate = new Date(`${year}-${month}-${day}`);
             const displayDate = `${day}/${month}/${year}`;
 
-            const tdte = Math.max(
-                0,
-                Math.round((expiryDate - today) / (1000 * 60 * 60 * 24) * 5 / 7)
-            );
+            // Trading Days to Expiration formula
+            const tdte = Math.max(0, Math.round((expiryDate - today) / (1000*60*60*24) * 5/7));
 
             const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
             const opening = parseFloat(item.OpeningPrice);
-            const contracts = parseFloat(item.Contracts);
-            const totalBaseMV = parseFloat(item.TotalBaseMV);
-
             const upside = (strike - opening) / opening * 100;
-
-            // ✅ Portfolio % Covered
-            const portfolioCoveredPct =
-                (contracts * 100 * strike) / totalBaseMV;
-
-            // 🔍 DEBUG (SAFE)
-            console.log({
-                ticker: item.Ticker,
-                strike,
-                contracts,
-                totalBaseMV,
-                overwrittenNotional: contracts * 100 * strike,
-                portfolioCoveredPct
-            });
-
-            let status = '';
-            let statusClass = '';
-            let forgoneGains = '';
+            let status = '', statusClass = '', forgoneGains = '';
 
             if (upside < 0) {
                 status = 'ITM';
@@ -111,7 +84,7 @@ function renderTable(bucketId, data) {
 
             tr.innerHTML = `
                 <td>${item.Ticker}</td>
-                <td>${portfolioCoveredPct.toFixed(2)}%</td>
+                <td>${item.Weight}%</td>
                 <td data-value="${item.Expiry_Date}">${displayDate}</td>
                 <td>${tdte}</td>
                 <td>${item.Strike_Price}</td>
@@ -122,30 +95,19 @@ function renderTable(bucketId, data) {
                 <td style="display:none;">${item.Contracts}</td>
                 <td style="display:none;">${item.TotalBaseMV}</td>
             `;
-
-            totalWeight += portfolioCoveredPct;
-
-        // ================= CASH & STOCKS =================
         } else {
-
-            tr.innerHTML = `
-                <td>${item.Ticker}</td>
-                <td>${item.Weight}%</td>
-            `;
-
-            totalWeight += parseFloat(item.Weight) || 0;
+            tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
         }
 
+        totalWeight += parseFloat(item.Weight) || 0;
         tbody.appendChild(tr);
     });
 
     const totalElem = document.getElementById(`${bucketId}-total`);
-    if (totalElem) {
-        totalElem.textContent = totalWeight.toFixed(2) + '%';
-    }
+    if(totalElem) totalElem.textContent = totalWeight.toFixed(2) + '%';
 }
 
-// -------------------- SORTING --------------------
+// ----- Sorting -----
 document.querySelectorAll('th').forEach(th => {
     th.addEventListener('click', () => {
         const table = th.closest('table');
@@ -159,17 +121,15 @@ document.querySelectorAll('th').forEach(th => {
             let aText = a.cells[index].dataset.value || a.cells[index].textContent.trim().replace('%','');
             let bText = b.cells[index].dataset.value || b.cells[index].textContent.trim().replace('%','');
 
-            if (type === 'number') {
+            if(type === 'number') {
                 aText = parseFloat(aText.replace(/,/g,'')) || 0;
                 bText = parseFloat(bText.replace(/,/g,'')) || 0;
-            } else if (type === 'date') {
+            } else if(type === 'date') {
                 aText = new Date(aText);
                 bText = new Date(bText);
             }
 
-            return aText < bText ? (asc ? -1 : 1)
-                 : aText > bText ? (asc ? 1 : -1)
-                 : 0;
+            return aText < bText ? (asc ? -1 : 1) : aText > bText ? (asc ? 1 : -1) : 0;
         });
 
         tbody.innerHTML = '';
@@ -177,7 +137,7 @@ document.querySelectorAll('th').forEach(th => {
     });
 });
 
-// -------------------- UPDATE INDEX --------------------
+// ----- Update Upside % and Forgone Gains -----
 updateButton.addEventListener("click", () => {
     const userIndex = parseFloat(userIndexInput.value);
     if (isNaN(userIndex)) return alert("Enter a valid index value");
@@ -196,15 +156,12 @@ updateButton.addEventListener("click", () => {
         row.cells[5].textContent = userIndex.toFixed(2);
         row.cells[6].textContent = upside.toFixed(2) + "%";
 
-        let status = '';
-        let statusClass = '';
-        let forgone = 0;
-
-        if (upside < 0) {
+        let status = '', statusClass = '', forgone = 0;
+        if(upside < 0){
             status = 'ITM';
             statusClass = 'itm';
-            forgone = ((userIndex - strike) * contracts * 100) / totalBaseMV;
-            row.cells[8].textContent = (forgone * 100).toFixed(2) + "%";
+            forgone = ((userIndex - strike) * contracts) / totalBaseMV * 100;
+            row.cells[8].textContent = forgone.toFixed(2) + "%";
         } else {
             status = 'OTM';
             statusClass = 'otm';
@@ -218,7 +175,5 @@ updateButton.addEventListener("click", () => {
     });
 
     const tfootCell = document.querySelector('#options-table tfoot td:last-child');
-    if (tfootCell) {
-        tfootCell.textContent = (forgoneSum * 100).toFixed(2) + '%';
-    }
+    if(tfootCell) tfootCell.textContent = forgoneSum.toFixed(2) + '%';
 });
