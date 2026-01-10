@@ -77,9 +77,17 @@ function renderTable(bucketId, data) {
 
             const upside = (strike - opening) / opening * 100;
 
+            console.log({
+    ticker: row.cells[0].textContent,
+    strike,
+    contracts,
+    totalBaseMV
+});
+
+
             // ✅ Portfolio % Covered (NEW)
             const portfolioCoveredPct =
-                (contracts * strike) / totalBaseMV;
+                (contracts * strike * 100) / totalBaseMV;
 
             let status = '';
             let statusClass = '';
