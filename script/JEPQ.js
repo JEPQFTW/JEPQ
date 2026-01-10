@@ -101,9 +101,10 @@ function renderTable(bucketId, data) {
                 <td style="display:none;">${item.TotalBaseMV}</td>
             `;
         } else {
+            // ✅ cash & stocks: preserve Weight logic
             tr.innerHTML = `
                 <td>${item.Ticker}</td>
-                <td></td>
+                <td>${item.Weight}%</td>
             `;
         }
 
