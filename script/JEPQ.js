@@ -68,10 +68,11 @@ function renderTable(bucketId, data) {
 
             const tdte = Math.max(0, Math.round((expiryDate - today) / (1000*60*60*24) * 5/7));
 
+            // -------------------- PARSE NUMBERS --------------------
             const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
             const opening = parseFloat(item.OpeningPrice);
-            const contracts = parseFloat(item.Contracts);
-            const totalBaseMV = parseFloat(item.TotalBaseMV);
+            const contracts = parseFloat(item.Contracts.replace(/,/g, '')); // ✅ Fix commas
+            const totalBaseMV = parseFloat(item.TotalBaseMV); // numeric in JSON, ok
 
             const upside = (strike - opening) / opening * 100;
 
@@ -107,8 +108,8 @@ function renderTable(bucketId, data) {
                 <td>${upside.toFixed(2)}%</td>
                 <td class="${statusClass}">${status}</td>
                 <td>${forgoneGains}</td>
-                <td style="display:none;">${item.Contracts}</td>
-                <td style="display:none;">${item.TotalBaseMV}</td>
+                <td style="display:none;">${contracts}</td>
+                <td style="display:none;">${totalBaseMV}</td>
             `;
         } else {
             tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
