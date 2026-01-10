@@ -49,7 +49,7 @@ function renderTable(bucketId, data) {
     if (!data || data.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = bucketId === 'options' ? 9 : 2; // TDTE adds one column
+        td.colSpan = bucketId === 'options' ? 9 : 2;
         td.textContent = "No records available";
         tr.appendChild(td);
         tbody.appendChild(tr);
@@ -59,18 +59,23 @@ function renderTable(bucketId, data) {
     data.forEach(item => {
         const tr = document.createElement('tr');
 
-        if(bucketId === 'options') {
+        if (bucketId === 'options') {
             const [year, month, day] = item.Expiry_Date.split('-');
             const expiryDate = new Date(`${year}-${month}-${day}`);
             const displayDate = `${day}/${month}/${year}`;
 
-            // Trading Days to Expiration formula
-            const tdte = Math.max(0, Math.round((expiryDate - today) / (1000*60*60*24) * 5/7));
+            const tdte = Math.max(
+                0,
+                Math.round((expiryDate - today) / (1000 * 60 * 60 * 24) * 5 / 7)
+            );
 
             const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
             const opening = parseFloat(item.OpeningPrice);
             const upside = (strike - opening) / opening * 100;
-            let status = '', statusClass = '', forgoneGains = '';
+
+            let status = '';
+            let statusClass = '';
+            let forgoneGains = '';
 
             if (upside < 0) {
                 status = 'ITM';
@@ -84,7 +89,7 @@ function renderTable(bucketId, data) {
 
             tr.innerHTML = `
                 <td>${item.Ticker}</td>
-                <td>${item.Weight}%</td>
+                <td></td>
                 <td data-value="${item.Expiry_Date}">${displayDate}</td>
                 <td>${tdte}</td>
                 <td>${item.Strike_Price}</td>
@@ -96,7 +101,10 @@ function renderTable(bucketId, data) {
                 <td style="display:none;">${item.TotalBaseMV}</td>
             `;
         } else {
-            tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
+            tr.innerHTML = `
+                <td>${item.Ticker}</td>
+                <td></td>
+            `;
         }
 
         totalWeight += parseFloat(item.Weight) || 0;
@@ -104,7 +112,7 @@ function renderTable(bucketId, data) {
     });
 
     const totalElem = document.getElementById(`${bucketId}-total`);
-    if(totalElem) totalElem.textContent = totalWeight.toFixed(2) + '%';
+    if (totalElem) totalElem.textContent = totalWeight.toFixed(2) + '%';
 }
 
 // ----- Sorting -----
@@ -121,10 +129,10 @@ document.querySelectorAll('th').forEach(th => {
             let aText = a.cells[index].dataset.value || a.cells[index].textContent.trim().replace('%','');
             let bText = b.cells[index].dataset.value || b.cells[index].textContent.trim().replace('%','');
 
-            if(type === 'number') {
+            if (type === 'number') {
                 aText = parseFloat(aText.replace(/,/g,'')) || 0;
                 bText = parseFloat(bText.replace(/,/g,'')) || 0;
-            } else if(type === 'date') {
+            } else if (type === 'date') {
                 aText = new Date(aText);
                 bText = new Date(bText);
             }
@@ -156,8 +164,11 @@ updateButton.addEventListener("click", () => {
         row.cells[5].textContent = userIndex.toFixed(2);
         row.cells[6].textContent = upside.toFixed(2) + "%";
 
-        let status = '', statusClass = '', forgone = 0;
-        if(upside < 0){
+        let status = '';
+        let statusClass = '';
+        let forgone = 0;
+
+        if (upside < 0) {
             status = 'ITM';
             statusClass = 'itm';
             forgone = ((userIndex - strike) * contracts) / totalBaseMV * 100;
@@ -175,5 +186,5 @@ updateButton.addEventListener("click", () => {
     });
 
     const tfootCell = document.querySelector('#options-table tfoot td:last-child');
-    if(tfootCell) tfootCell.textContent = forgoneSum.toFixed(2) + '%';
+    if (tfootCell) tfootCell.textContent = forgoneSum.toFixed(2) + '%';
 });
