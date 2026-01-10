@@ -68,15 +68,15 @@ function renderTable(bucketId, data) {
 
             const tdte = Math.max(0, Math.round((expiryDate - today) / (1000*60*60*24) * 5/7));
 
-            // -------------------- PARSE NUMBERS --------------------
+            // -------------------- PARSE NUMBERS CORRECTLY --------------------
             const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
             const opening = parseFloat(item.OpeningPrice);
-            const contracts = parseFloat(item.Contracts.replace(/,/g, '')); // ✅ Fix commas
-            const totalBaseMV = parseFloat(item.TotalBaseMV); // numeric in JSON, ok
+            const contracts = parseFloat(item.Contracts.replace(/,/g, '')); // ✅ fix comma
+            const totalBaseMV = parseFloat(item.TotalBaseMV);
 
             const upside = (strike - opening) / opening * 100;
 
-            // -------------------- DEBUG --------------------
+            // -------------------- DEBUG LOG --------------------
             console.log({
                 ticker: item.Ticker,
                 strike,
