@@ -8,7 +8,7 @@ const dateSelect = document.getElementById("dateSelect");
 const updateButton = document.getElementById("updateIndex");
 const userIndexInput = document.getElementById("userIndex");
 
-// Load available dates
+// -------------------- LOAD DATES --------------------
 fetch("/JEPQ/data/JEPQ-Files/available_dates.json")
   .then(res => res.json())
   .then(data => {
@@ -28,6 +28,7 @@ dateSelect.addEventListener("change", () => {
     loadTables(dateSelect.value);
 });
 
+// -------------------- LOAD TABLES --------------------
 function loadTables(date) {
     const timestamp = new Date().getTime();
 
@@ -40,6 +41,7 @@ function loadTables(date) {
     });
 }
 
+// -------------------- RENDER TABLE --------------------
 function renderTable(bucketId, data) {
     const tbody = document.querySelector(`#${bucketId}-table tbody`);
     tbody.innerHTML = "";
@@ -60,7 +62,9 @@ function renderTable(bucketId, data) {
     data.forEach(item => {
         const tr = document.createElement('tr');
 
+        // ================= OPTIONS =================
         if (bucketId === 'options') {
+
             const [year, month, day] = item.Expiry_Date.split('-');
             const expiryDate = new Date(`${year}-${month}-${day}`);
             const displayDate = `${day}/${month}/${year}`;
@@ -77,17 +81,19 @@ function renderTable(bucketId, data) {
 
             const upside = (strike - opening) / opening * 100;
 
-            console.log({
-    ticker: row.cells[0].textContent,
-    strike,
-    contracts,
-    totalBaseMV
-});
-
-
-            // ✅ Portfolio % Covered (NEW)
+            // ✅ Portfolio % Covered
             const portfolioCoveredPct =
-                (contracts * strike * 100) / totalBaseMV;
+                (contracts * 100 * strike) / totalBaseMV;
+
+            // 🔍 DEBUG (SAFE)
+            console.log({
+                ticker: item.Ticker,
+                strike,
+                contracts,
+                totalBaseMV,
+                overwrittenNotional: contracts * 100 * strike,
+                portfolioCoveredPct
+            });
 
             let status = '';
             let statusClass = '';
@@ -119,8 +125,9 @@ function renderTable(bucketId, data) {
 
             totalWeight += portfolioCoveredPct;
 
+        // ================= CASH & STOCKS =================
         } else {
-            // Cash & Stocks unchanged
+
             tr.innerHTML = `
                 <td>${item.Ticker}</td>
                 <td>${item.Weight}%</td>
@@ -138,7 +145,7 @@ function renderTable(bucketId, data) {
     }
 }
 
-// ----- Sorting -----
+// -------------------- SORTING --------------------
 document.querySelectorAll('th').forEach(th => {
     th.addEventListener('click', () => {
         const table = th.closest('table');
@@ -170,7 +177,7 @@ document.querySelectorAll('th').forEach(th => {
     });
 });
 
-// ----- Update Upside % and Forgone Gains -----
+// -------------------- UPDATE INDEX --------------------
 updateButton.addEventListener("click", () => {
     const userIndex = parseFloat(userIndexInput.value);
     if (isNaN(userIndex)) return alert("Enter a valid index value");
@@ -196,8 +203,8 @@ updateButton.addEventListener("click", () => {
         if (upside < 0) {
             status = 'ITM';
             statusClass = 'itm';
-            forgone = ((userIndex - strike) * contracts) / totalBaseMV * 100;
-            row.cells[8].textContent = forgone.toFixed(2) + "%";
+            forgone = ((userIndex - strike) * contracts * 100) / totalBaseMV;
+            row.cells[8].textContent = (forgone * 100).toFixed(2) + "%";
         } else {
             status = 'OTM';
             statusClass = 'otm';
@@ -212,6 +219,6 @@ updateButton.addEventListener("click", () => {
 
     const tfootCell = document.querySelector('#options-table tfoot td:last-child');
     if (tfootCell) {
-        tfootCell.textContent = forgoneSum.toFixed(2) + '%';
+        tfootCell.textContent = (forgoneSum * 100).toFixed(2) + '%';
     }
 });
