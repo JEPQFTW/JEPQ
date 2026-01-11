@@ -109,7 +109,7 @@ function renderTable(bucketId, data) {
                 <td data-value="${item.Expiry_Date}">${displayDate}</td>
                 <td>${tdte}</td>
                 <td>${item.Strike_Price}</td>
-                <td>${item.OpeningPrice}</td>
+                <td>${opening.toFixed(2)}</td>
                 <td>${upside.toFixed(2)}%</td>
                 <td class="${statusClass}">${status}</td>
                 <td>${forgoneGains}</td>
@@ -117,15 +117,19 @@ function renderTable(bucketId, data) {
                 <td style="display:none;">${totalBaseMV}</td>
             `;
 
+            // -------------------- SUM TOTAL --------------------
+            totalWeight += portfolioCoveredPct;
+
         } else {
-            // -------------------- CASH & STOCKS TABLES --------------------
+            // Cash & Stocks unchanged
             tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
+            totalWeight += parseFloat(item.Weight) || 0;
         }
 
-        totalWeight += parseFloat(item.Weight) || 0;
         tbody.appendChild(tr);
     });
 
+    // -------------------- UPDATE TOTAL --------------------
     const totalElem = document.getElementById(`${bucketId}-total`);
     if(totalElem) totalElem.textContent = totalWeight.toFixed(2) + '%';
 }
