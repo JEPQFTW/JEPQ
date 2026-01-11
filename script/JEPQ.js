@@ -8,7 +8,10 @@ const dateSelect = document.getElementById("dateSelect");
 const updateButton = document.getElementById("updateIndex");
 const userIndexInput = document.getElementById("userIndex");
 
-// -------------------- LOAD DATES --------------------
+// -------------------- ROBUST NUMBER CLEANER --------------------
+const cleanNumber = str => parseFloat(String(str).replace(/,/g,'').replace(/[^\d.]/g,''));
+
+// -------------------- LOAD AVAILABLE DATES --------------------
 fetch("/JEPQ/data/JEPQ-Files/available_dates.json")
   .then(res => res.json())
   .then(data => {
@@ -68,11 +71,11 @@ function renderTable(bucketId, data) {
 
             const tdte = Math.max(0, Math.round((expiryDate - today) / (1000*60*60*24) * 5/7));
 
-            // -------------------- PARSE NUMBERS CORRECTLY --------------------
-            const strike = parseFloat(item.Strike_Price.replace(/,/g, ''));
-            const opening = parseFloat(item.OpeningPrice);
-            const contracts = parseFloat(item.Contracts.replace(/,/g, '')); // ✅ fix comma
-            const totalBaseMV = parseFloat(item.TotalBaseMV);
+            // -------------------- PARSE NUMBERS --------------------
+            const strike = cleanNumber(item.Strike_Price);
+            const opening = cleanNumber(item.OpeningPrice);
+            const contracts = cleanNumber(item.Contracts);
+            const totalBaseMV = cleanNumber(item.TotalBaseMV);
 
             const upside = (strike - opening) / opening * 100;
 
@@ -85,7 +88,9 @@ function renderTable(bucketId, data) {
                 totalBaseMV,
                 upside
             });
-            // ------------------ END DEBUG -----------------
+
+            // -------------------- PORTFOLIO % COVERED --------------------
+            const portfolioCoveredPct = ((contracts * strike) / totalBaseMV) * 100;
 
             let status = '', statusClass = '', forgoneGains = '';
             if (upside < 0) {
@@ -100,7 +105,7 @@ function renderTable(bucketId, data) {
 
             tr.innerHTML = `
                 <td>${item.Ticker}</td>
-                <td>${item.Weight}%</td>
+                <td>${portfolioCoveredPct.toFixed(2)}%</td>
                 <td data-value="${item.Expiry_Date}">${displayDate}</td>
                 <td>${tdte}</td>
                 <td>${item.Strike_Price}</td>
@@ -111,7 +116,9 @@ function renderTable(bucketId, data) {
                 <td style="display:none;">${contracts}</td>
                 <td style="display:none;">${totalBaseMV}</td>
             `;
+
         } else {
+            // -------------------- CASH & STOCKS TABLES --------------------
             tr.innerHTML = `<td>${item.Ticker}</td><td>${item.Weight}%</td>`;
         }
 
@@ -163,9 +170,9 @@ updateButton.addEventListener("click", () => {
     let forgoneSum = 0;
 
     rows.forEach(row => {
-        const strike = parseFloat(row.cells[4].textContent.replace(/,/g,''));
-        const contracts = parseFloat(row.cells[9].textContent.replace(/,/g,''));
-        const totalBaseMV = parseFloat(row.cells[10].textContent);
+        const strike = cleanNumber(row.cells[4].textContent);
+        const contracts = cleanNumber(row.cells[9].textContent);
+        const totalBaseMV = cleanNumber(row.cells[10].textContent);
 
         const upside = (strike - userIndex) / userIndex * 100;
 
